@@ -1,0 +1,43 @@
+% Keine Seitenzahlen
+\thispagestyle{empty}
+
+% ----- OBEN: Logos -----
+\begin{minipage}{0.49\textwidth}
+    \includegraphics[width=0.6\linewidth]{logos/logo1.jpg}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+    \raggedleft
+    \includegraphics[width=0.6\linewidth]{logos/logo2.jpg}
+\end{minipage}
+
+\vfill % Weißraum zwischen Logos und Mittelteil
+
+% ----- MITTE: Titel und Angaben -----
+\begin{center}
+    {\LARGE \textbf{\titel}}\\[1.5ex]
+    {\large \textit{\artDerArbeit{ }\arbeit}}\\[2em]
+    
+    des Studiengangs \textbf{\studiengang} an der \\
+    Dualen Hochschule Baden-Württemberg \dhbwStandort \\
+    Campus \dhbwCampus\\[2em]
+
+    von \textbf{\vorname\ \nachname}\\[1.5em]
+
+    Abgabedatum: \textbf{\abgabedatum}
+\end{center}
+
+\vfill % Weißraum zwischen Mittelteil und unteren Angaben
+
+% ----- UNTEN: Detailzeilen -----
+\begin{flushleft}
+    \begin{tabularx}{\textwidth}{@{}l X@{}}
+        Bearbeitungszeitraum: & \bearbeitungswochen\ Wochen \\
+        Matrikelnummer, Kurs: & \matrikelnummer, \kurskuerzel \\
+        Dualer Partner: & \dualerPartnerFirmenName, \dualerPartnerStandort \\
+        Betreuer*in des Dualen Partners: & \betreuerTitel\ \betreuerVorname\ \betreuerNachname \\
+        Gutachter*in der Dualen Hochschule: & \gutachterTitel\ \gutachterVorname\ \gutachterNachname \\
+    \end{tabularx}
+\end{flushleft}
+
+

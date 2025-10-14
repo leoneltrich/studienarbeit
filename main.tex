@@ -1,0 +1,177 @@
+\documentclass[a4paper,12pt]{article}
+
+% \usepackage[T1]{fontenc}
+\usepackage{polyglossia}
+\setmainlanguage{ngerman}
+\setotherlanguage{ukrainian} % or {russian} if more appropriate
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+\usepackage{verbatim } % for multiline comments
+\usepackage{amsmath} % Mathematische symbole
+
+% \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+% \usepackage[ngerman]{babel} % Für deutsche Spracheinstellungen bei z.B. Abbildung anstatt Figure
+\usepackage{titlesec} % optional: bessere Kapitelgestaltung
+\usepackage{fancyhdr} % Header/Footer
+% \usepackage{mathptmx} % Times New Roman (text + math)
+\usepackage[style=ieee, backend=biber]{biblatex} % Zitieren
+\usepackage{csquotes} % Zitieren
+\usepackage{acronym}
+\usepackage{placeins} % Nutze \FloatBarrier um zu verhindern, dass eine Abbildung in eine folgende Subsection rutscht
+\usepackage{parskip} % Removes indent and adds vertical space between paragraphs
+\usepackage[hidelinks]{hyperref} % Für klickbare Links
+\usepackage{cleveref} % Dass auch der Titel und nicht nur die Kapitelnummer refernziert werden kann
+\usepackage{array} % Für Tabellenformatierung
+\usepackage{subcaption} % Mehrere Figures nebeneinander
+\usepackage{rotating} % Landscape tables
+\usepackage{longtable} % Table exceed page length
+
+
+%%%%%%%%%%%%%% Variablen %%%%%%%%%%%%%%
+
+\newcommand{\titel}{Entwicklung eines Konzepts zum sicheren Umgang mit als schädlich erkannten Dateien}
+\newcommand{\artDerArbeit}{Projektarbeit}
+\newcommand{\arbeit}{T3\_2000}
+\newcommand{\studiengang}{Informatik IT-Security}
+\newcommand{\dhbwStandort}{Ravensburg}
+\newcommand{\dhbwCampus}{Friedrichshafen}
+\newcommand{\vorname}{Leon Luca}
+\newcommand{\nachname}{Eltrich}
+\newcommand{\abgabedatum}{08.09.2025}
+\newcommand{\bearbeitungswochen}{10}
+\newcommand{\matrikelnummer}{4276625}
+\newcommand{\kurskuerzel}{TIS23}
+\newcommand{\dualerPartnerFirmenName}{doubleSlash Net-Business GmbH}
+\newcommand{\dualerPartnerStandort}{Friedrichshafen}
+\newcommand{\betreuerTitel}{B. Sc.}
+\newcommand{\betreuerVorname}{Timo}
+\newcommand{\betreuerNachname}{Schaz}
+\newcommand{\gutachterTitel}{Dr.}
+\newcommand{\gutachterVorname}{Andreas}
+\newcommand{\gutachterNachname}{Judt}
+
+%%%%%%%%%%%%%% Vermeide dass Text in die Weißzonen kommt %%%%%%%%%%%%%%
+
+\sloppy
+
+%%%%%%%%%%%%%% Seitenränder und Zeilenabstand %%%%%%%%%%%%%%
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\onehalfspacing{}
+%%%%%%%%%%%%%% Kopfzeile/Fußzeile %%%%%%%%%%%%%%
+
+% \pagestyle{fancy} % Aktiviere Linien
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+% Configure the header: left header gets the current section title.
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[C]{}
+\fancyhead[R]{}
+
+\lfoot{} 
+\cfoot{\thepage} 
+\rfoot{}
+
+% Linienbreite Footer/Header
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+%%%%%%%%%%%%%% Inhaltsverzeichnis maximale indentierung %%%%%%%%%%%%%%
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+%%%%%%%%%%%%%% Literaturverzeichnis Quelle hinzufügen %%%%%%%%%%%%%%
+
+\addbibresource{dokumentenrahmen/literatur.bib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Dokument start %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\setlength{\headheight}{15pt} % Header höhe um compiletime warnings zu vermeiden
+\pagenumbering{gobble} % Setze Seitennummerierung aus
+
+%%%%%%%%%%%%%% Titelblatt %%%%%%%%%%%%%%
+
+\input{dokumentenrahmen/titelblatt}
+\newpage
+
+%%%%%%%%%%%%%% Eigenständigkeitserklärung %%%%%%%%%%%%%%
+
+\input{dokumentenrahmen/eigenstaendigkeitserklaerung}
+\newpage
+
+%%%%%%%%%%%%%% Sperrvermerk %%%%%%%%%%%%%%
+
+% \input{dokumentenrahmen/sperrvermerk.tex}
+% \newpage
+
+%%%%%%%%%%%%%% Abkürzungsverzeichnis %%%%%%%%%%%%%%
+
+\include{dokumentenrahmen/abkuerzungsverzeichnis}
+\newpage
+
+%%%%%%%%%%%%%% Abstract %%%%%%%%%%%%%%
+
+\input{dokumentenrahmen/abstract}
+\newpage
+
+%%%%%%%%%%%%%% Inhaltsverzeichnis %%%%%%%%%%%%%%
+
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%% Starte Seitennummerierung  %%%%%%%%%%%%%%
+
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%% Einbinden der Kapitel %%%%%%%%%%%%%%
+
+\input{kapitel/kapitel1/kapitel}
+\newpage
+
+\input{kapitel/kapitel2/kapitel}
+\newpage
+
+
+
+% \acused{bzw.}
+
+
+
+% \input{kapitel/kapitel9 - Auswertung/kapitel}
+% \newpage
+
+% \input{kapitel/kapitel10/kapitel}
+% \newpage
+
+% - \input{kapitel/kapitel11/kapitel}
+% - \newpage
+
+%%%%%%%%%%%%%% Einbinden Verzeichnisse %%%%%%%%%%%%%%
+
+\printbibliography[title={Literaturverzeichnis}]
+\include{dokumentenrahmen/abbildungsverzeichnis}
+\include{dokumentenrahmen/tabellenverzeichnis}
+\include{dokumentenrahmen/ki-verzeichnis}
+
+
+%%%%%%%%%%%%%% Einbinden Anhang %%%%%%%%%%%%%%
+
+\include{dokumentenrahmen/anhang}
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Dokument ende %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
