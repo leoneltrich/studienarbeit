@@ -36,9 +36,9 @@
 
 %%%%%%%%%%%%%% Variablen %%%%%%%%%%%%%%
 
-\newcommand{\titel}{Entwicklung eines Konzepts zum sicheren Umgang mit als schädlich erkannten Dateien}
+\newcommand{\titel}{Natural Language-Based Command Option Retrieval Using a Local-First Approach: A Proof of Concept}
 \newcommand{\artDerArbeit}{Projektarbeit}
-\newcommand{\arbeit}{T3\_2000}
+\newcommand{\arbeit}{T3\_3100}
 \newcommand{\studiengang}{Informatik IT-Security}
 \newcommand{\dhbwStandort}{Ravensburg}
 \newcommand{\dhbwCampus}{Friedrichshafen}
@@ -50,12 +50,25 @@
 \newcommand{\kurskuerzel}{TIS23}
 \newcommand{\dualerPartnerFirmenName}{doubleSlash Net-Business GmbH}
 \newcommand{\dualerPartnerStandort}{Friedrichshafen}
-\newcommand{\betreuerTitel}{B. Sc.}
-\newcommand{\betreuerVorname}{Timo}
-\newcommand{\betreuerNachname}{Schaz}
-\newcommand{\gutachterTitel}{Dr.}
-\newcommand{\gutachterVorname}{Andreas}
-\newcommand{\gutachterNachname}{Judt}
+\newcommand{\betreuerTitel}{-}
+\newcommand{\betreuerVorname}{-}
+\newcommand{\betreuerNachname}{-}
+\newcommand{\gutachterTitel}{Prof. Dr.}
+\newcommand{\gutachterVorname}{Axel}
+\newcommand{\gutachterNachname}{Hoff}
+
+\makeatletter
+\AtBeginDocument {
+  \def\ltx@label#1{\cref@label{#1}}% add braces
+  \def\label@in@display@noarg#1{\cref@old@label@in@display{#1}}% remove braces
+  \def\label@in@mmeasure@noarg#1{%
+    \begingroup%
+    \measuring@false%
+    \cref@old@label@in@display{#1}%
+    \endgroup%
+  }
+}
+\makeatother
 
 %%%%%%%%%%%%%% Vermeide dass Text in die Weißzonen kommt %%%%%%%%%%%%%%
 

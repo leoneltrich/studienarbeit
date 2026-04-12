@@ -1,5 +1,42 @@
 \section{Introduction}
 
+\subsection{Background and Motivation}
+
+For decades, the Command Line Interface (CLI) has served as a fundamental and powerful mechanism for navigating and managing computer systems. Command-line applications remain ubiquitous across software development, system administration, data analysis, and scientific computing. They offer unmatched efficiency, scriptability, and granular control over system resources.
+
+However, despite its powerful features and long-standing existence, the command line continues to present a challenge, especially to novice users. The interface relies heavily on strict syntactical rules, cryptic abbreviations, and inconsistent command option flags across different utilities. While newcomers might struggle to interpret the highly technical descriptions found in traditional man pages or help manuals, the cognitive load affects seasoned users as well. Applications frequently possess an excessive number of options, flags, and arguments, making it difficult to utilize tools to their full potential without constant reference to external documentation. 
+
+\subsection{The Problem}\label{sec:theProblem}
+
+The traditional methods for bridging this knowledge gap, such as manual page consultation, web searches, or community forums, often require significant context switching, which disrupts the user's workflow. Recently, cloud-based \acp{LLM} such as ChatGPT or Gemini have emerged as popular alternatives for providing immediate command-line guidance.
+
+While they offer highly intuitive natural language interaction, they suffer from several critical limitations in the context of system administration and software development:
+
+\begin{itemize}
+    \item Privacy and Security Risks: Relying on cloud APIs requires transmitting user queries -- which may contain sensitive system paths, file names, or proprietary tool names -- to external servers.
+    \item Networking Constraints: Cloud models are inherently unavailable in restricted, air-gapped, or offline environments, which are common in enterprise server management and secure development setups.
+    \item Domain-Specific Knowledge Gap: General-purpose models often lack knowledge of internal, closed-source, or highly niche CLI applications specific to a particular organization's workflow.
+    \item Ressource Usage: While open-source \acp{LLM} exist, they tend to be quite hardware and ressource heavy, which limits their feasibility.
+\end{itemize}
+
+    
+\subsection{Proposed Solution: A Local-First Approach}
+
+This thesis aims at addressing the challenges outlined in section~\ref{sec:theProblem} by exploring a local-first, privacy-preserving and extensible command option retrieval system. The core objective is to design, implement and evaluate a system that interprets natural-language prompts and accurately retrieves the correct command-line options without relying on external services.
+
+By utilizing natural language processing approaches such as embeddings and lightweight langauge models, the proposed system will map user-generated descriptions of what they are trying to do (e.g. "List all files in this directory, including the ones not shown.") to the command-line options required for the task. Crucially, this proof-of-concept is designed to operate strictly offline, with a focus on acceptable response times and hardware usage, utilizing only standard CPU hardware.
+
+\subsection{Research Questions}
+
+To systematically evaluate the feasibility and performance of the proposed local-first approach, this thesis seeks to address several core research questions. These questions are designed to bridge the gap between technical optimization and human-centric usability, focusing specifically on the constraints of offline, CPU-bound environments. 
+
+The study is guided by the following specific research questions:
+
+\begin{itemize}
+    \item \textbf{RQ1:} Which local NLP techniques can effectively map natural language descriptions to command-line options with limited hardware resources available?
+    \item \textbf{RQ2:} What trade-offs exist between accuracy, resource usage and extensibility in such a system?
+    \item \textbf{RQ3:} HHow can the system be extended with new commands and options with minimal overhead?
+\end{itemize}
 % Unterkapitel einbinden
 % \input{kapitel/kapitel1/unterkapitel1/unterkapitel}
 

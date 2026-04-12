@@ -1,4 +1,8 @@
 {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 90,
+    "editor.rulers": [90],
+    "editor.wrappingIndent": "same",
     "update.enableWindowsBackgroundUpdates": false,
     "update.showReleaseNotes": false,
     "update.mode": "none",
