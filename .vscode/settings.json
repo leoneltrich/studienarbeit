@@ -2,7 +2,7 @@
     "update.enableWindowsBackgroundUpdates": false,
     "update.showReleaseNotes": false,
     "update.mode": "none",
-    "workbench.colorTheme": "Default Dark Modern",
+    "workbench.colorTheme": "Dark Modern",
     "latex-workshop.latex.tools": [
         {
             "name": "latexmk",
@@ -127,7 +127,9 @@
     "files.exclude": {
     "**/*.aux": true,
     "**/*.log": true,
-    "**/*.b*": true,
+    "**/*.bc*": true,
+    "**/*.bb*": true,
+    "**/*.bl*": true,
     "**/*.l*": true,
     "**/*.fls": true,
     "**/*.toc": true,
