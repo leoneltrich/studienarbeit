@@ -13,6 +13,8 @@ Database:
     - Tool Option beschreibung (TEXT)
     - Tool Option Beschreibung Vector (BLOB)
 
+Pipeline Design
+
 \subsubsection{Requirements}
 
 - Niedrige Latenz
@@ -21,13 +23,28 @@ Database:
 - Schneller Startup
 - Keine Internetanbindung nötig (Läuft lokal)
 - (Einfach) Erweiterbar
-- 
+- Embeddings der Tools müssen gespeichert werden dass sie nicht die ganze zeit berechnet werden müssen
+- Die rohen beschreibungen müssen gespeichert werden
+- Daten müssen gespeichert werden ohne anbindung an ressourcen intensiven Datenbank server
+- Es muss eine Validierung der Command syntax geben
+- Das Embedding modell muss austauschbar sein um in zukunft ein anderes verwenden zu können
+- Es soll eine kompiliere Sprache genutzt werden um schnelle Startup zeiten und portabilität zu gewährleisten
+
 
 \subsubsection{Business Cases?}
 
+user erfragt tool das kein options erfordert
+user erfragt tool das eine option erfordert
+user erfragt tool das mehrere options erfordert
+
+entwickler möchte das modell austauschen
+entwickler möchten ihre anwendung registrieren
 
 
 \subsection{Implementation}
+
+- Rust 
+
 
 
 tar, mv, cp, 
