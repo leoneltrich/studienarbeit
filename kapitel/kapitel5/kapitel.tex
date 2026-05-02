@@ -13,23 +13,80 @@ Database:
     - Tool Option beschreibung (TEXT)
     - Tool Option Beschreibung Vector (BLOB)
 
-Pipeline Design
+Pipeline Design \& Systemablaufdiagramm
+
+2 systeme, eine lightweight api die das modell lädt und embeddings macht falls app registriert wird und das cli system
+
+
 
 \subsubsection{Requirements}
 
-- Niedrige Latenz
-- Ram <1GB
-- 85 Prozent akkurat
-- Schneller Startup
-- Keine Internetanbindung nötig (Läuft lokal)
-- (Einfach) Erweiterbar
-- Embeddings der Tools müssen gespeichert werden dass sie nicht die ganze zeit berechnet werden müssen
-- Die rohen beschreibungen müssen gespeichert werden
-- Daten müssen gespeichert werden ohne anbindung an ressourcen intensiven Datenbank server
-- Es muss eine Validierung der Command syntax geben
-- Das Embedding modell muss austauschbar sein um in zukunft ein anderes verwenden zu können
-- Es soll eine kompiliere Sprache genutzt werden um schnelle Startup zeiten und portabilität zu gewährleisten
+\begin{table}[htbp]
+    \centering
+    \caption{Hardware and Environmental Constraints}
+    \label{tab:env_constraints}
+    \renewcommand{\arraystretch}{1.3} % Adds slightly more space between rows
+    \begin{tabularx}{\textwidth}{@{} l l X @{}}
+        \toprule
+        \textbf{ID} & \textbf{Constraint} & \textbf{Description} \\
+        \midrule
+        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8GB of 2133MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
+        ENV-2 & Offline Isolation & The system must function completely offline. It must not initiate any outbound network requests under any circumstances. \\
+        ENV-3 & Zero Third-Party Daemon & The system must be entirely self-contained. While the system's own architecture may utilize background processes, it must not require the installation or execution of third-party standalone server software. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
+\FloatBarrier
+
+\begin{table}[htbp]
+    \centering
+    \caption{Functional Requirements (FR)}
+    \label{tab:functional_reqs}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabularx}{\textwidth}{@{} l l X @{}}
+        \toprule
+        \textbf{ID} & \textbf{Requirement} & \textbf{Description} \\
+        \midrule
+        FR-1 & Command Generation & The system must accept natural language queries and return a syntactically correct command-line string comprising the base tool, relevant option flags, and placeholders for user-specific positional parameters. \\
+        FR-2 & Non-Execution Boundary & The system must strictly output the generated command as text and never autonomously execute it in the host shell. \\
+        FR-3 & Authenticated Ingestion & The system must provide a programmatic interface to ingest and index new tool catalogs, utilizing an authentication or cryptographic authorization mechanism to prevent unauthorized manipulation. \\
+        FR-4 & Catalog Lifecycle Management & The system must provide authenticated interfaces allowing authorized entities to list, update, and remove previously ingested tool catalogs. \\
+        FR-5 & State Persistence & The system must persist all ingested catalogs and computed retrieval states locally, ensuring immediate availability across system reboots and terminal sessions without requiring re-ingestion. \\
+        FR-6 & Syntactical Validation & The system must logically evaluate generated commands to ensure no mutually exclusive flags are recommended simultaneously, and that any required positional ordering is strictly respected. \\
+        FR-7 & Interactive Disambiguation & If a query is ambiguous, triggers a flag conflict, or falls outside the domain of ingested catalogs, the system must halt and prompt the user for clarification rather than returning an invalid command. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\FloatBarrier
+
+\begin{table}[htbp]
+    \centering
+    \caption{Non-Functional Requirements (NFR)}
+    \label{tab:non_functional_reqs}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabularx}{\textwidth}{@{} l l X @{}}
+        \toprule
+        \textbf{ID} & \textbf{Requirement} & \textbf{Description} \\
+        \midrule
+        NFR-1 & Query Latency & The system must return a completed command recommendation in under 1000ms from the moment the query is submitted. \\
+        NFR-2 & Cold Startup Latency & The application must initialize and be ready to process input in under 1000ms. \\
+        NFR-3 & Memory Bounding & The peak RAM utilization of the system process must never exceed 1024 MB at any time during operation. \\
+        NFR-4 & Latency Scalability & The system must maintain its $<$1000ms query latency when the persistent state is scaled to hold definitions for up to **Average number of CLI tools installed on a linux machine** distinct tools. \\
+        NFR-5 & Retrieval Quality & The system must achieve a minimum Macro-Averaged F1-Score of **[Target]** and a Jaccard Similarity of **[Target]** against the established evaluation dataset. \\
+        NFR-6 & Algorithmic Modularity & The system architecture must decouple the natural language processing and search logic from the user interfaces, allowing retrieval models to be swapped without altering the broader application. \\
+        NFR-7 & Zero-Runtime Portability & The system must be deployable as self-contained artifacts for Linux, macOS, and Windows, requiring no pre-installed language runtimes on the host machine. \\
+        NFR-8 & IPC Network Isolation & Any Inter-Process Communication (IPC) mechanisms utilized by the system must be strictly bound to local OS constructs, explicitly denying any non-local network access. \\
+        NFR-9 & State Access Control & The system must utilize host OS access control mechanisms to ensure its persistent state data is logically isolated and protected from unauthorized modification by other non-privileged users. \\
+        NFR-10 & Concurrency Resilience & The system must safely process simultaneous execution requests from multiple terminal instances without causing deadlocks, process crashes, or state corruption. \\
+        NFR-11 & Input Sanitization & The system must sanitize all user inputs and programmatic payloads to prevent injection attacks against the underlying persistent state mechanism. \\
+        NFR-12 & Opt-In Diagnostic Logging & By default, any diagnostic logs generated by the system must be strictly scrubbed of the user's raw natural language queries. Unredacted query logging must require explicit user opt-in. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\FloatBarrier
 
 \subsubsection{Business Cases?}
 
@@ -43,7 +100,9 @@ entwickler möchten ihre anwendung registrieren
 
 \subsection{Implementation}
 
-- Rust 
+- Rust
+
+Beschreibung der Module und wie sie ineinandergreifen (Diagram?)
 
 
 
