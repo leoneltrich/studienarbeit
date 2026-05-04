@@ -2,24 +2,26 @@
 
 \subsection{Design}
 
-Database:
-- Tabelle für Tool beschreibungen
-    - Tool name (ID)
-    - Tool Beschreibung (TEXT)
-    - Tool Beschreibung Vector (BLOB)
-- Tabelle für tool option Beschreibungen
-    - option (ID)
-    - Tool Name (ID)
-    - Tool Option beschreibung (TEXT)
-    - Tool Option Beschreibung Vector (BLOB)
+% Database:
+%- Tabelle für Tool beschreibungen
+%    - Tool name (ID)
+%    - Tool Beschreibung (TEXT)
+%    - Tool Beschreibung Vector (BLOB)
+%- Tabelle für tool option Beschreibungen
+%    - option (ID)
+%    - Tool Name (ID)
+%    - Tool Option beschreibung (TEXT)
+%    - Tool Option Beschreibung Vector (BLOB)
 
-Pipeline Design \& Systemablaufdiagramm
+%Pipeline Design \& Systemablaufdiagramm
 
-2 systeme, eine lightweight api die das modell lädt und embeddings macht falls app registriert wird und das cli system
+%2 systeme, eine lightweight api die das modell lädt und embeddings macht falls app registriert wird und das cli system
 
 
 
 \subsubsection{Requirements}
+
+Before defining the functional behaviors and quality attributes of the system, it is necessary to establish the immutable physical and operational boundaries within which the software must execute. These environmental constraints dictate the hardware baseline for all subsequent performance evaluations and formally enforce the strict offline, zero-dependency philosophy of the proposed architecture. The fundamental constraints governing the local execution environment are detailed in Table \ref{tab:env_constraints}.
 
 \begin{table}[htbp]
     \centering
@@ -30,14 +32,17 @@ Pipeline Design \& Systemablaufdiagramm
         \toprule
         \textbf{ID} & \textbf{Constraint} & \textbf{Description} \\
         \midrule
-        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8GB of 2133MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
+        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM running a Linux based operating system, configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8GB of 2133MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
         ENV-2 & Offline Isolation & The system must function completely offline. It must not initiate any outbound network requests under any circumstances. \\
         ENV-3 & Zero Third-Party Daemon & The system must be entirely self-contained. While the system's own architecture may utilize background processes, it must not require the installation or execution of third-party standalone server software. \\
+        ENV-4 & Headless Execution & The target environment is strictly headless. The system must not rely on or require graphical windowing systems or desktop environments for any user interaction or background execution. \\
         \bottomrule
     \end{tabularx}
 \end{table}
 
 \FloatBarrier
+
+With the operational boundaries established, the Functional Requirements (FR) define the explicit behaviors, interactions, and data-processing capabilities the system must exhibit. These requirements define the \enquote{what} of the system, strictly abstracting away internal implementation details to focus entirely on user-facing features, catalog lifecycle management, and logical orchestration. The complete functional specification is presented in Table \ref{tab:functional_reqs}.
 
 \begin{table}[htbp]
     \centering
@@ -55,9 +60,13 @@ Pipeline Design \& Systemablaufdiagramm
         FR-5 & State Persistence & The system must persist all ingested catalogs and computed retrieval states locally, ensuring immediate availability across system reboots and terminal sessions without requiring re-ingestion. \\
         FR-6 & Syntactical Validation & The system must logically evaluate generated commands to ensure no mutually exclusive flags are recommended simultaneously, and that any required positional ordering is strictly respected. \\
         FR-7 & Interactive Disambiguation & If a query is ambiguous, triggers a flag conflict, or falls outside the domain of ingested catalogs, the system must halt and prompt the user for clarification rather than returning an invalid command. \\
+        FR-8 & User Interface & The system must expose a user interface for all user-facing operations, including query submission, catalog management, and interactive disambiguation. \\
+        FR-9 & Configuration Management & The system must provide an accessible mechanism for the user to view and persistently modify local system preferences without requiring direct manipulation of the underlying storage mechanism or compiled source code. \\
         \bottomrule
     \end{tabularx}
 \end{table}
+
+While Functional Requirements dictate what the system must do, the Non-Functional Requirements (NFR) define the standard of quality to which the system must adhere. These attributes establish the rigorous performance budgets, architectural modularity paradigms, security perimeters, and latency thresholds required to ensure the tool remains a viable, high-performance alternative to cloud-based assistants. The quantifiable metrics and structural constraints governing the system's execution quality are enumerated in Table \ref{tab:non_functional_reqs}.
 
 \FloatBarrier
 \renewcommand{\arraystretch}{1.3} % You can safely increase this again for readability
@@ -104,7 +113,7 @@ Pipeline Design \& Systemablaufdiagramm
     
     NFR-8 & Similarity and Rank Aggregation & The system must support the multi-strategy evaluation of candidate command-line options against the user's natural language query. It must provide an internal mechanism to mathematically normalize and fuse disparate similarity scores from independent matching algorithms into a single, unified ranking before outputting the finalized result.\\
 
-    NFR-9 & Zero-Runtime Portability & The system must be deployable as self-contained artifacts for Linux, macOS, and Windows ** MAYBE LIMIT TO LINUX **, requiring no pre-installed language runtimes on the host machine. \\
+    NFR-9 & Linux Deployment & The system must be deployable as a self-contained artifact for Linux environments, requiring no pre-installed language runtimes or package managers on the host machine. \\
     
     NFR-10 & IPC Network Isolation & Any \ac{IPC} mechanisms utilized by the system must be strictly bound to local OS constructs, explicitly denying any non-local network access. \\
     
@@ -164,8 +173,27 @@ Therefore, this system adopts a \textbf{Hexagonal Architecture}, also known as t
 
 By implementing interface ports at the absolute boundary of the Core, the external mechanisms -- whether they are the user interface, storage backend, or the command option evaluation mechanisms -- are forced to depend on the Core rather than the inverse. This guarantees that the core natural language orchestration and rank aggregation math can be compiled, tested, and executed entirely independently of the chosen storage backend or matching technologies, successfully fulfilling all modularity constraints.
 
+\subsubsection{System Context Model (Level 1)}
+\label{sec:system_context}
 
-Requirement that the user must be able to interact with the system to use it and configure it.
+To formalize the operational boundaries of the software and verify the isolation constraints, a Level 1 System Context diagram was modeled using the C4 standard \cite{brown2018c4}. As illustrated in Figure~\ref{fig:arch_level_1}, the proposed tool is treated as a unified, opaque system operating entirely within a headless Linux environment (ENV-4). This high-level abstraction defines the absolute perimeter of the application, explicitly identifying the external actors and systems permitted to interact with it. 
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/HLA-Diagram-Level-1.jpg} 
+    \caption{Level 1 High-Level Architecture Diagram}
+    \label{fig:arch_level_1}
+\end{figure}
+
+The system interacts with two primary driving actors that initiate operations:
+\begin{itemize}
+    \item \textbf{The End-User:} Interacts with the system by submitting natural language queries and configuration parameters. In turn the End-User receives the command best fitting their query and disambiguation prompts (FR-8, FR-9).
+    \item \textbf{The Catalog-Maintainer:} Represents either a human developer or an application developed by them. This actor interfaces with the system via an authenticated programmatic boundary to ingest new or updated, structured tool catalogs, receiving synchronous validation receipts upon success or failure (FR-3). The Catalog-Maintainer also has the ability to delete their catalogs usign the authenticated interface.
+\end{itemize}
+
+To fulfill these requests, the system relies on a single driven external system: the \textbf{Linux Host \ac{OS}}. The application initiates outward requests to the host operating system to read and write its persistent state (vector embeddings and relational catalogs). Furthermore, rather than implementing a bespoke security layer, the system explicitly delegates access control and state isolation to the underlying \ac{OS} file permission mechanisms (NFR-9). 
+
+Most critically, the Context Model serves as visual and structural proof of the system's privacy and offline execution mandates (ENV-2). The defined perimeter strictly excludes any outbound network dependencies. There are no remote cloud APIs, external database daemons, or third-party telemetry collectors present within the system's execution context. By mathematically restricting the attack surface and data flow strictly to the local host operating system and authorized standard inputs, the architecture guarantees that all user queries and proprietary tool descriptions remain entirely localized.
 
 \subsection{Implementation}
 
