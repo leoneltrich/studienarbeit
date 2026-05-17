@@ -195,7 +195,7 @@ Furthermore, the system relies on a single driven external system: the \textbf{H
 
 Most critically, the Context Model serves as visual and structural proof of the system's privacy and offline execution limitations (ENV-2). It also demonstrates that the zero third-party daemon reliance (ENV-3) is considered. The defined perimeter strictly excludes any outbound network or third party daemon dependencies. By restricting the attack surface and data flow strictly to the local host operating system and authorized standard inputs, the architecture guarantees that all user queries and proprietary tool descriptions remain entirely localized.
 
-\subsubsection{System Context Model (Level 2) - Container Architecture}
+\subsubsection{System Context Model (Level 2)}
 \label{sec:container_architecture}
 
 Following the C4 modeling standard \cite{brown2026c4}, the Level 2 Container Diagram penetrates the opaque system boundary established in Level 1 to define the high-level, independently executable logical units. While the system is deployed to a localized, offline environment, it is structurally partitioned into two distinct containers. This separation formally illustrates the boundary between volatile computational execution and persistent state management, a necessary precursor to satisfying the storage modularity constraint (NFR-6).
@@ -217,6 +217,44 @@ As illustrated in Figure~\ref{fig:arch_level_2}, the system boundary encapsulate
 The inclusion of the system boundary (represented by the dashed perimeter) explicitly clarifies how external actors interface with the internal components. Both the \textbf{End-User} and the \textbf{Catalog-Maintainer} bypass the generic system perimeter to interact exclusively and directly with the \ac{CLI} Executable, submitting queries and ingestion payloads, respectively.
 
 Crucially, the diagram illustrates the specific dependency mechanics of an embedded data persistence architecture. Because the persistence mechanism must be daemonless, it operates as an embedded library, hence the data persistence initiates no outward  connections. The \ac{CLI} Executable maintains a strict, unidirectional dependency on the persistent storage, reading and writing state as needed. Consequently, it is the \ac{CLI} Executable--not the persistent storage itself--that initiates all direct interactions with the \textbf{Linux Host \ac{OS}} to delegate access control and execute the underlying file \ac{I/O} system calls.
+
+\subsubsection{System Context Model (Level 3)}
+\label{sec:component_architecture}
+
+To detail the internal logical arrangement of the compiled application, the Level 3 Component Diagram decomposes the \ac{CLI} Executable container into its structural building blocks. In this architecture, Level 3 serves as the concrete realization of the Hexagonal (Ports and Adapters) philosophy declared in Section~\ref{sec:architecture_philosophy}. It explicitly delineates the boundaries between the pure domain logic, the abstract interface contracts (Ports), and the pluggable execution infrastructure (Adapters).
+
+As modeled in Figure~\ref{fig:arch_level_3}, the internal architecture strictly enforces the Dependency Inversion Principle. The components are categorized into three conceptual rings of execution:
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/HLA-Diagram-Level-3.jpg} 
+    \caption{Level 3 Component Architecture detailing the Hexagonal boundaries}
+    \label{fig:arch_level_3}
+\end{figure}
+
+\paragraph{1. The Driving Adapters (Inbound Interface)}
+Positioned at the perimeter, the driving adapters are responsible for receiving external actor input and translating it into domain-specific requests. 
+\begin{itemize}
+    \item The \textbf{\ac{CLI} Controller} parses standard input from the End-User, manages the interactive disambiguation loop (FR-7), and formats the output (FR-8).
+    \item The \textbf{Ingestion API Handler} provides the authenticated boundary for receiving structured catalogs from the Catalog-Maintainer (FR-3). 
+\end{itemize}
+Crucially, these adapters do not invoke the application core directly; rather, they depend on abstract inbound ports (\textbf{UserCommandPort} and \textbf{CatalogIngestionPort}).
+
+\paragraph{2. The Isolated Core and Interface Ports}
+The architectural center of gravity consists entirely of pure computational logic and the definition of the boundary interfaces. It contains zero references to external frameworks or database libraries.
+\begin{itemize}
+    \item \textbf{The Inbound Dependency Inversion:} The \textbf{Query Orchestrator} and the \textbf{Catalog Lifecycle Manager} serve as the primary use-case interactors. **They physically \textit{implement} the inbound ports.** CHECK IF THIS CORRECT! ** Consequently, their compile-time dependency arrows point inward toward the port interfaces, proving that the core dictates the execution contracts to the driving adapters.
+    \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8). To prevent data starvation while maintaining domain purity, the Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
+\end{itemize}
+
+\paragraph{3. The Driven Adapters (Outbound Infrastructure)}
+When the core requires external data or heavy computational execution, it calls its internally defined outbound interfaces (\texttt{StoragePort} and \texttt{MatchingStrategyPort}). The driven adapters exist outside the core to physically fulfill these requests.
+\begin{itemize}
+    \item The \textbf{Persistence Adapter} implements the \textit{StoragePort} interface, translating domain entities into the strucutres required by the underlying storage mechanism and executing the underlying host \ac{OS} file operations (NFR-6, NFR-11).
+    \item The \textbf{Matching Strategy Adapters [1..*]} fulfill the matching interface. By utilizing the extension \texttt{1..n}, the diagram shows that the core is entirely agnostic to the number or type of search algorithms employed (NFR-7). 
+\end{itemize}
+
+Ultimately, this Level 3 configuration guarantees that all dependencies point inward toward the abstract ports. Because the core components only depend on interfaces they themselves define, the underlying storage mechanisms or scoring mechanisms can be entirely replaced without modifying the central orchestration or mathematical logic.
 
 \subsection{Implementation}
 
