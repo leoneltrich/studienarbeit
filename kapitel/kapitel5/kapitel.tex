@@ -176,7 +176,7 @@ By implementing interface ports at the absolute boundary of the Core, the extern
 \subsubsection{System Context Model (Level 1)}
 \label{sec:system_context}
 
-To formalize the operational boundaries of the software and verify the isolation constraints, a Level 1 System Context diagram was modeled using the C4 standard \cite{brown2018c4}. As illustrated in Figure~\ref{fig:arch_level_1}, the proposed tool is treated as a unified, opaque system operating entirely within a headless Linux environment (ENV-4). This high-level abstraction defines the absolute perimeter of the application, explicitly identifying the external actors and systems permitted to interact with it. 
+To formalize the operational boundaries of the software and verify the isolation constraints, a Level 1 System Context diagram was modeled using the C4 standard \cite{brown2026c4}. As illustrated in Figure~\ref{fig:arch_level_1}, the proposed tool is treated as a unified, opaque system operating entirely within a headless Linux environment (ENV-4). This high-level abstraction defines the absolute perimeter of the application, explicitly identifying the external actors and systems permitted to interact with it. 
 
 \begin{figure}[htbp]
     \centering
@@ -194,6 +194,29 @@ The system interacts with two primary driving actors that initiate operations:
 Furthermore, the system relies on a single driven external system: the \textbf{Host \ac{OS}}. The application initiates outward requests to the host operating system to read and write its persistent state. While the system manages application-level authentication, it defers to the underlying \ac{OS} file permission mechanisms to enforce \ac{OS}-level access control for all persisted data (NFR-11). 
 
 Most critically, the Context Model serves as visual and structural proof of the system's privacy and offline execution limitations (ENV-2). It also demonstrates that the zero third-party daemon reliance (ENV-3) is considered. The defined perimeter strictly excludes any outbound network or third party daemon dependencies. By restricting the attack surface and data flow strictly to the local host operating system and authorized standard inputs, the architecture guarantees that all user queries and proprietary tool descriptions remain entirely localized.
+
+\subsubsection{System Context Model (Level 2) - Container Architecture}
+\label{sec:container_architecture}
+
+Following the C4 modeling standard \cite{brown2026c4}, the Level 2 Container Diagram penetrates the opaque system boundary established in Level 1 to define the high-level, independently executable logical units. While the system is deployed to a localized, offline environment, it is structurally partitioned into two distinct containers. This separation formally illustrates the boundary between volatile computational execution and persistent state management, a necessary precursor to satisfying the storage modularity constraint (NFR-6).
+
+As illustrated in Figure~\ref{fig:arch_level_2}, the system boundary encapsulates the following containers:
+
+\begin{itemize}
+    \item \textbf{The \ac{CLI} Executable:} A compiled, standalone binary (NFR-9) that contains the system's core logic. It acts as the sole active computational process.
+    \item \textbf{The Local Database:} A daemonless data store strictly responsible for the persistent retention of system and configuration data. 
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/HLA-Diagram-Level-2.jpg} 
+    \caption{Level 2 Container Architecture}
+    \label{fig:arch_level_2}
+\end{figure}
+
+The inclusion of the system boundary (represented by the dashed perimeter) explicitly clarifies how external actors interface with the internal components. Both the \textbf{End-User} and the \textbf{Catalog-Maintainer} bypass the generic system perimeter to interact exclusively and directly with the \ac{CLI} Executable, submitting queries and ingestion payloads, respectively.
+
+Crucially, the diagram illustrates the specific dependency mechanics of an embedded data persistence architecture. Because the persistence mechanism must be daemonless, it operates as an embedded library, hence the data persistence initiates no outward  connections. The \ac{CLI} Executable maintains a strict, unidirectional dependency on the persistent storage, reading and writing state as needed. Consequently, it is the \ac{CLI} Executable--not the persistent storage itself--that initiates all direct interactions with the \textbf{Linux Host \ac{OS}} to delegate access control and execute the underlying file \ac{I/O} system calls.
 
 \subsection{Implementation}
 
