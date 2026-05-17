@@ -256,6 +256,10 @@ When the core requires external data or heavy computational execution, it calls 
 
 Ultimately, this Level 3 configuration guarantees that all dependencies point inward toward the abstract ports. Because the core components only depend on interfaces they themselves define, the underlying storage mechanisms or scoring mechanisms can be entirely replaced without modifying the central orchestration or mathematical logic.
 
+\subsubsection{Omission of C4 Level 4}
+
+While the C4 framework includes a fourth level for mapping individual components to code-level constructs, it is treated as an optional level of detail within this specification. As noted by the C4 standard, this depth is typically reserved for only the most complex or critical components to help tell a specific implementation story \cite{brown2026c4}. Because class structures are highly volatile and often available on-demand via tooling options, documenting them here would risk creating brittle artifacts. Instead, this architecture relies on the Level 3 component boundaries to provide sufficient rigor, leaving low-level attributes and methods to be automatically generated where deemed necessary.
+
 \subsection{Implementation}
 
 - Rust
