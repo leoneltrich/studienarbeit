@@ -170,6 +170,7 @@ Therefore, this system adopts a \textbf{Hexagonal Architecture}, also known as t
     \item \textbf{The Core (Inside):} This encapsulates the domain entities, the command validation (FR-6), and the mathematical normalization and score aggregation logic (NFR-8). The Core possesses zero knowledge of the external world, it dictates its storage and matching needs purely through abstract interfaces (Ports).
     \item \textbf{The Infrastructure (Outside):} This encompasses all external adapters that fulfill the Core's interfaces. This includes the user-interface, the storage backend, as well as the specific execution engines for the command option evaluation.
 \end{itemize}
+\FloatBarrier
 
 By implementing interface ports at the absolute boundary of the Core, the external mechanisms -- whether they are the user interface, storage backend, or the command option evaluation mechanisms -- are forced to depend on the Core rather than the inverse. This guarantees that the core natural language orchestration and rank aggregation math can be compiled, tested, and executed entirely independently of the chosen storage backend or matching technologies, successfully fulfilling all modularity constraints.
 
@@ -184,12 +185,14 @@ To formalize the operational boundaries of the software and verify the isolation
     \caption{Level 1 System Context Model}
     \label{fig:arch_level_1}
 \end{figure}
+\FloatBarrier
 
 The system interacts with two primary driving actors that initiate operations:
 \begin{itemize}
     \item \textbf{The End-User:} Interacts with the system by submitting natural language queries and configuration parameters (FR-1, FR-9). In turn the End-User receives the command best fitting their query and disambiguation prompts (FR-7, FR-9).
     \item \textbf{The Catalog-Maintainer:} Represents either a human developer or an application developed by them. This actor interfaces with the system via an authenticated programmatic boundary to ingest new or updated, structured tool catalogs, receiving synchronous validation receipts upon success or failure (FR-3). The Catalog-Maintainer also has the ability to delete their catalogs usign the authenticated interface.
 \end{itemize}
+\FloatBarrier
 
 Furthermore, the system relies on a single driven external system: the \textbf{Host \ac{OS}}. The application initiates outward requests to the host operating system to read and write its persistent state. While the system manages application-level authentication, it defers to the underlying \ac{OS} file permission mechanisms to enforce \ac{OS}-level access control for all persisted data (NFR-11). 
 
@@ -206,6 +209,7 @@ As illustrated in Figure~\ref{fig:arch_level_2}, the system boundary encapsulate
     \item \textbf{The \ac{CLI} Executable:} A compiled, standalone binary (NFR-9) that contains the system's core logic. It acts as the sole active computational process.
     \item \textbf{The Local Database:} A daemonless data store strictly responsible for the persistent retention of system and configuration data. 
 \end{itemize}
+\FloatBarrier
 
 \begin{figure}[htbp]
     \centering
@@ -213,6 +217,7 @@ As illustrated in Figure~\ref{fig:arch_level_2}, the system boundary encapsulate
     \caption{Level 2 Container Architecture}
     \label{fig:arch_level_2}
 \end{figure}
+\FloatBarrier
 
 The inclusion of the system boundary (represented by the dashed perimeter) explicitly clarifies how external actors interface with the internal components. Both the \textbf{End-User} and the \textbf{Catalog-Maintainer} bypass the generic system perimeter to interact exclusively and directly with the \ac{CLI} Executable, submitting queries and ingestion payloads, respectively.
 
@@ -231,6 +236,7 @@ As modeled in Figure~\ref{fig:arch_level_3}, the internal architecture strictly 
     \caption{Level 3 Component Architecture detailing the Hexagonal boundaries}
     \label{fig:arch_level_3}
 \end{figure}
+\FloatBarrier
 
 \paragraph{1. The Driving Adapters (Inbound Interface)}
 Positioned at the perimeter, the driving adapters are responsible for receiving external actor input and translating it into domain-specific requests. 
@@ -238,6 +244,7 @@ Positioned at the perimeter, the driving adapters are responsible for receiving 
     \item The \textbf{\ac{CLI} Controller} parses standard input from the End-User, manages the interactive disambiguation loop (FR-7), and formats the output (FR-8).
     \item The \textbf{Ingestion API Handler} provides the authenticated boundary for receiving structured catalogs from the Catalog-Maintainer (FR-3). 
 \end{itemize}
+\FloatBarrier
 Crucially, these adapters do not invoke the application core directly; rather, they depend on abstract inbound ports (\textbf{UserCommandPort} and \textbf{CatalogIngestionPort}).
 
 \paragraph{2. The Isolated Core and Interface Ports}
@@ -246,6 +253,7 @@ The architectural center of gravity consists entirely of pure computational logi
     \item \textbf{The Inbound Dependency Inversion:} The \textbf{Query Orchestrator} and the \textbf{Catalog Lifecycle Manager} serve as the primary use-case interactors. **They physically \textit{implement} the inbound ports.** CHECK IF THIS CORRECT! ** Consequently, their compile-time dependency arrows point inward toward the port interfaces, proving that the core dictates the execution contracts to the driving adapters.
     \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8). To prevent data starvation while maintaining domain purity, the Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
 \end{itemize}
+\FloatBarrier
 
 \paragraph{3. The Driven Adapters (Outbound Infrastructure)}
 When the core requires external data or heavy computational execution, it calls its internally defined outbound interfaces (\texttt{StoragePort} and \texttt{MatchingStrategyPort}). The driven adapters exist outside the core to physically fulfill these requests.
@@ -253,6 +261,7 @@ When the core requires external data or heavy computational execution, it calls 
     \item The \textbf{Persistence Adapter} implements the \textit{StoragePort} interface, translating domain entities into the strucutres required by the underlying storage mechanism and executing the underlying host \ac{OS} file operations (NFR-6, NFR-11).
     \item The \textbf{Matching Strategy Adapters [1..*]} fulfill the matching interface. By utilizing the extension \texttt{1..n}, the diagram shows that the core is entirely agnostic to the number or type of search algorithms employed (NFR-7). 
 \end{itemize}
+\FloatBarrier
 
 Ultimately, this Level 3 configuration guarantees that all dependencies point inward toward the abstract ports. Because the core components only depend on interfaces they themselves define, the underlying storage mechanisms or scoring mechanisms can be entirely replaced without modifying the central orchestration or mathematical logic.
 
@@ -283,6 +292,7 @@ The primary functional purpose of the system is to translate natural language in
     \caption{BPMN High-Level Systems Overview for Query Resolution}
     \label{fig:bpmn_high_level}
 \end{figure}
+\FloatBarrier
 
 The flow begins when the End-User submits a query. The core orchestration layer  initializes the necessary matching engines before tokenizing the query and dispatching it to the subprocesses. It explicitly handles ambiguities by utilizing disambiguation prompts to the user.
 
@@ -299,6 +309,7 @@ The system utilizes the pluggable matching adapters (defined in section~\ref{sec
     \caption{BPMN High-Level Systems Overview for Query Resolution}
     \label{fig:bpmn_2_sub_high_level}
 \end{figure}
+\FloatBarrier
 
 \paragraph{Filtering of Candidate Options}
 
@@ -310,6 +321,7 @@ To prevent the hallucination of low-quality results, the system applies a strict
     \caption{BPMN High-Level Systems Overview for Query Resolution}
     \label{fig:bpmn_3_sub_high_level}
 \end{figure}
+\FloatBarrier
 
 \paragraph{Command Verification}
 
@@ -321,11 +333,13 @@ The candidate tool and options are validated against the catalog schema (FR-6) t
     \caption{BPMN High-Level Systems Overview for Query Resolution}
     \label{fig:bpmn_4_sub_high_level}
 \end{figure}
-
-% ### corrected till here
+\FloatBarrier
 
 \subsubsection{The Interactive Disambiguation Loop}
-If the \textit{Tool Determination} subprocess fails to achieve the required confidence threshold, or if the \textit{Command Verification} subprocess encounters a validation error, the parent orchestrator initiates an interactive disambiguation loop (FR-7). The system suspends termination, issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to preserve sub-second latency on subsequent iterations.
+If the Tool and Option Determination subprocess fails to achieve the required confidence threshold, or if the Command Verification subprocess encounters a validation error, an interactive disambiguation loop (FR-7) is triggered. The system issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to minimize latency on subsequent iterations.
+** FIX ALL CAPTIONS FOR FIGURES! **
+% ### corrected till here
+
 
 \subsection{Administrative Execution Flows}
 \label{sec:administrative_flows}
@@ -333,19 +347,33 @@ If the \textit{Tool Determination} subprocess fails to achieve the required conf
 Beyond query resolution, the system must securely handle state mutations initiated by both users and external maintainer applications.
 
 \paragraph{Catalog Lifecycle Management}
-External maintainers inject new tool definitions via structured JSON payloads (FR-3, FR-4). Due to the stateless architecture, external applications interact with the system by executing the \ac{CLI} binary as a localized subprocess, passing the payload via standard \ac{POSIX} streams. 
+External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the Catalog Management flow (Figure~\ref{fig:bpmn_5_high_level}), the system first intercepts the request to authenticate and authorize the action. Once authorized, an exclusive gateway routes the payload to either the ingestion or deletion logic. If a catalog is being created or updated, the system preprocesses the ingested catalog data before persisting them to the data store. Regardless of the action, the system guarantees a synchronous success or failure receipt before the process terminates, ensuring maintainers can rely on a status message.
 
-As modeled in the Catalog Management flow, the system first intercepts the request to verify cryptographic authentication. Once authorized, an exclusive gateway routes the payload to either the ingestion or deletion logic. If a catalog is being created or updated, the system utilizes the JIT-loaded embedding models to vectorize the JSON descriptions before persisting them to the data store. Regardless of the action, the system guarantees a synchronous success or failure receipt before the process terminates, ensuring external \ac{CI/CD} pipelines can rely on the exit codes.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-5-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_5_high_level}
+\end{figure}
+\FloatBarrier
 
 \paragraph{Configuration Management}
-For local system adjustments (FR-9), such as modifying thresholds or enabling diagnostic logging, the system provides a highly linear execution path. The user intent is parsed, the local persistence layer is updated, and the process terminates immediately without incurring the memory overhead of loading the matching engines.
+For local system adjustments (FR-9), such as modifying thresholds or enabling diagnostic logging, the system provides a linear execution path. The user is authenticated and authorized. They then receive the configuration options and subsequently send back configuration data. This configuration data then gets persisted after which the \ac{CLI} terminates.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-6-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_6_high_level}
+\end{figure}
+\FloatBarrier
 
 \subsection{Implementation}
 
-- Rust
+% - Rust
 
-Beschreibung der Module und wie sie ineinandergreifen (Diagram?)
+% Beschreibung der Module und wie sie ineinandergreifen (Diagram?)
 
-Ggf. eine beschreibung wie man besonders effectiv die Beschreibungen für das Embedding formuliert.
+% Ggf. eine beschreibung wie man besonders effectiv die Beschreibungen für das Embedding formuliert.
 
-tar, mv, cp, 
+% tar, mv, cp, 
