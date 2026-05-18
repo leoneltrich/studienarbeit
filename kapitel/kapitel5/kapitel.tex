@@ -1,6 +1,6 @@
 \section{Systems Design And Implementation}
 
-\subsection{Design}
+\subsection{Requirements}
 
 % Database:
 %- Tabelle für Tool beschreibungen
@@ -16,10 +16,6 @@
 %Pipeline Design \& Systemablaufdiagramm
 
 %2 systeme, eine lightweight api die das modell lädt und embeddings macht falls app registriert wird und das cli system
-
-
-
-\subsubsection{Requirements}
 
 Before defining the functional behaviors and quality attributes of the system, it is necessary to establish the immutable physical and operational boundaries within which the software must execute. These environmental constraints dictate the hardware baseline for all subsequent performance evaluations and formally enforce the strict offline, zero-dependency philosophy of the proposed architecture. The fundamental constraints governing the local execution environment are detailed in Table \ref{tab:env_constraints}.
 
@@ -155,7 +151,7 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 %the external mechanisms are forced to depend on the Core rather than the inverse. This guarantees that the core natural language processing and hybrid retrieval engine can be compiled, tested, and executed entirely independent of the chosen database technology or host operating system terminal, successfully fulfilling all architectural constraints.
 %** Rewrite this entire paragraph!**
 
-\subsubsection{Architectural Pattern}
+\subsection{Architectural Pattern}
 \label{sec:architecture_philosophy}
 
 The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), while ensuring that the core domain logic remains strictly decoupled from volatile \ac{I/O} operations, allowing both the persistent storage backend (NFR-6) and the specific search and matching algorithms (NFR-7) to be seamlessly replaced.
@@ -173,6 +169,8 @@ Therefore, this system adopts a \textbf{Hexagonal Architecture}, also known as t
 \FloatBarrier
 
 By implementing interface ports at the absolute boundary of the Core, the external mechanisms -- whether they are the user interface, storage backend, or the command option evaluation mechanisms -- are forced to depend on the Core rather than the inverse. This guarantees that the core natural language orchestration and rank aggregation math can be compiled, tested, and executed entirely independently of the chosen storage backend or matching technologies, successfully fulfilling all modularity constraints.
+
+\subsection{Static Architecture}
 
 \subsubsection{System Context Model (Level 1)}
 \label{sec:system_context}
@@ -269,7 +267,7 @@ Ultimately, this Level 3 configuration guarantees that all dependencies point in
 
 While the C4 framework includes a fourth level for mapping individual components to code-level constructs, it is treated as an optional level of detail within this specification. As noted by the C4 standard, this depth is typically reserved for only the most complex or critical components to help tell a specific implementation story \cite{brown2026c4}. Because class structures are highly volatile and often available on-demand via tooling options, documenting them here would risk creating brittle artifacts. Instead, this architecture relies on the Level 3 component boundaries to provide sufficient rigor, leaving low-level attributes and methods to be automatically generated where deemed necessary.
 
-\section{Dynamic Architecture (System Behavior)}
+\subsection{Dynamic Architecture (System Behavior)}
 \label{sec:dynamic_architecture}
 
 While the static architecture defined in Section~\ref{sec:component_architecture} establishes the strict structural boundaries of the system, it does not describe the runtime execution logic. This section models the dynamic behavior of the \ac{CLI} application using \ac{BPMN} 2.0 standard notation. To prevent visual bloating, some diagrams have been structured hierarchically by adding subprocess diagrams.
@@ -281,7 +279,7 @@ To strictly satisfy the \enquote{Single Linux Deployment Artifact} (NFR-9) and \
 
 This daemonless approach guarantees that \ac{RAM} limits (NFR-3) are only consumed during active execution and that only one executable has to be installed.
 
-\subsection{Primary Query Resolution Flow}
+\subsubsection{Primary Query Resolution Flow}
 \label{sec:primary_query_flow}
 
 The primary functional purpose of the system is to translate natural language into executable terminal commands (FR-1). Figure~\ref{fig:bpmn_high_level} illustrates the High-Level Systems Overview of this interaction.
@@ -296,7 +294,7 @@ The primary functional purpose of the system is to translate natural language in
 
 The flow begins when the End-User submits a query. The core orchestration layer  initializes the necessary matching engines before tokenizing the query and dispatching it to the subprocesses. It explicitly handles ambiguities by utilizing disambiguation prompts to the user.
 
-\subsubsection{Subprocesses}
+\paragraph{Subprocesses}
 As described before, the process in Figure~\ref{fig:bpmn_high_level} has been simplified to ensure the diagram remains easily comprehensible. The following diagrams aim to provide more detailed insights into the previously simplified subprocesses.
 
 \paragraph{Tool and Option Determination}
@@ -335,13 +333,13 @@ The candidate tool and options are validated against the catalog schema (FR-6) t
 \end{figure}
 \FloatBarrier
 
-\subsubsection{The Interactive Disambiguation Loop}
+\paragraph{The Interactive Disambiguation Loop}
 If the Tool and Option Determination subprocess fails to achieve the required confidence threshold, or if the Command Verification subprocess encounters a validation error, an interactive disambiguation loop (FR-7) is triggered. The system issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to minimize latency on subsequent iterations.
 ** FIX ALL CAPTIONS FOR FIGURES! **
 % ### corrected till here
 
 
-\subsection{Administrative Execution Flows}
+\subsubsection{Administrative Execution Flows}
 \label{sec:administrative_flows}
 
 Beyond query resolution, the system must securely handle state mutations initiated by both users and external maintainer applications.
