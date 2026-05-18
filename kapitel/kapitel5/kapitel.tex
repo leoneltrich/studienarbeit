@@ -260,6 +260,86 @@ Ultimately, this Level 3 configuration guarantees that all dependencies point in
 
 While the C4 framework includes a fourth level for mapping individual components to code-level constructs, it is treated as an optional level of detail within this specification. As noted by the C4 standard, this depth is typically reserved for only the most complex or critical components to help tell a specific implementation story \cite{brown2026c4}. Because class structures are highly volatile and often available on-demand via tooling options, documenting them here would risk creating brittle artifacts. Instead, this architecture relies on the Level 3 component boundaries to provide sufficient rigor, leaving low-level attributes and methods to be automatically generated where deemed necessary.
 
+\section{Dynamic Architecture (System Behavior)}
+\label{sec:dynamic_architecture}
+
+While the static architecture defined in Section~\ref{sec:component_architecture} establishes the strict structural boundaries of the system, it does not describe the runtime execution logic. This section models the dynamic behavior of the \ac{CLI} application using \ac{BPMN} 2.0 standard notation. To prevent visual bloating, some diagrams have been structured hierarchically by adding subprocess diagrams.
+
+\paragraph{Architectural Execution Model (The Stateless Lifecycle)}
+\label{sec:execution_model}
+
+To strictly satisfy the \enquote{Single Linux Deployment Artifact} (NFR-9) and \enquote{Zero Third-Party Daemon} (ENV-3) constraints, the system is designed as a purely stateless executable. The application does not rely on background listeners or idle memory allocation. Instead, every interaction follows a strictly bounded lifecycle: the process is initialized by the host \ac{OS}, allocates memory Just-In-Time (JIT), executes the requested domain logic, and immediately terminates. 
+
+This daemonless approach guarantees that \ac{RAM} limits (NFR-3) are only consumed during active execution and that only one executable has to be installed.
+
+\subsection{Primary Query Resolution Flow}
+\label{sec:primary_query_flow}
+
+The primary functional purpose of the system is to translate natural language into executable terminal commands (FR-1). Figure~\ref{fig:bpmn_high_level} illustrates the High-Level Systems Overview of this interaction.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-1-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_high_level}
+\end{figure}
+
+The flow begins when the End-User submits a query. The core orchestration layer  initializes the necessary matching engines before tokenizing the query and dispatching it to the subprocesses. It explicitly handles ambiguities by utilizing disambiguation prompts to the user.
+
+\subsubsection{Subprocesses}
+As described before, the process in Figure~\ref{fig:bpmn_high_level} has been simplified to ensure the diagram remains easily comprehensible. The following diagrams aim to provide more detailed insights into the previously simplified subprocesses.
+
+\paragraph{Tool and Option Determination}
+
+The system utilizes the pluggable matching adapters (defined in section~\ref{sec:component_architecture}) to match the tokenized data against the data persisted in the data store. If the highest resulting score remains below the minimum confidence threshold, the process immediately aborts evaluation and returns a \enquote{Tool Undetermined} state.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-2-Sub-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_2_sub_high_level}
+\end{figure}
+
+\paragraph{Filtering of Candidate Options}
+
+To prevent the hallucination of low-quality results, the system applies a strict filter. If the highest match score does not exceed a confidence threshold, it prunes all options. Otherwise, it calculates the percentage drop between the ranked candidates, severing the list where the cliff first exceeds a threshold.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-3-Sub-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_3_sub_high_level}
+\end{figure}
+
+\paragraph{Command Verification}
+
+The candidate tool and options are validated against the catalog schema (FR-6) to ensure mutually exclusive flags are not combined and that positional ordering is respected. Successfully built commands trigger the termination of the subprocess and are returned to the user.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-4-Sub-High-Level.jpg} 
+    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \label{fig:bpmn_4_sub_high_level}
+\end{figure}
+
+% ### corrected till here
+
+\subsubsection{The Interactive Disambiguation Loop}
+If the \textit{Tool Determination} subprocess fails to achieve the required confidence threshold, or if the \textit{Command Verification} subprocess encounters a validation error, the parent orchestrator initiates an interactive disambiguation loop (FR-7). The system suspends termination, issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to preserve sub-second latency on subsequent iterations.
+
+\subsection{Administrative Execution Flows}
+\label{sec:administrative_flows}
+
+Beyond query resolution, the system must securely handle state mutations initiated by both users and external maintainer applications.
+
+\paragraph{Catalog Lifecycle Management}
+External maintainers inject new tool definitions via structured JSON payloads (FR-3, FR-4). Due to the stateless architecture, external applications interact with the system by executing the \ac{CLI} binary as a localized subprocess, passing the payload via standard \ac{POSIX} streams. 
+
+As modeled in the Catalog Management flow, the system first intercepts the request to verify cryptographic authentication. Once authorized, an exclusive gateway routes the payload to either the ingestion or deletion logic. If a catalog is being created or updated, the system utilizes the JIT-loaded embedding models to vectorize the JSON descriptions before persisting them to the data store. Regardless of the action, the system guarantees a synchronous success or failure receipt before the process terminates, ensuring external \ac{CI/CD} pipelines can rely on the exit codes.
+
+\paragraph{Configuration Management}
+For local system adjustments (FR-9), such as modifying thresholds or enabling diagnostic logging, the system provides a highly linear execution path. The user intent is parsed, the local persistence layer is updated, and the process terminates immediately without incurring the memory overhead of loading the matching engines.
+
 \subsection{Implementation}
 
 - Rust
