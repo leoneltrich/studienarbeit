@@ -1,5 +1,153 @@
 \begin{appendix}
 
+\section{Interface specification}\label{app:interfaces}
+** VERIFY ALL REQUIREMENT REFERNCES IN THIS CHAPTER!!! Maybe remove the architecture stuff under the tables!**
+
+\begin{table}[htbp]
+    \centering
+    \caption{Interface Specification: UserCommandPort (Inbound / Driving Port)}
+    \label{tab:user_command_port}
+    \renewcommand{\arraystretch}{1.4} % Adds breathing room
+    \begin{tabularx}{\textwidth}{|p{3.2cm}|X|l|X|}
+        \hline
+        \rowcolor{gray!10} % Optional: Adds a light gray background to the header if you use \usepackage{colortbl}
+        \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
+        \hline
+        \texttt{resolveQuery} & \texttt{rawQuery: String} & \texttt{String} & \texttt{Disambiguation\-Required\-Exception} \\
+        \hline
+        \texttt{update\-Configuration} & \texttt{config: EndUser\-Configuration} & \texttt{Boolean} & \texttt{Invalid\-Configuration\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{read\-Configuration} & \texttt{None} & \texttt{EndUser\-Configuration} & \texttt{\texttt{Storage\-Connection\-Exception}} \\
+        \hline
+        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
+            \small \textbf{Architectural Purpose:} The primary entry point for translating a user's natural language request into an executable command. If similarity scores fall below the minimum threshold, or if the resulting command violates catalog exclusivity rules, it throws an exception to trigger the interactive clarification loop (FR-1, FR-6, FR-7).
+        } \\
+        \hline
+    \end{tabularx}
+\end{table}
+\FloatBarrier
+
+
+\begin{table}[htbp]
+    \centering
+    \caption{Interface Specification: CatalogIngestionPort (Inbound / Driving Port)}
+    \label{tab:catalog_ingestion_port}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|p{3.2cm}|X|l|X|}
+        \hline
+        \rowcolor{gray!10}
+        \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
+        \hline
+        \texttt{ingestCatalog} & \texttt{catalog: ToolCatalog}, \newline \texttt{authKey: String} & \texttt{Boolean} & \texttt{Authentication\-Exception}, \newline \texttt{Invalid\-Catalog\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{updateCatalog} & \texttt{catalog: ToolCatalog}, \newline \texttt{authKey: String} & \texttt{Boolean} & \texttt{Authentication\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception}, \newline \texttt{Invalid\-Catalog\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{deleteCatalog} & \texttt{toolName: String}, \newline \texttt{authKey: String} & \texttt{Boolean} & \texttt{Authentication\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
+            \small \textbf{Architectural Purpose:} Defines the administrative contract for managing the lifecycle of tool catalogs. The external CLI adapter handles JSON deserialization, while this port ensures that all catalog mutations are strictly authenticated and semantically valid before the core delegates them to the persistence layer (FR-3, FR-4, FR-5).
+        } \\
+        \hline
+    \end{tabularx}
+\end{table}
+\FloatBarrier
+
+
+\renewcommand{\arraystretch}{1.4}
+% The column definition now automatically permits breaks anywhere inside \texttt strings
+\begin{longtable}{|>{\raggedright\arraybackslash\hspace{0pt}\emergencystretch=1em\hyphenpenalty=1}p{3.2cm}|>{\raggedright\arraybackslash}p{3.5cm}|l|>{\raggedright\arraybackslash}p{4cm}|}
+    
+    % --- FIRST PAGE HEADER ---
+    \caption{Interface Specification: StoragePort (Outbound / Driven Port)} \label{tab:storage_port} \\
+    \hline
+    \rowcolor{gray!10}
+    \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
+    \hline
+    \endfirsthead
+
+    % --- SUBSEQUENT PAGES HEADER ---
+    \hline
+    \rowcolor{gray!10}
+    \multicolumn{4}{|l|}{\small\textit{Table \ref{tab:storage_port} continued from previous page}} \\
+    \hline
+    \rowcolor{gray!10}
+    \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
+    \hline
+    \endhead
+
+    % --- FOOTER FOR PAGES THAT SPLIT ---
+    \hline
+    \multicolumn{4}{|r|}{\small\textit{Continued on next page...}} \\
+    \hline
+    \endfoot
+    
+    % --- FINAL FOOTER ---
+    \hline
+    \endlastfoot
+
+    % --- TABLE DATA ---
+    \multicolumn{4}{|l|}{\textbf{Catalog Management}} \\
+    \hline
+    \texttt{save\-Catalog} & \texttt{catalog: ToolCatalog} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Duplicate\-Catalog\-Exception} \\
+    \hline
+    \texttt{update\-Catalog} & \texttt{catalog: ToolCatalog} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception} \\
+    \hline
+    \texttt{delete\-Catalog} & \texttt{toolName: String} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception} \\
+    \hline
+    \texttt{fetch\-Catalog} & \texttt{toolName: String} & \texttt{ToolCatalog} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception} \\
+    \hline
+    \texttt{fetch\-All\-Catalogs} & \texttt{None} & \texttt{List<ToolCatalog>} & \texttt{Storage\-Connection\-Exception} \\
+    \hline
+    
+    \multicolumn{4}{|l|}{\textbf{Authentication / Maintainer Data}} \\
+    \hline
+    \texttt{save\-Maintainer} & \texttt{maintainer: Catalog\-Maintainer} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception} \\
+    \hline
+    \texttt{update\-Maintainer} & \texttt{maintainer: Catalog\-Maintainer} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception, \newline \texttt{Maintainer\-NotFound\-Exception}} \\
+    \hline
+    \texttt{fetch\-Maintainer} & \texttt{maintainerId: String} & \texttt{Catalog\-Maintainer} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Maintainer\-NotFound\-Exception} \\
+    \hline
+    \texttt{delete\-Maintainer} & \texttt{maintainerId: String} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception}, \newline \texttt{Maintainer\-NotFound\-Exception}, \newline \texttt{Maintainer\-NotFound\-Exception} \\
+    \hline
+    
+    \multicolumn{4}{|l|}{\textbf{User Configuration}} \\
+    \hline
+    \texttt{load\-Configuration} & \texttt{None} & \texttt{EndUser\-Config} & \texttt{Storage\-Connection\-Exception} \\
+    \hline
+    \texttt{save\-Configuration} & \texttt{config: EndUser\-Config} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception} \\
+    \hline
+    
+    \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
+        \small \textbf{Architectural Purpose:} Defines the absolute contract for persisting and retrieving domain entities. Note that \texttt{fetchCatalog} inherently retrieves all associated \texttt{CommandDefinitions} and \texttt{ExclusivityRules} required by the Syntactical Validator. By strictly relying on this interface, the Application Core remains completely agnostic to the underlying database technology (e.g., SQLite).
+    } \\
+\hline
+\end{longtable}
+\FloatBarrier
+
+\begin{table}[htbp]
+    \centering
+    \caption{Interface Specification: MatchingStrategyPort (Outbound / Driven Port)}
+    \label{tab:matching_strategy_port}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|p{3.2cm}|X|X|X|}
+        \hline
+        \rowcolor{gray!10}
+        \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
+        \hline
+        \texttt{calculate\-Similarities} & \texttt{query: UserQuery}, \newline \texttt{options: List<Command\-Definition>} & \texttt{List\-<List\-<Scored\-Candidate>>} & \texttt{Engine\-Execution\-Exception}\\
+        \hline
+        \texttt{loadEngines} & \texttt{None} & \texttt{Boolean} & \texttt{Initialization\-Exception} \\
+        \hline
+        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
+            \small \textbf{Architectural Purpose:} Defines the contract for evaluating query similarity against candidate commands. By exposing only this interface to the core, the system achieves true algorithmic decoupling (NFR-7). External adapters can implement this port using anything from simple lexical token-matching to advanced neural embeddings (NFR-8). Furthermore, the \texttt{preloadModels} method guarantees that heavy machine learning assets are loaded into RAM during the boot or JIT phase, thereby preserving sub-second query latency during actual execution (NFR-1, NFR-2).
+        } \\
+        \hline
+    \end{tabularx}
+\end{table}
+\FloatBarrier
+
+
+
 
 \end{appendix}
 

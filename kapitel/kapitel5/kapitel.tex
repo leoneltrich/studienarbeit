@@ -224,7 +224,7 @@ Crucially, the diagram illustrates the specific dependency mechanics of an embed
 \subsubsection{System Context Model (Level 3)}
 \label{sec:component_architecture}
 
-To detail the internal logical arrangement of the compiled application, the Level 3 Component Diagram decomposes the \ac{CLI} Executable container into its structural building blocks. In this architecture, Level 3 serves as the concrete realization of the Hexagonal (Ports and Adapters) philosophy declared in Section~\ref{sec:architecture_philosophy}. It explicitly delineates the boundaries between the pure domain logic, the abstract interface contracts (Ports), and the pluggable execution infrastructure (Adapters).
+To detail the internal logical arrangement of the compiled application, the Level 3 Component Diagram decomposes the \ac{CLI} Executable container into its structural building blocks. It explicitly delineates the boundaries between the pure domain logic, the abstract interface contracts (Ports), and the pluggable execution infrastructure (Adapters).
 
 As modeled in Figure~\ref{fig:arch_level_3}, the internal architecture strictly enforces the Dependency Inversion Principle. The components are categorized into three conceptual rings of execution:
 
@@ -246,10 +246,10 @@ Positioned at the perimeter, the driving adapters are responsible for receiving 
 Crucially, these adapters do not invoke the application core directly; rather, they depend on abstract inbound ports (\textbf{UserCommandPort} and \textbf{CatalogIngestionPort}).
 
 \paragraph{2. The Isolated Core and Interface Ports}
-The architectural center of gravity consists entirely of pure computational logic and the definition of the boundary interfaces. It contains zero references to external frameworks or database libraries.
+The architectural center consists entirely of computational logic and the definition of the boundary interfaces. It contains no references to external frameworks or database libraries.
 \begin{itemize}
     \item \textbf{The Inbound Dependency Inversion:} The \textbf{Query Orchestrator} and the \textbf{Catalog Lifecycle Manager} serve as the primary use-case interactors. **They physically \textit{implement} the inbound ports.** CHECK IF THIS CORRECT! ** Consequently, their compile-time dependency arrows point inward toward the port interfaces, proving that the core dictates the execution contracts to the driving adapters.
-    \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8). To prevent data starvation while maintaining domain purity, the Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
+    \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8).The Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
 \end{itemize}
 \FloatBarrier
 
@@ -265,7 +265,7 @@ Ultimately, this Level 3 configuration guarantees that all dependencies point in
 
 \subsubsection{Omission of C4 Level 4}
 
-While the C4 framework includes a fourth level for mapping individual components to code-level constructs, it is treated as an optional level of detail within this specification. As noted by the C4 standard, this depth is typically reserved for only the most complex or critical components to help tell a specific implementation story \cite{brown2026c4}. Because class structures are highly volatile and often available on-demand via tooling options, documenting them here would risk creating brittle artifacts. Instead, this architecture relies on the Level 3 component boundaries to provide sufficient rigor, leaving low-level attributes and methods to be automatically generated where deemed necessary.
+While the C4 framework includes a fourth level for mapping individual components to code-level constructs, it is treated as an optional level of detail within this specification. As noted by the C4 standard, this depth is typically reserved for only the most complex components \cite{brown2026c4}. Because class structures are highly volatile and often available on-demand via tooling options\cite{brown2026c4}, documenting them here would risk creating brittle artifacts. Instead, the architecture relies on the Level 3 component boundaries to provide sufficient rigor, leaving low-level attributes and methods to be automatically generated where deemed necessary.
 
 \subsection{Dynamic Architecture (System Behavior)}
 \label{sec:dynamic_architecture}
@@ -336,7 +336,6 @@ The candidate tool and options are validated against the catalog schema (FR-6) t
 \paragraph{The Interactive Disambiguation Loop}
 If the Tool and Option Determination subprocess fails to achieve the required confidence threshold, or if the Command Verification subprocess encounters a validation error, an interactive disambiguation loop (FR-7) is triggered. The system issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to minimize latency on subsequent iterations.
 ** FIX ALL CAPTIONS FOR FIGURES! **
-% ### corrected till here
 
 
 \subsubsection{Administrative Execution Flows}
@@ -345,7 +344,7 @@ If the Tool and Option Determination subprocess fails to achieve the required co
 Beyond query resolution, the system must securely handle state mutations initiated by both users and external maintainer applications.
 
 \paragraph{Catalog Lifecycle Management}
-External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the Catalog Management flow (Figure~\ref{fig:bpmn_5_high_level}), the system first intercepts the request to authenticate and authorize the action. Once authorized, an exclusive gateway routes the payload to either the ingestion or deletion logic. If a catalog is being created or updated, the system preprocesses the ingested catalog data before persisting them to the data store. Regardless of the action, the system guarantees a synchronous success or failure receipt before the process terminates, ensuring maintainers can rely on a status message.
+External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the Catalog Management flow (Figure~\ref{fig:bpmn_5_high_level}), the system first intercepts the request to authenticate and authorize the action. Once authorized, an exclusive gateway routes the payload to either the ingestion, update or deletion logic. If a catalog is being created or updated, the system preprocesses the ingested catalog data before persisting them to the data store, to ensure they fit the format required by the application. Regardless of the action, the system guarantees a success or failure receipt before the process terminates, ensuring maintainers can rely on a status message.
 
 \begin{figure}[htbp]
     \centering
@@ -356,7 +355,7 @@ External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the
 \FloatBarrier
 
 \paragraph{Configuration Management}
-For local system adjustments (FR-9), such as modifying thresholds or enabling diagnostic logging, the system provides a linear execution path. The user is authenticated and authorized. They then receive the configuration options and subsequently send back configuration data. This configuration data then gets persisted after which the \ac{CLI} terminates.
+For local system adjustments (FR-9), the system provides a linear execution path. The user is authenticated and authorized. They then receive the configuration options and subsequently send back configuration data. This configuration data then gets persisted after which the \ac{CLI} terminates.
 
 \begin{figure}[htbp]
     \centering
@@ -365,6 +364,92 @@ For local system adjustments (FR-9), such as modifying thresholds or enabling di
     \label{fig:bpmn_6_high_level}
 \end{figure}
 \FloatBarrier
+
+
+\subsection{Interface Specifications (Schnittstellen)}
+\label{sec:interfaces}
+
+To finalize the systems design, it is necessary to define the data contracts that bridge the system's boundaries. This section is explicitly divided into two categories: Internal Interfaces and External Interfaces. This allows us to distinguish between programmatic domain contracts (inside the Hexagon) and the interaction pathways used by actors (outside the hexagon).
+
+\subsubsection{Internal Interfaces (Hexagonal Ports)}
+\label{sec:internal_interfaces}
+
+The internal interfaces formalize the Inbound (Driving) and Outbound (Driven) ports introduced during the Level 3 Component Architecture breakdown (Section~\ref{sec:component_architecture}).
+
+The programmatic contracts -- comprising the required method signatures, input parameters, return types, and exceptions -- are explicitly outlined in the technical tables provided in Appendix~\ref{app:interfaces}. Defining these parameters formally concludes the design of the application core, guaranteeing its total isolation from external adapters.
+
+\subsubsection{External Interfaces (System Boundaries)}
+\label{sec:external_interfaces}
+
+External interfaces differ fundamentally from internal interfaces. While internal ports dictate code-level method contracts utilizing domain entities, external interfaces define the syntax and data structures through which human users and external systems interact with the binary. 
+
+\begin{table}[htbp]
+    \centering
+    \caption{Interface Specification: CLI Execution Boundary (External Boundary)}
+    \label{tab:cli_execution_boundary}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|p{4cm}|X|p{4.5cm}|}
+        \hline
+        \rowcolor{gray!10}
+        \textbf{Execution Syntax} & \textbf{Arguments \& Interaction} & \textbf{Triggered Internal Port} \\
+        \hline
+        \texttt{local-assistant query} \newline \texttt{"<text>"} & \textbf{<text>}: Natural language string containing the user's intent. & \texttt{UserCommandPort} \newline (\texttt{resolveQuery}) \\
+        \hline
+        \texttt{local-assistant config} & \textbf{None (Interactive Dialog)}: Initiates an interactive terminal session allowing the user to view and mutate preferences. & \texttt{UserCommandPort} \newline (\texttt{saveConfiguration}) \\
+        \hline
+        \texttt{local-assistant catalog} \newline \texttt{<action> <payload>} & \textbf{<action>}: \texttt{add|update|delete}. \newline \textbf{<payload>}: The catalog data to process | may be empty for deletion & \texttt{CatalogIngestionPort} \newline (\texttt{ingestCatalog} / \texttt{deleteCatalog}) \\
+        \hline
+        \multicolumn{3}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
+            \small \textbf{Architectural Purpose:} Defines the physical interaction points exposed by the localized \ac{CLI} binary. This single interface serves both the End-User (querying and configuring) and the Catalog-Maintainer (managing tool definitions). As a daemonless, stateless application, these entry points act as the primary triggers for process initialization. The \ac{CLI} Controller adapter parses these physical arguments, handles any required interactive dialogs, and routes the intent to the appropriate internal Hexagonal Ports.
+        } \\
+        \hline
+    \end{tabularx}
+\end{table}
+\FloatBarrier
+
+The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) maps the  terminal syntax and arguments entered by the user to the corresponding internal ports. It differs from the previous internal tables because it describes user interaction and execution routing rather than static programmatic data types. 
+
+\begin{table}[H]
+    \centering
+    \caption{Interface Specification: Maintainer Data Contract (External Boundary)}
+    \label{tab:maintainer_data_contract}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\textwidth}{|l|l|c|X|}
+        \hline
+        \rowcolor{gray!10}
+        \textbf{Property Key} & \textbf{Data Type} & \textbf{Required} & \textbf{Description \& Domain Rule} \\
+        \hline
+        \texttt{toolName} & \texttt{String} & Yes & The global, unique identifier for the \ac{CLI} tool. \\
+        \hline
+        \texttt{description} & \texttt{String} & Yes & High-level description of the tool's purpose. \\
+        \hline
+        \texttt{keywords} & \texttt{String} & Yes & Keywords describing the tool's purpose. \\
+        \hline
+        \texttt{version} & \texttt{String} & Yes & Semantic versioning identifier for schema migration compatibility. \\
+        \hline
+        \texttt{options} & \texttt{List<Object>} & Yes & A collection of the command line options belonging to this tool. \\
+        \hline
+        \texttt{options[].intent} & \texttt{String} & Yes & The natural language description of what the option achieves. \\
+        \hline
+        \texttt{options[].keywords} & \texttt{String} & Yes & keywords describing what the option does. \\
+        \hline
+        \texttt{options[].base} & \texttt{String} & Yes & The foundational executable string (e.g., "mv"). \\
+        \hline
+        \texttt{rules} & \texttt{Object} & No & Constraints on how the command string must be built. \\
+        \hline
+    \end{tabularx}
+\end{table}
+\FloatBarrier
+
+Finally, the \textbf{Maintainer Data Contract} (Table~\ref{tab:maintainer_data_contract}defines the exact structural schema for the tool catalogs to be ingested into the system. Attributes such as \texttt{descriptiojn} and \texttt{keywords} have been deliberately included to provide a broad semantic baseline. This ensures that any pluggable matching engine -- whether relying on simple keyword matching or advanced neural text embeddings -- has sufficient contextual data available to accurately calculate candidate similarities.
+
+\subsection{Interfaces}
+
+
+
+
+
+
 
 \subsection{Implementation}
 
