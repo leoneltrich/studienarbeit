@@ -443,9 +443,19 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
 
 Finally, the \textbf{Maintainer Data Contract} (Table~\ref{tab:maintainer_data_contract}defines the exact structural schema for the tool catalogs to be ingested into the system. Attributes such as \texttt{descriptiojn} and \texttt{keywords} have been deliberately included to provide a broad semantic baseline. This ensures that any pluggable matching engine -- whether relying on simple keyword matching or advanced neural text embeddings -- has sufficient contextual data available to accurately calculate candidate similarities.
 
-\subsection{Interfaces}
+\subsection{Technology Decisions}
 
+After having established the architectural design of the system the following chapter will discuss teh technology decisions we have considered for this project. As it is the core of the system we will start by evaluating and picking a suitable programming language for the project. We will then compare different ways of implementing the persistence layer of our tool before finally discussing what matching engines the system shall utilize to determine the correct commands.
 
+\subsubsection{Programming Language}
+Rust vs. Java vs. Python vs. C++
+
+\subsubsection{Persistence Layer}
+Plain file vs SQLite
+
+\subsubsection{Matching Engines}
+
+LLM, Embedding, Keyword, Was gibt es noch?
 
 
 
