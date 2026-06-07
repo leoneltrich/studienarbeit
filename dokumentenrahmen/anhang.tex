@@ -134,9 +134,9 @@
         \rowcolor{gray!10}
         \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
         \hline
-        \texttt{calculate\-Similarities} & \texttt{query: UserQuery}, \newline \texttt{options: List<Command\-Definition>} & \texttt{List\-<List\-<Scored\-Candidate>>} & \texttt{Engine\-Execution\-Exception}\\
+        \texttt{calculate\-Similarities} & \texttt{query: UserQuery}, \newline & \texttt{List\-<List\-<Scored\-Candidate>>} & \texttt{Engine\-Execution\-Exception}\\
         \hline
-        \texttt{loadEngines} & \texttt{None} & \texttt{Boolean} & \texttt{Initialization\-Exception} \\
+        \texttt{loadEngine} & \texttt{None} & \texttt{Boolean} & \texttt{Initialization\-Exception} \\
         \hline
         \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
             \small \textbf{Architectural Purpose:} Defines the contract for evaluating query similarity against candidate commands. By exposing only this interface to the core, the system achieves true algorithmic decoupling (NFR-7). External adapters can implement this port using anything from simple lexical token-matching to advanced neural embeddings (NFR-8). Furthermore, the \texttt{preloadModels} method guarantees that heavy machine learning assets are loaded into RAM during the boot or JIT phase, thereby preserving sub-second query latency during actual execution (NFR-1, NFR-2).

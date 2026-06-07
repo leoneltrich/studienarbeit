@@ -397,7 +397,7 @@ External interfaces differ fundamentally from internal interfaces. While interna
         \hline
         \texttt{local-assistant config} & \textbf{None (Interactive Dialog)}: Initiates an interactive terminal session allowing the user to view and mutate preferences. & \texttt{UserCommandPort} \newline (\texttt{saveConfiguration}) \\
         \hline
-        \texttt{local-assistant catalog} \newline \texttt{<action> <payload>} & \textbf{<action>}: \texttt{add|update|delete}. \newline \textbf{<payload>}: The catalog data to process | may be empty for deletion & \texttt{CatalogIngestionPort} \newline (\texttt{ingestCatalog} / \texttt{deleteCatalog}) \\
+        \texttt{local-assistant catalog} \newline \texttt{<action> <payload>} & \textbf{<action>}: \texttt{add|update|delete}. \newline \textbf{<payload>}: The catalog data to process or the catalog ID in case of deletion & \texttt{CatalogIngestionPort} \newline (\texttt{ingestCatalog} / \texttt{deleteCatalog}) \\
         \hline
         \multicolumn{3}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
             \small \textbf{Architectural Purpose:} Defines the physical interaction points exposed by the localized \ac{CLI} binary. This single interface serves both the End-User (querying and configuring) and the Catalog-Maintainer (managing tool definitions). As a daemonless, stateless application, these entry points act as the primary triggers for process initialization. The \ac{CLI} Controller adapter parses these physical arguments, handles any required interactive dialogs, and routes the intent to the appropriate internal Hexagonal Ports.
@@ -433,7 +433,7 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
         \hline
         \texttt{options[].keywords} & \texttt{String} & Yes & keywords describing what the option does. \\
         \hline
-        \texttt{options[].base} & \texttt{String} & Yes & The foundational executable string (e.g., "mv"). \\
+        \texttt{options[].option} & \texttt{String} & Yes & the string of the flag (e.g. -f). \\
         \hline
         \texttt{rules} & \texttt{Object} & No & Constraints on how the command string must be built. \\
         \hline
