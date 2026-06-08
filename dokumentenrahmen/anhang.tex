@@ -1,5 +1,99 @@
 \begin{appendix}
 
+\section{User Pre-Evaluation Questionnaire}
+
+\begin{enumerate}
+    \item \textbf{What command do you use to display the absolute path of the directory you are currently in?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{cd}
+        \item[\textbf{B)}] \texttt{dir}
+        \item[\textbf{C)}] \texttt{pwd}
+        \item[\textbf{D)}] \texttt{path}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{You are in \texttt{/home/user/projects/data}. You type \texttt{cd ..} and press Enter. Where are you now?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{/home/user/projects}
+        \item[\textbf{B)}] \texttt{/home/user}
+        \item[\textbf{C)}] \texttt{/home/user/projects/data/..}
+        \item[\textbf{D)}] An error will occur.
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{If a program is currently running in your terminal and you want to forcefully stop or terminate it, what keyboard shortcut do you press?}
+    \begin{itemize}
+        \item[\textbf{A)}] Esc
+        \item[\textbf{B)}] \texttt{Ctrl+X}
+        \item[\textbf{C)}] \texttt{Ctrl+C}
+        \item[\textbf{D)}] \texttt{Ctrl+Z}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{What is the primary purpose of the \texttt{cat} command?}
+    \begin{itemize}
+        \item[\textbf{A)}] To search for specific words inside a file.
+        \item[\textbf{B)}] To print the contents of a file directly to the terminal.
+        \item[\textbf{C)}] To combine two directories together.
+        \item[\textbf{D)}] To view the system hardware catalog.
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{Which command would you use to search for the specific word ``error'' inside a text file named \texttt{app.log}?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{find "error" app.log}
+        \item[\textbf{B)}] \texttt{search app.log --text="error"}
+        \item[\textbf{C)}] \texttt{grep "error" app.log}
+        \item[\textbf{D)}] \texttt{cat app.log | match "error"}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{How do you change the permissions of a script named \texttt{run.sh} to make it executable by the current user?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{chmod +x run.sh}
+        \item[\textbf{B)}] \texttt{chown root run.sh}
+        \item[\textbf{C)}] \texttt{make run.sh executable}
+        \item[\textbf{D)}] \texttt{attrib +e run.sh}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{What does the pipe operator (\textbar) do in a command sequence like \texttt{cat data.txt | grep "failed"}?}
+    \begin{itemize}
+        \item[\textbf{A)}] It runs the first command, waits for it to finish, then runs the second.
+        \item[\textbf{B)}] It takes the standard output (stdout) of the first command and passes it as the standard input (stdin) to the second.
+        \item[\textbf{C)}] It writes the output of both commands into a shared temporary file.
+        \item[\textbf{D)}] It runs both commands simultaneously in the background.
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{You want to continuously watch the bottom of a log file as new lines are written to it in real-time. What command achieves this?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{watch app.log}
+        \item[\textbf{B)}] \texttt{less --stream app.log}
+        \item[\textbf{C)}] \texttt{tail -f app.log}
+        \item[\textbf{D)}] \texttt{cat --live app.log}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{Using the \texttt{find} command, how do you locate all files ending in \texttt{.tmp} and immediately delete them within that exact same command?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{find . -name "*.tmp" | rm}
+        \item[\textbf{B)}] \texttt{find . -name "*.tmp" -delete}
+        \item[\textbf{C)}] \texttt{find . -type "*.tmp" --remove}
+        \item[\textbf{D)}] \texttt{rm \$(find "*.tmp")}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+
+    \item \textbf{You have a comma-separated file named \texttt{users.csv}. How would you extract only the second column (e.g., the usernames) and print it to the terminal?}
+    \begin{itemize}
+        \item[\textbf{A)}] \texttt{cut -d',' -f2 users.csv}
+        \item[\textbf{B)}] \texttt{grep --column=2 users.csv}
+        \item[\textbf{C)}] \texttt{column -extract 2 users.csv}
+        \item[\textbf{D)}] \texttt{awk '\{print column 2\}' users.csv}
+        \item[\textbf{E)}] I don't know
+    \end{itemize}
+\end{enumerate}
+
 \section{Interface specification}\label{app:interfaces}
 ** VERIFY ALL REQUIREMENT REFERNCES IN THIS CHAPTER!!! Maybe remove the architecture stuff under the tables!**
 
