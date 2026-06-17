@@ -338,3 +338,5 @@ TSWLatexianTemp*
 *.fdb*
 *.gz
 *.out
+
+*.pdf
