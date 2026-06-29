@@ -229,12 +229,24 @@
         \rowcolor{gray!10}
         \textbf{Method} & \textbf{Parameters} & \textbf{Return} & \textbf{Exceptions} \\
         \hline
-        \texttt{calculate\-Similarities} & \texttt{query: UserQuery}, \newline & \texttt{List\-<List\-<Scored\-Candidate>>} & \texttt{Engine\-Execution\-Exception}\\
+        \texttt{find\-Tools} & \texttt{query: UserQuery}, \newline & \texttt{List\-<List\-<Scored\-Tool>>} & \texttt{Engine\-Execution\-Exception}\\
         \hline
-        \texttt{loadEngine} & \texttt{None} & \texttt{Boolean} & \texttt{Initialization\-Exception} \\
+        \texttt{find\-Options} & \texttt{query: UserQuery, toolName: String}, \newline & \texttt{List\-<List\-<Scored\-Option>>} & \texttt{Engine\-Execution\-Exception}\\
+        \hline
+        \texttt{load\-Engine} & \texttt{None} & \texttt{Boolean} & \texttt{Initialization\-Exception} \\
+        \hline
+        \texttt{create\-Optimized\-Catalog} & \texttt{catalog: toolCatalog} & \texttt{None} & \texttt{Initialization\-Exception}, \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{update\-Optimized\-Catalog} & \texttt{catalog: toolCatalog} & \texttt{None} & \texttt{Initialization\-Exception}, \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{delete\-Optimized\-Catalog} & \texttt{toolName: String} & \texttt{None} & \texttt{Storage\-Connection\-Exception} \\
+        \hline
+        \texttt{toolWeight} & \texttt{None} & \texttt{Float} & \texttt{Initialization\-Exception} \\
+        \hline
+        \texttt{optionWeight} & \texttt{None} & \texttt{Float} & \texttt{Initialization\-Exception} \\
         \hline
         \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
-            \small \textbf{Architectural Purpose:} Defines the contract for evaluating query similarity against candidate commands. By exposing only this interface to the core, the system achieves true algorithmic decoupling (NFR-7). External adapters can implement this port using anything from simple lexical token-matching to advanced neural embeddings (NFR-8). Furthermore, the \texttt{preloadModels} method guarantees that heavy machine learning assets are loaded into RAM during the boot or JIT phase, thereby preserving sub-second query latency during actual execution (NFR-1, NFR-2).
+            \small \textbf{Architectural Purpose:} Defines the contract for evaluating query similarity against candidate commands. By exposing only this interface to the core, the system achieves true algorithmic decoupling (NFR-7). External adapters can implement this port using anything from simple lexical token-matching to advanced neural embeddings (NFR-8). Furthermore, the \texttt{preloadModels} method guarantees that heavy machine learning assets are loaded into RAM during the boot or JIT phase, thereby preserving sub-second query latency during actual execution (NFR-1, NFR-2). Additionally methods are provided to manage optimized catalog instances, which allows an engine to store the catalog in it's preprocessed engine specific form. This reduces computational overhead during execution, contributing to the sub-second query latency. The \texttt{toolWeight} and \texttt{optionWeight} methods allow to give more accurate engines a higher importance during the ranking of candidates.
         } \\
         \hline
     \end{tabularx}
