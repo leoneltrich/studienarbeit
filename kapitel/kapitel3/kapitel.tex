@@ -3,8 +3,9 @@
 \subsection{Literature Review}
 
 \subsection{Benchmarking}
+This section is split into the statistical benchmarking which, focuses on dataset generation and utilization, and the performance benchmarking, which talks about the benchmarking environment used.
 
-\subsubsection{Statistical benchamrking}
+\subsubsection{Statistical Benchamrking}
 To allow for a founded evaluation of different parameter configurations we created a dataset. The dataset aimed at providing a set of sample queries that a user might give to the system to achieve a task. For this we first defined a total of ten sample categories (Appendix **X**), five of them utilizing the "mv"-tool and another five the "cp"-tool. Each category consists of a destination command and a description of what that command does. A destination command was defined as a full command, including the tool name, the options, the flags and any arguments required to achieve the action described in the description. 
 
 Because of the vast sample size required to make a statistically valid claim we utilized the large language model Gemini 3.1 Flash Lite. The exact prompt used was optimized for creating versatile samples and is documented in appendix **X**. The generated dataset totaled 1219 sample queries. These queries are almost equally distributed across categories, with only two divergances from the expected 120 samples. 
@@ -20,7 +21,7 @@ e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
 
 With $Z$ being the z-score for 90\% confidence, $N$ being the sample size, and $p$ representing the empirical success rate recorded during the benchmark.
 
-\subsubsection{Performance benchmarking}
+\subsubsection{Performance Benchmarking}
 Since the system utilizes a local first approach we can not only limit our benchmarking to the expected success rate. The ressource usage and speed of the system also need to be taken into account. Therefore we defined the execution environment in table~\ref{tab:env_constraints}. The VM described had several standard performance measures manually enabled to utilize the provided hardware as effectively as possible. The measures taken are:
 
 \begin{enumerate}
@@ -28,9 +29,13 @@ Since the system utilizes a local first approach we can not only limit our bench
     \item Hard Disk enabled SSD emulation and discard option
 \end{enumerate}
 
-All other configuration options remain in their default mode. 
+All other configuration options remain in at the default set by Proxmox upon machine creation. The utilization of a Proxmox Virtual Machine for the benchmarking enabled us to achieve results applicable to real world server environments. 
 
-\subsection{System Design}
+\subsection{System Design And Implementation}
+
+\subsubsection{Systems Design}
+The systems design process started by defining the requirements for the application. In addition to functional and non-functional requiremnts, environment constraints were defined. This provided the the base for the following architecture pattern decision and modeling phases. For the architecture pattern decision different architecture patterns were systematically analysed. Based on qualitative aspects it was evaluated which architecture best fits the requirements. After the architecture pattern was chosen the system was modeled using the C4 standard~\cite{brown2026c4}. This provided a high level overview of the system, it's components and it's boundries. To gain a more detailled perspective on how the system works BPMN2.0 ** ref BMPN ** style diagrams were created to describe the execution flow of the system and it's different functionalities. Ultimately the internal and external interfaces of the system were defined and the technologies best suited to implement the system were chosen. To choose the best technologies for the system, different candidates were evaluated based on qualitative and quantitative measures. This concluded the ground work for the systems implementation.
+
 % Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
 % Implementation -> Based on the Theoretical design, Based on Benchmarks (Otsu (alpha & Multiplier), Embedding models, Different ways of concatenating and optimizing descriptions and keywords, Weights of keywords BM25, Bi-grams & Tri-grams)
 % 
