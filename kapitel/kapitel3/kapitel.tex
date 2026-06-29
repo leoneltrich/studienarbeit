@@ -29,7 +29,7 @@ Since the system utilizes a local first approach we can not only limit our bench
     \item Hard Disk enabled SSD emulation and discard option
 \end{enumerate}
 
-All other configuration options remain in at the default set by Proxmox upon machine creation. The utilization of a Proxmox Virtual Machine for the benchmarking enabled us to achieve results applicable to real world server environments. 
+Most other configuration options remain in at the default set by Proxmox upon machine creation, with one exception. To get performance comparable to enterprise SSDs or an SSD in a bare metal system, we disabled ZFS write confirmation using the command \textit{zfs set sync=disabled rpool/data/vm500-disk-0}. Whilst the utilization of a Proxmox Virtual Machine for the benchmarking enabled us to achieve results applicable to real world server environments, it must be considered that this specific performance measure may cause write speeds even exceeding enterprise SSDs that do not have the confirmations turned off.
 
 \subsection{System Design And Implementation}
 
