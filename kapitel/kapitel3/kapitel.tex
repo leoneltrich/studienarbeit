@@ -3,14 +3,16 @@
 \subsection{Literature Review}
 
 \subsection{Benchmarking}
-To allow for a founded evaluation of different parameter configurations we created a dataset. The dataset aimed at providing a set of sample queries that a user might give to the system to achieve a task. For this we first defined a total of ten sample categories (Appendix **X**), five of them utilizing the "mv"-tool and another five the "cp"-tool. Each category consists of a destination command and a description of what that command does. A destination command is defined as a full command, including the tool name, the options, the flags and any arguments required to achieve the action described in the description. 
+
+\subsubsection{Statistical benchamrking}
+To allow for a founded evaluation of different parameter configurations we created a dataset. The dataset aimed at providing a set of sample queries that a user might give to the system to achieve a task. For this we first defined a total of ten sample categories (Appendix **X**), five of them utilizing the "mv"-tool and another five the "cp"-tool. Each category consists of a destination command and a description of what that command does. A destination command was defined as a full command, including the tool name, the options, the flags and any arguments required to achieve the action described in the description. 
 
 Because of the vast sample size required to make a statistically valid claim we utilized the large language model Gemini 3.1 Flash Lite. The exact prompt used was optimized for creating versatile samples and is documented in appendix **X**. The generated dataset totaled 1219 sample queries. These queries are almost equally distributed across categories, with only two divergances from the expected 120 samples. 
-The first divergence can be found for the  category with the ID 1. This due to an initial test run that created 20 additional samples, resulting in a total of 140 sampels for that category. The second divergance can be found in the category with ID 4. It is a result of a redundancy protection feature that we implemented, to prevent multiple instances of identical sample queries. The feature converts all characters to lowercase, and strips all excess whitespaces and any punctuation. It then stores this normalized string along with the original query, provided no instance of the normalized string exists in the database yet. This mechanism prevented one duplicate sample for category 4, leading to a total of 119 sample queries for that category. 
+The first divergence can be found for the  category with the ID 1. This is due to an initial test run that created 20 additional samples, resulting in a total of 140 sampels for that category. The second divergance can be found in the category with ID 4. It is a result of a redundancy protection feature we implemented, to prevent multiple instances of identical sample queries. The feature converts all characters to lowercase, strips all excess whitespaces and removes any punctuation. It then stores this normalized string along with the original query, provided no instance of the normalized string exists in the database yet. This mechanism prevented one duplicate sample for category 4, leading to a total of 119 sample queries for that category. 
 
-To prevent bias toward the dataset, we decided to create a stratified 50/50 split resulting in a test and a validation set. Since the dataset has an uneven number of records the validation set will have 610 samples and the test set will have 609 samples. During the development process only the validation set will be used to tune the system. The test set will only be used at the very end, on the finished system, for the technical benchmarking. 
+To prevent bias toward the dataset, we decided to create a stratified 50/50 split resulting in a test and a validation set. Since the dataset has an uneven number of records the validation set consists of 610 samples and the test set of 609 samples. During the development process only the validation set was used to tune the system. The test set was used only at the very end, on the finished system, for the technical benchmarking. 
 
-To ensure the final benchmark is statistically reliable, we evaluate our test set size ($N = 609$) using the standard margin of error for proportions. Since this is a Proof of Concept (PoC), a 90\% confidence level ($Z = 1.645$) is chosen. Based on this sample size and confidence threshold, the maximum theoretical margin of error is $\pm3.3\%$ under conditions of maximum variance ($p = 0.5$). The margin of error ($e$) for a population proportion is calculated as:
+To ensure the final benchmark is statistically reliable, we evaluated our test set size ($N = 609$) using the standard margin of error for proportions. Since this is a Proof of Concept (PoC), a 90\% confidence level ($Z = 1.645$) was chosen. Based on this sample size and confidence threshold, the maximum theoretical margin of error is $\pm3.3\%$ under the condition of a maximum variance ($p = 0.5$). The margin of error ($e$) for a population proportion is calculated as:
 
 \begin{equation}
 e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
@@ -18,8 +20,15 @@ e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
 
 With $Z$ being the z-score for 90\% confidence, $N$ being the sample size, and $p$ representing the empirical success rate recorded during the benchmark.
 
-% Generation of the sample dataset
-% Hardware same as Constraints
+\subsubsection{Performance benchmarking}
+Since the system utilizes a local first approach we can not only limit our benchmarking to the expected success rate. The ressource usage and speed of the system also need to be taken into account. Therefore we defined the execution environment in table~\ref{tab:env_constraints}. The VM described had several standard performance measures manually enabled to utilize the provided hardware as effectively as possible. The measures taken are:
+
+\begin{enumerate}
+    \item CPU set to host mode
+    \item Hard Disk enabled SSD emulation and discard option
+\end{enumerate}
+
+All other configuration options remain in their default mode. 
 
 \subsection{System Design}
 % Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
