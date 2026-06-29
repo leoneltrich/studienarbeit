@@ -247,7 +247,7 @@ Positioned at the perimeter, the driving adapters are responsible for receiving 
 Crucially, these adapters do not invoke the application core directly; rather, they depend on abstract inbound ports (\textbf{UserCommandPort} and \textbf{CatalogIngestionPort}).
 
 \paragraph{2. The Isolated Core and Interface Ports}
-The architectural center consists entirely of computational logic and the definition of the boundary interfaces. It contains no references to external frameworks or database libraries.
+The architectural center consists entirely of computational logic and the definition of the boundary interfaces. It contains no references to external frameworks or database libraries **Fix this sentence! incorrect!**.
 \begin{itemize}
     \item \textbf{The Inbound Dependency Inversion:} The \textbf{Query Orchestrator} and the \textbf{Catalog Lifecycle Manager} serve as the primary use-case interactors. **They physically \textit{implement} the inbound ports.** CHECK IF THIS CORRECT! ** Consequently, their compile-time dependency arrows point inward toward the port interfaces, proving that the core dictates the execution contracts to the driving adapters.
     \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8).The Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
