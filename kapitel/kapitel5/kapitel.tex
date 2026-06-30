@@ -486,17 +486,11 @@ In our literature review we identified two approaches that might be used as matc
 
 By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, we identified two other methods for retrieving commandline tools and their options **sources**. 
 
-\paragraph{Embedding Models} being the first one of them. Instead of directly translating a user query into a full command and option response, this approach calculates a vector representation of the user query. If we now also have a vector representation of the tools and their options, we can use cosine similarity to identify the closest semantic match to the query. Since there exists a selection of embedding models using significantly fewer parameters than one billion, the memory and latency constraints are not that significant here. Additionally the corpus of commands and their options would be easily extensible by just calculating their vector representations and adding them. This would allow for new commands and options to be added at any time and therefore not just be limited to the training data. Due to those reasons we decided to include an embedding model as one of the matching engines.
+\paragraph{Embedding Models} being the first one of them. Instead of directly translating a user query into a full command and option response, this approach calculates a vector representation of the user query. If we now also have a vector representation of the tools and their options, we can use cosine similarity to identify the closest semantic match to the query. Since there exists a selection of embedding models using significantly fewer parameters than one billion, the memory and latency constraints are not that significant here. Additionally the corpus of commands and their options would be easily extensible by just calculating their vector representations and adding them. This would allow for new commands and options to be added at any time and therefore not just be limited to the training data. Due to those reasons we decided to include an embedding model as one of the matching engines. Chapter~\ref{sec:comp_emb_models} will identify and compare a selection of embedding models, to identify the best possible candidate for this system.
 
 \paragraph{Keyword Search} was identified as the second method. This approach would be highly efficient, using up only a fraction of the 1024MB memory budget **source**. It is also highly efficient once the data is loaded **source**, making it a suitable to supplement the retrieval results of the embedding models. It is also easily extensible, all that needs to be done is add a new catalog containing descriptions, keywords or both for the new tool and it's options. We therefore decided to use a simple keyword search as our secondary engine. As it is the defacto standard for such tasks, we decided to use the BM25 algorithm **sources**.
 
-
-\subsubsection{Comparison Of Embedding Models}
-
-
 \subsubsection{Programming Language}
-
-
 
 Rust vs. Java vs. Python vs. C++
 
@@ -504,26 +498,3 @@ Rust vs. Java vs. Python vs. C++
 Plain file vs SQLite
 
 \subsubsection{FSM}\label{sec:fsm_tech}
-
-
-
-
-
-
-\subsection{Implementation}
-
-\subsubsection{FSM}
-
-\subsubsection{Compilation}
-
-% - Rust
-
-% Beschreibung der Module und wie sie ineinandergreifen (Diagram?)
-
-% Ggf. eine beschreibung wie man besonders effectiv die Beschreibungen für das Embedding formuliert.
-
-% tar, mv, cp, 
-
-\subsection{Limitations}
-
-Due to time constraint a selection of non-essential requirements were ommitted during the implementation phase. In particular, no authentication (FR-3) and access control mechanisms (NFR-11) were implemented at this time. Neither was the concurrency resilience (NFR-12). This decision was made, because the application is not supposed to be deployed in a production environment at this stage, hence making security features a secondary concern. Furthermore, the interactive disambiguatio (FR-7) was ommitted for now. Users are still notified when a conflict has been detected, but the program does not enter another execution cycle after that. Instead it finishes it's run, which requires the engines to be reloaded, if a user revises their query and calls the program an additional time. We decided that this was a negligible concern, since it does not directly influence the usefulness of the program. Finally the configuration management (FR-9) and diagnostic logging were not implemented at this stage, thereby also causing NFR-14 to become redundant. We decided to omit those features, because at this stage they do not aid the usability of the program and no diagnostics are required.

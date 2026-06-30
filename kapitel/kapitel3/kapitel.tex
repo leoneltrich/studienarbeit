@@ -31,14 +31,18 @@ Since the system utilizes a local first approach we can not only limit our bench
 
 Most other configuration options remain in at the default set by Proxmox upon machine creation, with one exception. To get performance comparable to enterprise SSDs or an SSD in a bare metal system, we disabled ZFS write confirmation using the command \textit{zfs set sync=disabled rpool/data/vm500-disk-0}. Whilst the utilization of a Proxmox Virtual Machine for the benchmarking enabled us to achieve results applicable to real world server environments, it must be considered that this specific performance measure may cause write speeds even exceeding enterprise SSDs that do not have the confirmations turned off.
 
-\subsection{System Design And Implementation}
+\subsection{System Design}
 
-\subsubsection{Systems Design}
 The systems design process started by defining the requirements for the application. In addition to functional and non-functional requiremnts, environment constraints were defined. This provided the the base for the following architecture pattern decision and modeling phases. For the architecture pattern decision different architecture patterns were systematically analysed. Based on qualitative aspects it was evaluated which architecture best fits the requirements. After the architecture pattern was chosen the system was modeled using the C4 standard~\cite{brown2026c4}. This provided a high level overview of the system, it's components and it's boundries. To gain a more detailled perspective on how the system works BPMN2.0 ** ref BMPN ** style diagrams were created to describe the execution flow of the system and it's different functionalities. Ultimately the internal and external interfaces of the system were defined and the technologies best suited to implement the system were chosen. To choose the best technologies for the system, different candidates were evaluated based on qualitative and quantitative measures. This concluded the ground work for the systems implementation.
 
 % Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
+
+\subsection{Implementation}
+
 % Implementation -> Based on the Theoretical design, Based on Benchmarks (Otsu (alpha & Multiplier), Embedding models, Different ways of concatenating and optimizing descriptions and keywords, Weights of keywords BM25, Bi-grams & Tri-grams)
 % 
+
+\subsection{Model Selection}
 
 \subsection{User Study}
 The goal of this project was to contribute to improving a user’s workflow when using the terminal, regardless of whether they were novices, intermediate, or advanced CLI users. A goal of this study was to evaluate the perceived effectiveness of the tool by users, to assess whether it succeeded at helping the user through using the CLI, in terms of speed and accessibility.
@@ -47,11 +51,11 @@ For the user study, users with a wide spectrum of skill levels were selected. Th
 
 \subsubsection{Pre-study Evaluation}
 
-The pre-study evaluation was composed of 10 questions, of varying difficulty, that aimed to assess a user’s general knowledge of the CLI. The questions were compiled based on widely used operations, ranging from moving and locating files, to the understanding of paths, managing permissions, and using commands (see appendix **insert ref**). During the user study, the questions were shuffled randomly to make the user survey as accurate as possible, thereby preventing users from potentially sharing answers.
+The pre-study evaluation was composed of 10 questions, of varying difficulty, that aimed to assess a user's general knowledge of the CLI. The questions were compiled based on widely used operations, ranging from moving and locating files, to the understanding of paths, managing permissions, and using commands (see appendix **insert ref**). During the user study, the questions were shuffled randomly to make the user survey as accurate as possible, thereby preventing users from potentially sharing answers.
 
-The survey questions were written as multiple choice, with 4 possible answers each, and an "I don’t know" option for each question. The latter option was implemented to prevent users from guessing randomly and skewing the results. Asking specific questions instead of asking users to estimate their skills is considered best for an accurate portrayal of user capacities **SOURCE?**. Originally, the survey instrument called for written text responses **What "survey instrument"?**, but it was determined that multiple choice would not only reduce cognitive load and maximize user engagement, but it would reduce ambiguity in the responses and allow for easier grading.
+The survey questions were written as multiple choice, with 4 possible answers each, and an "I don't know" option for each question. The latter option was implemented to prevent users from guessing randomly and skewing the results. Asking specific questions instead of asking users to estimate their skills is considered best for an accurate portrayal of user capacities **SOURCE?**. Originally, the survey instrument called for written text responses **What "survey instrument"?**, but it was determined that multiple choice would not only reduce cognitive load and maximize user engagement, but it would reduce ambiguity in the responses and allow for easier grading.
 
-Lastly, each correct answer added one point to a user’s score, and the levels were determined by the following score intervals:
+Lastly, each correct answer added one point to a user's score, and the levels were determined by the following score intervals:
 
 \begin{itemize}
     \item 0 - 3: Beginner
