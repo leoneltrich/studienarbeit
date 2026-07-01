@@ -474,7 +474,7 @@ Finally, the \textbf{Maintainer Data Contract} (table~\ref{tab:maintainer_data_c
 
 After having established the architectural design of the system the following chapter will discuss teh technology decisions we have considered for this project. As it is the core of the system we will start by evaluating and picking a suitable programming language for the project. We will then compare different ways of implementing the persistence layer of our tool before finally discussing what matching engines the system shall utilize to determine the correct commands.
 
-\subsubsection{Matching Engines}
+\subsubsection{Matching Engines}\label{sec:engines}
 **Revise this section and also find sources where necessary!**
 
 **Revise numbers in table and add sources and update texts to include the information of the table**
@@ -523,7 +523,11 @@ By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, we
 
 \subsubsection{Programming Language}
 
-Rust vs. Java vs. Python vs. C++
+\paragraph{Python} frequently get's picked as the langauge for machine learning projects **source**. It is established as the defacto standard, uses simple syntax and has a variety of frameworks for such projects available **sources**. However those frameworks come with a big performance and memory footprint **source** and while a lot of the frameworks are actually written in C or C++ **source**, native Python is considered quite slow **sources**. This makes it not not suitable for our project due to the NFR-1 and NFR-3 constraints.
+
+\paragraph{C++} is the language behind the llama-cpp library, which can be used to run  embedding models **source**. It is also considered to be a fast programming language **source** since unlike Python, it does not require an interpreter to run, which also leads to a lower memory footprint. This makes it a reasonable choice for our project. We however decided, that due to the lack of memory safety **source** and missing experience in the use of the langauge by the team, C++ is not the right fit for the project.
+
+\paragraph{Rust} is a compiled langauge that is considered memory safe **source**. It therefore combines the speed and memory efficiency of an interpreterless language like C++ with the feature of memory safety. Additionally the llama-cpp library is also available for Rust which allows to use it for running embedding models. All this in addition to the team being experienced in the use of the language makes Rust the best fit for the project. Hence Rust will be used as the programming language in the implementation phase.
 
 \subsubsection{Persistence Layer}
 Plain file vs SQLite
