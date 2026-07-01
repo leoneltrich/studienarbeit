@@ -530,6 +530,12 @@ By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, we
 \paragraph{Rust} is a compiled langauge that is considered memory safe **source**. It therefore combines the speed and memory efficiency of an interpreterless language like C++ with the feature of memory safety. Additionally the llama-cpp library is also available for Rust which allows to use it for running embedding models. All this in addition to the team being experienced in the use of the language makes Rust the best fit for the project. Hence Rust will be used as the programming language in the implementation phase.
 
 \subsubsection{Persistence Layer}
-Plain file vs SQLite
 
-\subsubsection{FSM}\label{sec:fsm_tech}
+The environmental cosntraint ENV-3 strictly requires the application to not use any third party daemons. Due to this traditional \acp{DBMS} can not be used to persist the tool catalogs. This leaves us with two options:
+
+\paragraph{Structured files} would allow us to store any data directly into a file. No third party daemon would be required and by utilizing an established structured format like JSON or XML, no custom parser would have to be developed for accessing any of the data. However this approach has two significant drawbacks. The first one being, that despite parsers existing for such files, the data retrieval itself would be very slow compared to an indexed database **source**. This might be an issue especially in a big corpus of data. On the other hand the bigger of the drawbacks, is that strucutred files do not allow us to optimize the retrieval of vectors. This would lead to poor query performance and thereby endanger the 1000ms query latency limit specified by NFR-1.
+
+\paragraph{SQLite} is a file based database system. Unlike traditional \ac{DBMS} it does not require a database server running in the background. The database engine is contained within the connection library itself **source**, hence it gets compiled directly into the application, circumventing the ENV-3 constraint of no third-party daemons because there is no daemon running. Despite this architectural choice, SQLite functions much like a traditional database. It allows for indexing **source** and guarantees ACID-Principles. While native SQLite does not support any optimizations for the retrieval of vectors, extensions can be added to achieve this **source**. The sqlite-vec library for example allows for a direct cosine distance check between stored vectors and a target vector **source**. We therefore decided that SQLite in combination with the sqlite-vec extension is the most suitable persistance layer for this project. 
+
+
+\subsubsection{Extended Finite State Machine (EFSM)}\label{sec:fsm_tech}
