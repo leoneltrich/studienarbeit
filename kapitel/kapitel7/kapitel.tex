@@ -1,9 +1,35 @@
 
 \section{Implementation}
 
+The implementation of the tool was based on the system design and technology decisions of cahpter~\ref{sec:design_and_decision}. We utilized the tool Antigravity CLI in combination with various Gemini \acp{LLM} to accelerate development. For this we first created a project scaffold, with placholder functionality. This allowed us to ensure the architecture outlined in the respective chapters was properly implemented. We then utilized Antigravity CLI to implement the actual functionality of the tool step by step. By keeping tight boundries on what should be created and manually verifying the correctness of generated code, we managed to build a functional tool, fulfilling a subset of the requirements specified. In subsection \ref{sec:implementation_limitation} we outline the requirements ommitted at this stage and the reasons behind it.
+
 \subsection{Extended Finite State Machine (EFSM)}
 
 \subsection{Compilation}
+
+To ensure portability, performance and avoid compilation issues, we did not use the standard \texttt{cargo build --release} command for compilation. We instead used the following:
+
+\texttt{CFLAGS="-Du\_int8\_t=uint8\_t -Du\_int16\_t=uint16\_t -Du\_int64\_t=uint64\_t" RUSTFLAGS="-C target-feature=+avx,+avx2,+fma,+f16c,+bmi2" cargo zigbuild --release --target x86\_64-unknown-linux-musl}
+
+The command can be split into a total of five section:
+
+\begin{enumerate}
+    \item \textbf{CFLAGS="-Du\_int8\_t=uint8\_t -Du\_int16\_t=uint16\_t -Du\_int64\_t=uint64\_t"} 
+    
+    Because the used version of sqlite-vec (v0.1.9) utilizes legacy types (e.g. u\_int8\_t) **source** this part of the compilation command defines a preprocessor macro for the compiler to map those legacy types to C99 standard types (e.g. uint8\_t). This is required because otherwise the musl build fails.
+    \item \textbf{RUSTFLAGS="-C target-feature=+avx,+avx2,+fma,+f16c,+bmi2"}
+    
+    This part of the command enables hardware-level CPU instruction extensions on the target machine. The \textbf{avx} and \textbf{avx2} extensions allow the CPU to run \ac{SIMD} operations, processing up to 8 floating-point numbers in a single clock cycle instead of one by one **source**. On the other hand the \textbf{fma} allows teh CPU to perform multiplication and addition (A x B + C) in a single CPU instruction. This is the fundamental math operation behind neural networks and matrix multiplications **source**, leading to a significant speedup of those operations. The \textbf{f16c} extension enables hardware acceleration for converting 16-bit floats to 32-bit floats, which may help to speed up decompression of machine learning models **source**. Finally the \textbf{bmi2} extension accelerates low-level indexing and hashing operations **source**.
+    \item \textbf{cargo zigbuild}
+    
+    By using this part in our comamnd we swap out cargos default linker and C compiler with Zig. This allows for teh cross compilation of C and C++ code without requiring a complex setup of a copilation environment **source**. 
+    \item \textbf{--release}
+    
+    Using this flag in our compilation command, tells cargo to optimize code, strip debugging symbols and trun of runtime debugging assertions, leading to an optimized executable.
+    \item \textbf{--target x86\_64-unknown-linux-musl}
+    
+    This last part of the command, specifies the compilation target system. This specific variation will compile for an x86 64 bit system. By specifying linux it is specified that the executable targets the a Linux kernel based OS and using musl tells the compiler to use musl-libc instead of the standard glibc. Unlike the standard gnu target, the  musl  target configures the compiler to link the C standard library statically **source**, making our binary portable and not require any shared runtime dependencies.
+\end{enumerate}
 
 % - Rust
 
@@ -13,6 +39,6 @@
 
 % tar, mv, cp, 
 
-\subsection{Limitations}
+\subsection{Limitations}\label{sec:implementation_limitation}
 
 Due to time constraint a selection of non-essential requirements were ommitted during the implementation phase. In particular, no authentication (FR-3) and access control mechanisms (NFR-11) were implemented at this time. Neither was the concurrency resilience (NFR-12). This decision was made, because the application is not supposed to be deployed in a production environment at this stage, hence making security features a secondary concern. Furthermore, the interactive disambiguatio (FR-7) was ommitted for now. Users are still notified when a conflict has been detected, but the program does not enter another execution cycle after that. Instead it finishes it's run, which requires the engines to be reloaded, if a user revises their query and calls the program an additional time. We decided that this was a negligible concern, since it does not directly influence the usefulness of the program. Finally the configuration management (FR-9) and diagnostic logging were not implemented at this stage, thereby also causing NFR-14 to become redundant. We decided to omit those features, because at this stage they do not aid the usability of the program and no diagnostics are required.
