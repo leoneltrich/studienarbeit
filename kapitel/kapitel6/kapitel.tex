@@ -53,7 +53,8 @@ For the Jina-v5-retrieval models, the primary task-specific modification applied
 For \texttt{embeddinggemma-300m}, a task type must be specified so that the model can optimize embeddings for the intended retrieval setting **source**. In this evaluation, the task type \textit{"search result"} was used and prepended to each query together with the prefix \textit{"query: "}, yielding the format \textit{"task: search result | query: <query>"}. For the embedding of tool and option descriptions, a title-text structure was used in the form \textit{"title: <title> | text: <description>"} **source**. The title was defined as either the tool name or the combination of tool name and option, depending on the embedding target, and the text field contained the corresponding description.
 
 \subsubsection{Qwen3-Embedding-0.6B}
-For \texttt{Qwen3-Embedding-0.6B} custom prompt can be added before the query. While this allows for versatile testing, it makes some of th results highly circumstancial based on the prompt used. While one prompt might lead to good scores another prompt might have yielded worse ones. We therefore compared a total of three prompts for each, retrieving the tool and retrieving the options. For retriving the tool we compared the following prompts using the Q8 quantized version of the \texttt{Qwen3-Embedding-0.6B} model:
+
+For \texttt{Qwen3-Embedding-0.6B}, a custom instruction prompt can be prepended to the query. Although this enables flexible task-specific prompting, it also means that retrieval performance can depend substantially on the particular prompt formulation used. A prompt that yields strong results in one setting may perform less well in another. To account for this, three prompt variants were evaluated separately for tool retrieval and option retrieval. For tool retrieval, the following prompts were compared using the Q8-quantized version of \texttt{Qwen3-Embedding-0.6B}:
 
 \begin{enumerate}
     \item Given a user command query, retrieve the matching command-line tool description. (Accuracy: 84.26\%)
@@ -61,15 +62,46 @@ For \texttt{Qwen3-Embedding-0.6B} custom prompt can be added before the query. W
     \item Given a command, retrieve the corresponding tool description. (Accuracy: 83.28\%)
 \end{enumerate}
 
-The accuracy was in this case measured as the percentage of times, the model scored the correct tool higher then the incorrect one. The test was conducted using the validation set described in chapter~\ref{sec:statistical_benchmarking}. All prompts perform very similarly, however the first one got the highest score and was hence used in the further evaluation.
+In this setting, accuracy was measured as the percentage of cases in which the model assigned a higher score to the correct tool than to the incorrect one. The evaluation was conducted on the validation set described in Chapter~\ref{sec:statistical_benchmarking}. All three prompts performed similarly; however, the first prompt achieved the highest score and was therefore selected for the subsequent evaluation.
 
-Using the same quantized model, the following prompt options were compared for retrieving the correct command options:
+Using the same quantized model, the following prompt variants were compared for retrieving the correct command options:
 
 \begin{enumerate}
-    \item Given a user command query, retrieve all matching command-line option descriptions.
-    \item Given a user request, find the option flags that match the description.
-    \item Retrieve the command-line flags that match the user request.
+    \item Given a user command query, retrieve all matching command-line option descriptions. ($S = 0.2019$)
+    \item Given a user request, find the option flags that match the description. ($S = 0.2251$)
+    \item Retrieve the command-line flags that match the user request. ($S = 0.2350$)
 \end{enumerate}
+
+Since more than one option may be correct for a given query, standard accuracy is not suitable in this case. Instead, performance was evaluated using the \ac{RMQ}. For a single query, if $N$ options are expected, each correct option appearing within the top $N$ predicted matches contributes $\frac{1}{N}$ points.
+
+The overall \ac{RMQ} score ($S$) is defined as the average score across all queries in the validation set:
+
+\begin{equation}
+S = \frac{1}{|Q|} \sum_{q \in Q} \left( \sum_{i \in M_q} \frac{1}{N_q} \right)
+\end{equation}
+
+where:
+\begin{itemize}
+    \item $Q$ is the set of all test queries, and $|Q|$ is the total number of queries,
+    \item $N_q$ is the number of expected correct options for a specific query $q$,
+    \item $M_q$ is the set of correct options that appear within the top $N_q$ predicted matches for query $q$.
+\end{itemize}
+
+According to this metric, the third prompt variant achieved the highest score $S$ and was therefore selected as the default prompt for option retrieval in the remainder of the evaluation.
+
+Combining the selected prompts with the required query structure and an end-of-sequence token yields the following formats.
+
+Tool retrieval:
+
+\begin{quote}
+\texttt{Instruct: Given a user command query, retrieve the matching command-line tool description.\textbackslash nQuery: <query>}
+\end{quote}
+
+Option retrieval:
+
+\begin{quote}
+\texttt{Instruct: Retrieve the command-line flags that match the user request.\textbackslash nQuery: <query>}
+\end{quote}
 
 
 
