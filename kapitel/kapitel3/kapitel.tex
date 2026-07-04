@@ -5,7 +5,7 @@
 \subsection{Benchmarking}
 This section is split into the statistical benchmarking which, focuses on dataset generation and utilization, and the performance benchmarking, which talks about the benchmarking environment used.
 
-\subsubsection{Statistical Benchamrking}
+\subsubsection{Statistical Benchamrking}\label{sec:statistical_benchmarking}
 To allow for a founded evaluation of different parameter configurations we created a dataset. The dataset aimed at providing a set of sample queries that a user might give to the system to achieve a task. For this we first defined a total of ten sample categories (Appendix **X**), five of them utilizing the "mv"-tool and another five the "cp"-tool. Each category consists of a destination command and a description of what that command does. A destination command was defined as a full command, including the tool name, the options, the flags and any arguments required to achieve the action described in the description. 
 
 Because of the vast sample size required to make a statistically valid claim we utilized the large language model Gemini 3.1 Flash Lite. The exact prompt used was optimized for creating versatile samples and is documented in appendix **X**. The generated dataset totaled 1219 sample queries. These queries are almost equally distributed across categories, with only two divergances from the expected 120 samples. 

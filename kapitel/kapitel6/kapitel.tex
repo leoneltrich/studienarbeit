@@ -53,14 +53,23 @@ For the Jina-v5-retrieval models, the primary task-specific modification applied
 For \texttt{embeddinggemma-300m}, a task type must be specified so that the model can optimize embeddings for the intended retrieval setting **source**. In this evaluation, the task type \textit{"search result"} was used and prepended to each query together with the prefix \textit{"query: "}, yielding the format \textit{"task: search result | query: <query>"}. For the embedding of tool and option descriptions, a title-text structure was used in the form \textit{"title: <title> | text: <description>"} **source**. The title was defined as either the tool name or the combination of tool name and option, depending on the embedding target, and the text field contained the corresponding description.
 
 \subsubsection{Qwen3-Embedding-0.6B}
-For \texttt{Qwen3-Embedding-0.6B} custom prompt can be added before the query. While this allows for versatile testing, it makes some of th results highly circumstancial based on the prompt used. While one prompt might lead to good scores another prompt might have yielded worse ones. We therefore compared a total of three prompts for each, retrieving the tool and retrieving the options. For retriving the tool we compared the following prompts:
+For \texttt{Qwen3-Embedding-0.6B} custom prompt can be added before the query. While this allows for versatile testing, it makes some of th results highly circumstancial based on the prompt used. While one prompt might lead to good scores another prompt might have yielded worse ones. We therefore compared a total of three prompts for each, retrieving the tool and retrieving the options. For retriving the tool we compared the following prompts using the Q8 quantized version of the \texttt{Qwen3-Embedding-0.6B} model:
 
 \begin{enumerate}
-    \item Given a user command query, retrieve the matching command-line tool description.
-    \item Given a command description, find the matching command name.
-    \item Given a command, retrieve the corresponding tool description.
+    \item Given a user command query, retrieve the matching command-line tool description. (Accuracy: 84.26\%)
+    \item Given a command description, find the matching command name. (Accuracy: 82.95\%)
+    \item Given a command, retrieve the corresponding tool description. (Accuracy: 83.28\%)
 \end{enumerate}
 
+The accuracy was in this case measured as the percentage of times, the model scored the correct tool higher then the incorrect one. The test was conducted using the validation set described in chapter~\ref{sec:statistical_benchmarking}. All prompts perform very similarly, however the first one got the highest score and was hence used in the further evaluation.
+
+Using the same quantized model, the following prompt options were compared for retrieving the correct command options:
+
+\begin{enumerate}
+    \item Given a user command query, retrieve all matching command-line option descriptions.
+    \item Given a user request, find the option flags that match the description.
+    \item Retrieve the command-line flags that match the user request.
+\end{enumerate}
 
 
 
