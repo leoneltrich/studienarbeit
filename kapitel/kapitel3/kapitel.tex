@@ -1,87 +1,87 @@
 \section{Methodology}
+This chapter describes the methodological approach used to design, implement, and evaluate the proposed local-first command option retrieval system. The methodology consists of a literature review, a requirements-driven system design process, an implementation and model selection phase, technical benchmarking, and a user study. Together, these steps provide the basis for evaluating both the technical feasibility of the approach and its perceived usefulness in command-line workflows.
 
 \subsection{Literature Review}
 
+\subsection{System Design}
+The system design process began by defining functional and non-functional requirements for the application, in addition to the relevant environmental constraints. These requirements and constraints provided the foundation for the subsequent architecture selection and modeling phases.
+
+To determine which architectural pattern best fit the requirements, different patterns were systematically analyzed based on qualitative criteria. After selecting the architectural pattern, the system was modeled using the C4 standard~\cite{brown2026c4}. This provided a high-level overview of the system, its components, and its boundaries. To provide a more detailed view of the system behavior, BPMN 2.0 ** ref BMPN ** style diagrams were created to describe the execution flow of the system and its different functionalities.
+
+Finally, the internal and external interfaces of the system were defined, and the technologies most suitable for implementing the system were selected. The technology selection was based on qualitative and quantitative criteria. This concluded the groundwork for the system implementation.
+
+% Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
+\subsection{Implementation}
+% Implementation -> Based on the Theoretical design, Based on Benchmarks (Otsu (alpha & Multiplier), Embedding models, Different ways of concatenating and optimizing descriptions and keywords, Weights of keywords BM25, Bi-grams & Tri-grams)
+%
+
+\subsection{Model Selection}
+
 \subsection{Benchmarking}
-This section is split into the statistical benchmarking which, focuses on dataset generation and utilization, and the performance benchmarking, which talks about the benchmarking environment used.
+After the system design and implementation methodology had been established, the next methodological step was to define how the system would be evaluated technically. This section is divided into statistical benchmarking, which focuses on dataset generation and utilization, and performance benchmarking, which outlines the benchmarking environment used.
 
-\subsubsection{Statistical Benchamrking}\label{sec:statistical_benchmarking}
-To allow for a founded evaluation of different parameter configurations we created a dataset. The dataset aimed at providing a set of sample queries that a user might give to the system to achieve a task. For this we first defined a total of ten sample categories (Appendix **X**), five of them utilizing the "mv"-tool and another five the "cp"-tool. Each category consists of a destination command and a description of what that command does. A destination command was defined as a full command, including the tool name, the options, the flags and any arguments required to achieve the action described in the description. 
+\subsubsection{Statistical Benchmarking} \label{sec:statistical_benchmarking}
+To allow for a systematic evaluation of different parameter configurations, a dataset was created. The dataset was intended to provide a set of sample queries that a user might submit to the system in order to achieve a specific task. For this purpose, ten sample categories were first defined (Appendix **X**), five of which used the "mv" tool and five of which used the "cp" tool. Each category consisted of a destination command and a description of the function performed by that command. A destination command was defined as a full command, including the tool name, options, flags, and any arguments required to perform the action described.
 
-Because of the vast sample size required to make a statistically valid claim we utilized the large language model Gemini 3.1 Flash Lite. The exact prompt used was optimized for creating versatile samples and is documented in appendix **X**. The generated dataset totaled 1219 sample queries. These queries are almost equally distributed across categories, with only two divergances from the expected 120 samples. 
-The first divergence can be found for the  category with the ID 1. This is due to an initial test run that created 20 additional samples, resulting in a total of 140 sampels for that category. The second divergance can be found in the category with ID 4. It is a result of a redundancy protection feature we implemented, to prevent multiple instances of identical sample queries. The feature converts all characters to lowercase, strips all excess whitespaces and removes any punctuation. It then stores this normalized string along with the original query, provided no instance of the normalized string exists in the database yet. This mechanism prevented one duplicate sample for category 4, leading to a total of 119 sample queries for that category. 
+To obtain a sufficiently large and varied set of sample queries for benchmarking, the large language model Gemini 3.1 Flash Lite was used. The exact prompt was optimized for creating versatile samples and is documented in Appendix **X**. The generated dataset consisted of 1219 sample queries. These queries were almost equally distributed across the categories, with only two deviations from the expected 120 samples per category.
+The first deviation occurred in category ID 1. This was caused by an initial test run that created 20 additional samples, resulting in a total of 140 samples for that category. The second deviation occurred in category ID 4. It resulted from a redundancy protection feature that was implemented to prevent multiple instances of identical sample queries. This feature converts all characters to lowercase, strips excess whitespace, and removes punctuation. It then stores the normalized string together with the original query, provided that no identical normalized string already exists in the database. This mechanism prevented one duplicate sample in category ID 4, resulting in a total of 119 sample queries for that category.
 
-To prevent bias toward the dataset, we decided to create a stratified 50/50 split resulting in a test and a validation set. Since the dataset has an uneven number of records the validation set consists of 610 samples and the test set of 609 samples. During the development process only the validation set was used to tune the system. The test set was used only at the very end, on the finished system, for the system evaluation. 
+To prevent bias toward the dataset, a stratified 50/50 split was created, resulting in a validation set and a test set. Since the dataset contained an uneven number of records, the validation set consisted of 610 samples and the test set consisted of 609 samples. During development, only the validation set was used to tune the system. The test set was used only at the end, after the system had been finalized, for the final system evaluation.
 
-To ensure the final benchmark is statistically reliable, we evaluated our test set size ($N = 609$) using the standard margin of error for proportions. Since this is a Proof of Concept (PoC), a 90\% confidence level ($Z = 1.645$) was chosen. Based on this sample size and confidence threshold, the maximum theoretical margin of error is $\pm3.3\%$ under the condition of a maximum variance ($p = 0.5$). The margin of error ($e$) for a population proportion is calculated as:
+To ensure that the final benchmark was statistically reliable, the test set size ($N = 609$) was evaluated using the standard margin of error for proportions. Since this work is a Proof of Concept (PoC), a 90\% confidence level ($Z = 1.645$) was chosen. Based on this sample size and confidence threshold, the maximum theoretical margin of error is $\pm3.3\%$ under the condition of maximum variance ($p = 0.5$). The margin of error ($e$) for a population proportion is calculated as:
 
 \begin{equation}
 e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
 \end{equation}
 
-With $Z$ being the z-score for 90\% confidence, $N$ being the sample size, and $p$ representing the empirical success rate recorded during the benchmark.
+Here, $Z$ is the z-score for a 90\% confidence level, $N$ is the sample size, and $p$ represents the empirical success rate recorded during the benchmark.
 
 \subsubsection{Performance Benchmarking}
-Since the system utilizes a local first approach we can not only limit our benchmarking to the expected success rate. The ressource usage and speed of the system also need to be taken into account. Therefore we defined the execution environment in table~\ref{tab:env_constraints}. The VM described had several standard performance measures manually enabled to utilize the provided hardware as effectively as possible. The measures taken are:
+Since the system follows a local-first approach, benchmarking must not be limited to the expected success rate alone. Resource usage and execution speed also need to be taken into account. Therefore, the execution environment was defined in table~\ref{tab}. The VM described there had several standard performance-related configuration options enabled manually to utilize the provided hardware as effectively as possible. The measures taken were:
 
 \begin{enumerate}
-    \item CPU set to host mode
-    \item Hard Disk enabled SSD emulation and discard option
+	\item CPU set to host mode
+	\item Hard disk enabled SSD emulation and discard option
 \end{enumerate}
 
-Most other configuration options remain in at the default set by Proxmox upon machine creation, with one exception. To get performance comparable to enterprise SSDs or an SSD in a bare metal system, we disabled ZFS write confirmation using the command \textit{zfs set sync=disabled rpool/data/vm500-disk-0}. Whilst the utilization of a Proxmox Virtual Machine for the benchmarking enabled us to achieve results applicable to real world server environments, it must be considered that this specific performance measure may cause write speeds even exceeding enterprise SSDs that do not have the confirmations turned off.
-
-\subsection{System Design}
-
-The systems design process started by defining the requirements for the application. In addition to functional and non-functional requiremnts, environment constraints were defined. This provided the the base for the following architecture pattern decision and modeling phases. For the architecture pattern decision different architecture patterns were systematically analysed. Based on qualitative aspects it was evaluated which architecture best fits the requirements. After the architecture pattern was chosen the system was modeled using the C4 standard~\cite{brown2026c4}. This provided a high level overview of the system, it's components and it's boundries. To gain a more detailled perspective on how the system works BPMN2.0 ** ref BMPN ** style diagrams were created to describe the execution flow of the system and it's different functionalities. Ultimately the internal and external interfaces of the system were defined and the technologies best suited to implement the system were chosen. To choose the best technologies for the system, different candidates were evaluated based on qualitative and quantitative measures. This concluded the ground work for the systems implementation.
-
-% Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
-
-\subsection{Model Selection}
-
-% Implementation -> Based on the Theoretical design, Based on Benchmarks (Otsu (alpha & Multiplier), Embedding models, Different ways of concatenating and optimizing descriptions and keywords, Weights of keywords BM25, Bi-grams & Tri-grams)
-% 
-
-\subsection{Model Selection}
+Most other configuration options remained at the Proxmox defaults applied during virtual machine creation, with one exception. To obtain performance closer to that of enterprise SSDs or bare-metal SSD storage, ZFS synchronous write handling was disabled using the command \textit{zfs set sync=disabled rpool/data/vm500-disk-0}. With this setting, ZFS may acknowledge synchronous write requests before the data has been durably committed to storage. This can increase apparent write performance, but it also reduces protection against data loss in the event of a crash or power failure. Therefore, the measured write speeds may be higher than those achievable by storage systems operating with standard synchronous-write guarantees.
 
 \subsection{User Study}
-The goal of this project was to contribute to improving a user’s workflow when using the terminal, regardless of whether they were novices, intermediate, or advanced CLI users. A goal of this study was to evaluate the perceived effectiveness of the tool by users, to assess whether it succeeded at helping the user through using the CLI, in terms of speed and accessibility.
+In addition to the technical benchmarking, a user study was conducted to evaluate the perceived usefulness of the tool in realistic command-line workflows. While the benchmarking focused on measurable technical characteristics, the user study was intended to assess how participants experienced the tool in terms of accessibility, speed, and workflow support.
 
-For the user study, users with a wide spectrum of skill levels were selected. This was intended to avoid overall bias in the results, as, for example, more advanced users might have been able to resolve tasks with greater ease due to their existing expertise, while less experienced users might have found the tool less convenient due to their lack of CLI understanding. For the selection, a pre-study survey was created to divide the users into novice, intermediate, and expert categories.
+The goal of this project was to contribute to improving users' workflows when using the terminal, regardless of whether they were novice, intermediate, or advanced CLI users. The user study therefore evaluated the perceived effectiveness of the tool and assessed whether it supported participants when working with the CLI.
+For the user study, participants with a wide spectrum of skill levels were selected. This was intended to reduce bias in the results. For example, more advanced users might have been able to solve tasks more easily due to their existing expertise, while less experienced users might have perceived the tool differently due to their limited CLI understanding. To support participant classification, a pre-study survey was created to divide participants into novice, intermediate, and expert categories.
 
 \subsubsection{Pre-study Evaluation}
+The pre-study evaluation consisted of 10 questions of varying difficulty, designed to assess participants' general knowledge of the CLI. The questions were compiled based on widely used operations, ranging from moving and locating files to understanding paths, managing permissions, and using commands (see Appendix **insert ref**). During the user study, the questions were shuffled randomly to improve the reliability of the survey and to reduce the likelihood of participants sharing answers.
 
-The pre-study evaluation was composed of 10 questions, of varying difficulty, that aimed to assess a user's general knowledge of the CLI. The questions were compiled based on widely used operations, ranging from moving and locating files, to the understanding of paths, managing permissions, and using commands (see appendix **insert ref**). During the user study, the questions were shuffled randomly to make the user survey as accurate as possible, thereby preventing users from potentially sharing answers.
+The survey questions were written as multiple-choice questions, with four possible answers and an "I don't know" option for each question. The latter option was included to discourage random guessing and reduce distortion in the results. Asking specific knowledge-based questions instead of asking participants to estimate their own skill level is considered more suitable for accurately assessing user competence **SOURCE?**. Originally, the survey was planned to use written text responses **What "survey instrument"?**, but multiple-choice questions were selected instead. This reduced cognitive load, increased participant engagement, reduced ambiguity in the responses, and simplified grading.
 
-The survey questions were written as multiple choice, with 4 possible answers each, and an "I don't know" option for each question. The latter option was implemented to prevent users from guessing randomly and skewing the results. Asking specific questions instead of asking users to estimate their skills is considered best for an accurate portrayal of user capacities **SOURCE?**. Originally, the survey instrument called for written text responses **What "survey instrument"?**, but it was determined that multiple choice would not only reduce cognitive load and maximize user engagement, but it would reduce ambiguity in the responses and allow for easier grading.
-
-Lastly, each correct answer added one point to a user's score, and the levels were determined by the following score intervals:
-
+Each correct answer added one point to a participant's score, and the skill levels were determined using the following score intervals:
 \begin{itemize}
-    \item 0 - 3: Beginner
-    \item 4 - 7: Intermediate
-    \item 8 - 10: Advanced
+	\item 0 - 3: Beginner
+	\item 4 - 7: Intermediate
+	\item 8 - 10: Advanced
 \end{itemize}
 
 \subsubsection{User Evaluation}
 
-To give the users a chance to experience the developed tool and give feedback on it,
-we created a platform consisting of a sandboxed testing environment and a catalog of tasks and questions. After getting a short introduction to the tool (appendix **insert ref**) the users were presented with three tasks invloving the "mv" and "cp" tools. This particularly allowed more proficient users to compare the results of our tool with their own pre-existing knowledge. Consecutively, a set of three tasks was presented to the users, where the use of a custom, poorly documented tool, with ambiguous option names was required. This was to show the users how the tool might help them to use a proprietary tool they had never seen before. 
+After the pre-study evaluation, participants were asked to interact with the developed tool in a controlled evaluation environment. To give participants the opportunity to experience the tool and provide feedback, an evaluation platform was created. The platform consisted of a sandboxed testing environment and a catalog of tasks and questions. After receiving a short introduction to the tool (Appendix **insert ref**), participants were presented with three tasks involving the "mv" and "cp" utilities. These tasks allowed more proficient users to compare the tool's results with their own prior knowledge.
 
-Users were not required to successfully complete a task to move on to the next one. However, they could not go back to a previous task, because they were provided with the solution to the previous task after moving on to the next one. To give users a way to verify, wether the tool yielded correct results, a verification command was provided for each task, that the users could use during the tasks to check, if they had successfully completed them. We did not track wether the users actually solved the tasks, since the survey was focussed on gathering qualitative feedback from the users. We did however track, how long it took each user to move on to the next task respectively.
+Subsequently, participants completed three additional tasks requiring the use of a custom, poorly documented tool with ambiguous option names. This was intended to demonstrate how the tool could support users when working with a proprietary command-line application they had not encountered before.
 
-The time spent per task, was generally measured using a websocket connection. Like this we could track the begin of the connection and the exact time it was closed, which would mean the user closed their browser or the tab the evaluation platform was running in. That allowed us to pause the timer until the user returned back to the task. However, the websocket connection would remain established, if the user only changed tabs or windows on their maschine. To also track this and pause the timer appropriately, we utilized standard Javascript APIs to track the state of the tab and send a pause signal to the backend if required.
+Participants were not required to successfully complete a task before moving on to the next one. However, returning to previous tasks was not possible, as the solution to each task was shown after proceeding. To allow participants to verify whether the tool had produced correct results, a verification command was provided for each task. This command could be used during the task to check whether it had been completed successfully. Since the survey focused on gathering qualitative feedback, task success was not recorded. However, the time taken by each participant to proceed to the next task was measured.
+The time spent on each task was primarily measured using a WebSocket connection. This made it possible to track when the connection was established and when it was closed, for example when a participant closed the browser or the evaluation platform tab. In such cases, the timer could be paused until the participant returned to the task. However, the WebSocket connection remained active if the participant merely switched tabs or windows. To account for this, standard JavaScript APIs were used to track the tab state and send a pause signal to the backend when necessary.
 
-To prevent users from manipulating the system, breaking out of the sandbox or messing with other users sandboxes we utilized securely configured containers. To secure the containers we used gVisor **insert ref** as a runtime, which runs the containers in their own micro \acp{VM} preventing a shared host kernel and thereby guranteeing an increased level of isolation. Forthermore network and internet access were disabled for the sandboxes to prevent any kind of inter-container communication.
+To prevent participants from manipulating the system, escaping the sandbox, or interfering with other participants' environments, securely configured containers were used. The containers were executed with gVisor **insert ref** as the runtime. gVisor provides an additional isolation layer by running containers in their own sandboxed environment, reducing reliance on the shared host kernel and thereby increasing isolation. In addition, network and internet access were disabled for the sandboxes to prevent inter-container communication.
 
-After finishing the tasks the users were provided with a total of twelve questions, with the first nine of them being multiple choice and the remaining three requiring free text responses.
-
+After completing the tasks, participants answered a total of twelve questions. The first nine questions were multiple-choice questions, while the remaining three required free-text responses.
 \subsection{System Evaluation}
-
 - Speed of the test drive, the entire test system (proxmox, ssd, zfs, ...)
-- how is hte start up time measured 
-
+- how is the start up time measured
 
 - Test catalog generation
 - Test Set generation
 - Sentence collection tool
+
+
