@@ -44,6 +44,25 @@ Despite the stronger leaderboard performance of some Qwen-derived variants, \tex
 The 3 families and how they work
 -> Input \& Prompting Optimizations
 
+In order to optimize results for each of the models, different modifications have been applied to the user queries and descriptions ingested.
+
+\subsubsection{jina-v5-retrieval Models (small/nano)}
+For the Jina-v5-retrieval models, the primary task-specific modification applied in this comparison was to prepend user queries with \textit{"Query: "} and tool and option descriptions with \textit{"Document: "}, following Jina's retrieval setup **source**.
+
+\subsubsection{embeddinggemma-300m}
+For \texttt{embeddinggemma-300m}, a task type must be specified so that the model can optimize embeddings for the intended retrieval setting **source**. In this evaluation, the task type \textit{"search result"} was used and prepended to each query together with the prefix \textit{"query: "}, yielding the format \textit{"task: search result | query: <query>"}. For the embedding of tool and option descriptions, a title-text structure was used in the form \textit{"title: <title> | text: <description>"} **source**. The title was defined as either the tool name or the combination of tool name and option, depending on the embedding target, and the text field contained the corresponding description.
+
+\subsubsection{Qwen3-Embedding-0.6B}
+For \texttt{Qwen3-Embedding-0.6B} custom prompt can be added before the query. While this allows for versatile testing, it makes some of th results highly circumstancial based on the prompt used. While one prompt might lead to good scores another prompt might have yielded worse ones. We therefore compared a total of three prompts for each, retrieving the tool and retrieving the options. For retriving the tool we compared the following prompts:
+
+\begin{enumerate}
+    \item Given a user command query, retrieve the matching command-line tool description.
+    \item Given a command description, find the matching command name.
+    \item Given a command, retrieve the corresponding tool description.
+\end{enumerate}
+
+
+
 
 \subsection{Comparison Results}
 
