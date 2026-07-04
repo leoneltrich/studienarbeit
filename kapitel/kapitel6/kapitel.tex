@@ -1,13 +1,53 @@
 \section{Comparison Of Embedding Models}\label{sec:comp_emb_models}
 
-Why Bi-encoder
+For the project only embedding modells of the bi-encoder family were compared. Models of the cross-encoder family were not taken into account. The reason for this is the fundamentally different way the two work. While for a bi-encoder model the embeddings of a target description can be calculated and stored **source**, providing a significant boost in retrieval, this is not possible for cross-encoder models. That is, due to the way data is processed using cross-encoder models. The calculated similarity score in this case, is based on the combined input of the target description and the user query **source**. This makes cross-encoders more accurate, but at the same time slower than bi-encoders **source**, leading to the decision to focus on a bi-encoder model as the embedding engine in this project.
 
-Literature talking about those models, maxbe some leader board
+\subsection{Initial Model Selection}
 
+To identify an initial selection of candidate models the leaderboard for the Englsih MTEB(eng, v2) was used~\cite{mteb_leaderboard}. Due to the memory constraints of NFR-3, the maximum size for models taken into consideration was set to one billion parameters. The top best ranked models are shown in table~\ref{tab:best_models}. The table is based directly on the leaderboard~\cite{mteb_leaderboard}.
+
+\begin{table}[htbp]
+\centering
+\caption{Embedding Models Comparison (MTEB Leaderboard)}
+\label{tab:best_models}
+\begin{tabularx}{\textwidth}{lXcr}
+\toprule
+\textbf{Rank} & \textbf{Model Name} & \textbf{Parameters} \\
+\midrule
+1 & infgrad/Jasper-Token-Compression-600M & 607M \\
+2 & jinaai/jina-embeddings-v5-text-small & 596M \\
+3 & jinaai/jina-embeddings-v5-omni-nano & 986M \\
+4 & jinaai/jina-embeddings-v5-text-nano & 212M \\
+5 & KaLM-Embedding/KaLM-embedding-multilingual-mini-instruct-v2.5 & 494M \\
+6 & Qwen/Qwen3-Embedding-0.6B & 596M \\
+7 & IEITYuan/Yuan-embedding-2.0-en & 596M \\
+8 & google/embeddinggemma-300m & 300M \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Excluded Models}
+
+While models such as \texttt{IEITYuan/Yuan-embedding-2.0-en}, \texttt{infgrad/Jasper-Token-Compression-600M}, and \texttt{KaLM-embedding-multilingual-mini-instruct-v2.5} rank highly on the leaderboard, they were deliberately excluded from our evaluation to maintain architectural diversity and mitigate structural redundancy.
+
+\texttt{IEITYuan/Yuan-embedding-2.0-en} and \texttt{infgrad/Jasper-Token-Compression-600M} are both directly derived from \texttt{Qwen3-Embedding-0.6B} **source**, \texttt{KaLM-embedding-multilingual-mini-instruct-v2.5} is built on a Qwen2 backbone **source**. Including all three in the evaluation would therefore increase representation of the broader Qwen family and make the comparison less focused on genuinely independent embedding designs.
+
+\subsubsection{Selected Models}
+
+Firstly, we selected two Jina models for comparison. However, rather than using the higher-ranked Jina-v5 text variants listed on the benchmark, we chose the \texttt{small} and \texttt{nano} retrieval variants. In this project, the model must map a natural-language user query to short descriptions of command-line tools and their options, making the task an asymmetric query-document retrieval problem. Jina explicitly distinguishes retrieval from text-matching and provides task-specific adapters for these settings **source**. Accordingly, the \texttt{small} and \texttt{nano} retrieval variants were selected instead of their respective text equivalents, because they are designed for retrieval-oriented semantic search, whereas text-matching is intended for symmetric similarity tasks such as paraphrase or duplicate detection **source**. This ensures that the Jina models are evaluated in the configuration most appropriate for the command-retrieval task rather than being chosen solely on the basis of aggregate benchmark rank.
+
+Google's \texttt{embeddinggemma-300m} was selected because it adds a smaller, independent comparison point to the evaluation while remaining competitive in the benchmark ranking. At 300M parameters, it offers a substantially lighter alternative to the larger models in the comparison, making it useful for assessing whether a more compact embedding model can still perform adequately on the command-retrieval task. This also improves the overall evaluation design by broadening the comparison beyond Qwen-related and Jina-based choices.
+
+Despite the stronger leaderboard performance of some Qwen-derived variants, \texttt{Qwen/Qwen3-Embedding-0.6B} was selected as the primary baseline because it provides the clearest and most interpretable reference point within that model family. Yuan is explicitly built on \texttt{Qwen3-Embedding-0.6B}, Jasper is a downstream derivative of the same line, and KaLM is built on a Qwen2 backbone, so using \texttt{Qwen/Qwen3-Embedding-0.6B} as the primary representative of that family helps avoid repeatedly sampling closely related variants with additional downstream modifications. This choice preserves analytical clarity by separating the base Qwen embedding architecture from later fine-tuning and architectural adaptations, allowing the comparison to focus more directly on differences between model families rather than refinements within a single lineage.
+
+\subsection{Model Specific Optimizations}
 The 3 families and how they work
 -> Input \& Prompting Optimizations
 
-The tests:
+
+\subsection{Comparison Results}
+
+The tests (table with everything):
 
 Loading speed
 
