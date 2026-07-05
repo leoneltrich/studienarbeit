@@ -17,6 +17,56 @@ Finally, the internal and external interfaces of the system were defined, and th
 
 \subsection{Model Selection}
 
+The selection of the retrieval model began with the definition of an initial candidate set. This set was derived from the ranked list of models with fewer than one billion parameters on the MTEB English v2 leaderboard~\cite{mteb_leaderboard} **source for MTEB benchmark**. As this benchmark provides a focused overview of models that perform strongly across a range of English-language embedding tasks, it served as an appropriate basis for the initial selection process. The initial candidate set was then refined to account for task suitability and architectural diversity, as described in Chapter~\ref{sec:comp_emb_models}. The aim of this step was to obtain a reduced set of at least three suitable candidate models for the subsequent evaluation stage. In addition, multiple quantized variants of the selected models were tested whenever they satisfied the available memory constraints, in order to account for potential performance differences between quantization levels of the same base model.
+
+In a second step, the remaining candidate models were compared using two retrieval tasks based on the validation set described in Chapter~\ref{sec:statistical_benchmarking}.
+
+The first task focused on tool retrieval. For this purpose, an example catalog was created for the \texttt{mv} and \texttt{cp} tools (see Appendix~\ref{appendix:tool_catalog_examples}). Using these catalogs, each sample query from the validation set was embedded and compared against the corresponding tool descriptions. The dot product between query and tool embeddings was then used to determine which of the two candidate tools received the higher similarity score. Each model variant was assigned an accuracy score corresponding to the percentage of cases in which the correct tool was ranked above the incorrect one.
+
+The second task focused on option retrieval and split into multiple steps. First, a baseline test was run utilizing an Otsu cutoff **source** to select the subset of the most relevant options. This baseline was evaluated on the raw sample queries from the validation set. During this stage, the following metrics were collected:
+
+**sources for those:**
+\begin{enumerate}
+    \item Precision: The ratio of correctly predicted options to the total predicted options. 
+    \begin{equation}
+        \text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+    \end{equation}
+    
+    \item Recall: The proportion of options actually required that were correctly identified by the model. 
+    \begin{equation}
+        \text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+    \end{equation}
+    
+    \item F1-Score: The harmonic mean of Precision and Recall, providing a balanced metric.
+    \begin{equation}
+        \text{F}_1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+    \end{equation}
+    
+    \item \ac{RSF}: A metric that measures how much the total number of predicted options deviates from the expected number, focusing purely on volume rather than whether the specific choices are correct.
+    \begin{equation}
+        \text{RSF} = \begin{cases}
+           1.0 & \text{if } |P| = 0 \text{ and } |E| = 0 \\
+           \max\left(\frac{|P|}{|E|}, \frac{|E|}{|P|}\right) & \text{if } |P| > 0 \text{ and } |E| > 0 \\
+           \big||E| - |P|\big| + 1.0 & \text{otherwise}
+        \end{cases}
+    \end{equation}
+    
+    \item Recall/\ac{RSF}: The ratio of Recall to the \ac{RSF} ($\frac{\text{Recall}}{\text{RSF}}$), used to evaluate a model's efficiency by penalizing accurate recall that relies on massive over-prediction.
+\end{enumerate}
+
+In addition to the baseline, several variations of the retrieval setup were evaluated in an exhaustive grid search, in which every possible combination of the selected variations was tested. For each model, the best-performing configuration across all tested combinations was retained, and the resulting best scores were used to construct a final comparison table. This table formed the basis for selecting the model that performed best on the available data.
+
+The following three variations were tested individually and in all possible combinations:
+
+\begin{enumerate}
+    \item Appending the target tool to the input query in the format \textit{"<query> Tool: <tool>"}, since this information is already available at the stage where command options are retrieved.
+    \item AAdding a title to the option description. Instead of embedding only the description itself, the input was reformulated as \textit{"title: <tool> <flag> | text: <description>"}. 
+    \item Appending catalog keywords to the option description in the format \textit{"<description> Keywords: <keywords>"} in order to test whether keyword augmentation improves retrieval performance.
+\end{enumerate}
+
+Because the project targets an efficient retrieval system, additional efficiency-related metrics were collected alongside the retrieval quality metrics. These included peak memory consumption during embedding, model load time, and average throughput in tokens per second. To ensure accurate and isolated measurements, each benchmark run was executed in a fresh subprocess, preventing interference from previous model evaluations. Peak memory usage was obtained directly from \texttt{/proc/self/status} via the \texttt{VmHWM} field, which reports the process high-water mark~\cite{linux_proc_status}. Model load time was measured with a timer started immediately before model loading and stopped directly after context initialization, thereby excluding unrelated benchmark setup overhead. Throughput was calculated by dividing the total number of processed tokens by the cumulative time spent exclusively in the decoding stage, while excluding tokenization and all post-processing steps.
+
+
 \subsection{Benchmarking}
 After the system design and implementation methodology had been established, the next methodological step was to define how the system would be evaluated technically. This section is divided into statistical benchmarking, which focuses on dataset generation and utilization, and performance benchmarking, which outlines the benchmarking environment used.
 
