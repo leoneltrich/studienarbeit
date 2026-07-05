@@ -10,11 +10,6 @@ To determine which architectural pattern best fit the requirements, different pa
 
 Finally, the internal and external interfaces of the system were defined, and the technologies most suitable for implementing the system were selected. The technology selection was based on qualitative and quantitative criteria. This concluded the groundwork for the system implementation.
 
-% Theoretical Design -> Requirements, Constraints, Modelled using BPMN & C4
-\subsection{Implementation}
-% Implementation -> Based on the Theoretical design, Based on Benchmarks (Otsu (alpha & Multiplier), Embedding models, Different ways of concatenating and optimizing descriptions and keywords, Weights of keywords BM25, Bi-grams & Tri-grams)
-%
-
 \subsection{Model Selection}
 
 The selection of the retrieval model began with the definition of an initial candidate set. This set was derived from the ranked list of models with fewer than one billion parameters on the MTEB English v2 leaderboard~\cite{mteb_leaderboard} **source for MTEB benchmark**. As this benchmark provides a focused overview of models that perform strongly across a range of English-language embedding tasks, it served as an appropriate basis for the initial selection process. The initial candidate set was then refined to account for task suitability and architectural diversity, as described in Chapter~\ref{sec:comp_emb_models}. The aim of this step was to obtain a reduced set of at least three suitable candidate models for the subsequent evaluation stage. In addition, multiple quantized variants of the selected models were tested whenever they satisfied the available memory constraints, in order to account for potential performance differences between quantization levels of the same base model.
@@ -54,7 +49,7 @@ The second task focused on option retrieval and split into multiple steps. First
     \item Recall/\ac{RSF}: The ratio of Recall to the \ac{RSF} ($\frac{\text{Recall}}{\text{RSF}}$), used to evaluate a model's efficiency by penalizing accurate recall that relies on massive over-prediction.
 \end{enumerate}
 
-In addition to the baseline, several variations of the retrieval setup were evaluated in an exhaustive grid search, in which every possible combination of the selected variations was tested. For each model, the best-performing configuration across all tested combinations was retained, and the resulting best scores were used to construct a final comparison table. This table formed the basis for selecting the model that performed best on the available data.
+In addition to the baseline, several variations of the retrieval setup were evaluated in an exhaustive grid search, in which every possible combination of the selected variations was tested. For each model, the best-performing configuration (measured by the Recall/\ac{RSF}) across all tested combinations was retained, and the resulting best scores were used to construct a final comparison table. This table formed the basis for selecting the model that performed best on the available data.
 
 The following three variations were tested individually and in all possible combinations:
 
@@ -66,6 +61,7 @@ The following three variations were tested individually and in all possible comb
 
 Because the project targets an efficient retrieval system, additional efficiency-related metrics were collected alongside the retrieval quality metrics. These included peak memory consumption during embedding, model load time, and average throughput in tokens per second. To ensure accurate and isolated measurements, each benchmark run was executed in a fresh subprocess, preventing interference from previous model evaluations. Peak memory usage was obtained directly from \texttt{/proc/self/status} via the \texttt{VmHWM} field, which reports the process high-water mark~\cite{linux_proc_status}. Model load time was measured with a timer started immediately before model loading and stopped directly after context initialization, thereby excluding unrelated benchmark setup overhead. Throughput was calculated by dividing the total number of processed tokens by the cumulative time spent exclusively in the decoding stage, while excluding tokenization and all post-processing steps.
 
+The final model selection was performed using a weighted decision matrix incorporating memory consumption, token processing speed, initial load time, \ac{RSF}, \ac{RSF}/Recall, precision, recall, and F1-score. Each model was ranked for every criterion, with higher ranks assigned to better-performing models. The resulting ranks were multiplied by predefined weights reflecting the relative importance of each criterion, and the weighted values were summed to produce a final score for each model. The model achieving the highest overall score was then chosen as the final retrieval model.
 
 \subsection{Benchmarking}
 After the system design and implementation methodology had been established, the next methodological step was to define how the system would be evaluated technically. This section is divided into statistical benchmarking, which focuses on dataset generation and utilization, and performance benchmarking, which outlines the benchmarking environment used.
