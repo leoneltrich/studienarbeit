@@ -5,7 +5,7 @@ The implementation of the tool was based on the system design and technology dec
 
 \subsection{Extended Finite State Machine (EFSM)}
 
-\subsection{Otsu Cutoff}
+\subsection{Otsu Cutoff Optimizations}
 
 \subsection{Compilation}
 
@@ -13,7 +13,7 @@ To ensure portability, performance and avoid compilation issues, we did not use 
 
 \texttt{CFLAGS="-Du\_int8\_t=uint8\_t -Du\_int16\_t=uint16\_t -Du\_int64\_t=uint64\_t" RUSTFLAGS="-C target-feature=+avx,+avx2,+fma,+f16c,+bmi2" cargo zigbuild --release --target x86\_64-unknown-linux-musl}
 
-The command can be split into a total of five section:
+The command can be split into a total of five sections:
 
 \begin{enumerate}
     \item \textbf{CFLAGS="-Du\_int8\_t=uint8\_t -Du\_int16\_t=uint16\_t -Du\_int64\_t=uint64\_t"} 
