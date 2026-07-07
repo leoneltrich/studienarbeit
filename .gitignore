@@ -331,6 +331,7 @@ TSWLatexianTemp*
 *.aux
 *.log
 *.b*
+!*.bib
 *.l*
 *.fls
 *.toc
