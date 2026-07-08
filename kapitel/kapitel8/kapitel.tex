@@ -2,6 +2,41 @@
 
 \subsection{Technical Benchmarking}
 
+The technical benchmarking helped us to gain an overview of the overall performance of the system created. In the test run evaluated the following metrics were achieved:
+
+Tool selection:
+298+191 out of 609 times the correct tool was identified
+56+64 out of 609 times the wrong tool was identified
+
+Option matches for queries where the correct tool was determined:
+72 out of 298 times all the required options were matched successfully without error
+152 out of 298 times at least one of the required options was matched (on average 50.11\% of options required were included)
+74 out of 298 times non of the required options were suggested.
+
+for the queries with 100\% option recall the number of suggested options was of by an RSF of 1.67
+For the queries with 50.11\% recall it was 1.68
+for 0\% it was 1.64
+
+Resolution failures:
+
+out of 255 resolution failures 64 had teh wrong tool selected and 191 had the right tool but conflicting options
+
+When the wrong tool was picked the command retrieval failed in 64 out of 64+56 cases
+When the right tool was picked the command retrieval failed in 191 out of 191+298 cases
+
+
+Command Execution Time (ms):
+Average: 563.21 ms
+Minimum (Fastest Query): 486.53 ms
+Maximum (Slowest Query): 1570.54 ms
+Slow Runs (>1000ms): 5 out of 609 (0.82\% of test set)
+
+Peak Memory Usage (HWM / RSS):
+Average: 674425.00 KB (658.62 MB)
+Minimum (Lowest memory footprint): 663108.00 KB (647.57 MB)
+Maximum (Highest memory footprint): 688676.00 KB (672.54 MB)
+
+
 SSD runs in ZFS pool in proxmox, For performance:
 zfs set sync=disabled rpool/data/vm-500-disk-1
 
