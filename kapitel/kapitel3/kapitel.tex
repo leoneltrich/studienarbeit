@@ -82,7 +82,7 @@ e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
 
 Here, $Z$ is the z-score for a 90\% confidence level, $N$ is the sample size, and $p$ represents the empirical success rate recorded during the benchmark.
 
-\subsubsection{Performance Benchmarking}
+\subsubsection{Performance Benchmarking}\label{sec:performance_bench}
 Since the system follows a local-first approach, benchmarking must not be limited to the expected success rate alone. Resource usage and execution speed also need to be taken into account. Therefore, the execution environment was defined in table~\ref{tab}. The VM described there had several standard performance-related configuration options enabled manually to utilize the provided hardware as effectively as possible. The measures taken were:
 
 \begin{enumerate}
@@ -122,7 +122,13 @@ The time spent on each task was primarily measured using a WebSocket connection.
 To prevent participants from manipulating the system, escaping the sandbox, or interfering with other participants' environments, securely configured containers were used. The containers were executed with gVisor **insert ref** as the runtime. gVisor provides an additional isolation layer by running containers in their own sandboxed environment, reducing reliance on the shared host kernel and thereby increasing isolation. In addition, network and internet access were disabled for the sandboxes to prevent inter-container communication.
 
 After completing the tasks, participants answered a total of twelve questions. The first nine questions were multiple-choice questions, while the remaining three required free-text responses.
+
 \subsection{System Evaluation}
+
+To evaluate the final system from a technical point of view, an automated benchmark gathering data was run based on the test set created in section \ref{sec:statistical_benchmarking}. The creation of the system was based entirely on the validation set, was done to avoid fitting the system to the final test data. This allows to realistically evaluate it on previously unseen data. The benchmark was run with a total of three tool catalogs stored in the system's database and on the system described in section~\ref{sec:performance_bench}. 
+
+
+
 - Speed of the test drive, the entire test system (proxmox, ssd, zfs, ...)
 - how is the start up time measured
 
