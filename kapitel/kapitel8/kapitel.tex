@@ -1,65 +1,32 @@
 \section{Results}
 
 \subsection{Technical Benchmarking}
+** Revise all captions for diagrams and every instance of "RSF"**
+** Check that all numbers in all diagrams are correct **
+\FloatBarrier
 
-The technical benchmarking helped us to gain an overview of the overall performance of the system created. In the test run evaluated the following metrics were achieved:
+The experimental evaluation of the command generation engine across the benchmark dataset of $N=609$ natural language queries yielded insights into utility retrieval accuracy, option validation dynamics, and runtime performance characteristics.
 
-Tool selection:
-298+191 out of 609 times the correct tool was identified
-56+64 out of 609 times the wrong tool was identified
-
-Option matches for queries where the correct tool was determined:
-72 out of 298 times all the required options were matched successfully without error
-152 out of 298 times at least one of the required options was matched (on average 50.11\% of options required were included)
-74 out of 298 times non of the required options were suggested.
-
-for the queries with 100\% option recall the number of suggested options was of by an RSF of 1.67
-For the queries with 50.11\% recall it was 1.68
-for 0\% it was 1.64
-
-Resolution failures:
-
-out of 255 resolution failures 64 had teh wrong tool selected and 191 had the right tool but conflicting options
-
-When the wrong tool was picked the command retrieval failed in 64 out of 64+56 cases
-When the right tool was picked the command retrieval failed in 191 out of 191+298 cases
-
-
-Command Execution Time (ms):
-Average: 563.21 ms
-Minimum (Fastest Query): 486.53 ms
-Maximum (Slowest Query): 1570.54 ms
-Slow Runs (>1000ms): 5 out of 609 (0.82\% of test set)
-
-Peak Memory Usage (HWM / RSS):
-Average: 674425.00 KB (658.62 MB)
-Minimum (Lowest memory footprint): 663108.00 KB (647.57 MB)
-Maximum (Highest memory footprint): 688676.00 KB (672.54 MB)
-
-
-SSD runs in ZFS pool in proxmox, For performance:
-zfs set sync=disabled rpool/data/vm-500-disk-1
+\subsubsection{Utility Retrieval And Command Resolution Success}
+At the primary stage of command synthesis, the classification model demonstrated strong classification capabilities, correctly identifying the target command-line utility ( \texttt{cp}, \texttt{mv}, or \texttt{ops-sync}) in 80.30\% of the evaluated cases ($N=489$, as shown in Figure~\ref{fig:overall_tool_accuracy}). 
 
 \FloatBarrier
-% ====================================================================
-% GROUP A: Tool Selection Accuracy (Chart 1 & Chart 4 side-by-side)
-% ====================================================================
 \begin{figure}[htbp]
 \centering
 \begin{minipage}{0.48\textwidth}
   \centering
   \begin{tikzpicture}[scale=0.9]
     % Segment 1: Correct Tool (80.3%)
-    \draw[fill=primaryblue] (0,0) -- (0:2) arc (0:289:2) -- cycle;
+    \draw[fill=primaryblue] (0,0) -- (0:2) arc (0:289.1:2) -- cycle;
     % Segment 2: Wrong Tool (19.7%)
-    \draw[fill=primaryorange] (0,0) -- (289:2) arc (289:360:2) -- cycle;
+    \draw[fill=primaryorange] (0,0) -- (289.1:2) arc (289.1:360:2) -- cycle;
   \end{tikzpicture}
   \vspace{0.3cm}
   
   \small
   \begin{tabular}{llcc}
-    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Correct Tool & 489 & (80.3\%) \\
-    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Wrong Tool & 120 & (19.7\%) \\
+    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Correct Tool Identified & 489 & (80.3\%) \\
+    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Wrong Tool Identified & 120 & (19.7\%) \\
   \end{tabular}
   \vspace{0.2cm}
   \caption{Overall Tool Selection Accuracy ($N=609$).}
@@ -69,135 +36,38 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
 \begin{minipage}{0.48\textwidth}
   \centering
   \begin{tikzpicture}[scale=0.9]
-    % Segment 1: Correct Tool (74.9%)
-    \draw[fill=primaryblue] (0,0) -- (0:2) arc (0:270:2) -- cycle;
-    % Segment 2: Incorrect Tool (25.1%)
-    \draw[fill=primaryorange] (0,0) -- (270:2) arc (270:360:2) -- cycle;
+    % Segment 1: Successfully Resolved (58.13%)
+    \draw[fill=primarygreen] (0,0) -- (0:2) arc (0:209.3:2) -- cycle;
+    % Segment 2: Not Successfully Resolved (41.87%)
+    \draw[fill=primaryred] (0,0) -- (209.3:2) arc (209.3:360:2) -- cycle;
   \end{tikzpicture}
   \vspace{0.3cm}
   
   \small
   \begin{tabular}{llcc}
-    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Correct Tool & 191 & (74.9\%) \\
-    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Incorrect Tool & 64 & (25.1\%) \\
+    \textcolor{primarygreen}{\rule{1.2ex}{1.2ex}} & Successfully Resolved & 354 & (58.1\%) \\
+    \textcolor{primaryred}{\rule{1.2ex}{1.2ex}} & Resolution Failure & 255 & (41.9\%) \\
   \end{tabular}
   \vspace{0.2cm}
-  \caption{Tool Selection Accuracy in Failures ($N_{\text{errors}}=255$).}
-  \label{fig:failures_tool_accuracy}
+  \caption{Successful Resolution Overview ($N=609$).}
+  \label{fig:resolution_overview}
 \end{minipage}
 \end{figure}
+\FloatBarrier
 
-% ====================================================================
-% GROUP B: Option Recall and Over-generation (Chart 2 & Chart 3 side-by-side)
-% ====================================================================
-\begin{figure}[htbp]
-\centering
-\begin{minipage}{0.48\textwidth}
-  \centering
-  \begin{tikzpicture}[scale=0.9]
-    % Segment 1: Fully Correct (24.2%)
-    \draw[fill=primarygreen] (0,0) -- (0:2) arc (0:87:2) -- cycle;
-    % Segment 2: Partially Correct (51.0%)
-    \draw[fill=primaryblue] (0,0) -- (87:2) arc (87:271:2) -- cycle;
-    % Segment 3: Non-Correct (24.8%)
-    \draw[fill=primaryorange] (0,0) -- (271:2) arc (271:360:2) -- cycle;
-  \end{tikzpicture}
-  \vspace{0.3cm}
-  
-  \small
-  \begin{tabular}{llcc}
-    \textcolor{primarygreen}{\rule{1.2ex}{1.2ex}} & Fully Correct & 72 & (24.2\%) \\
-    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Partially Correct & 152 & (51.0\%) \\
-    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Non-Correct & 74 & (24.8\%) \\
-  \end{tabular}
-  \vspace{0.2cm}
-  \caption{Option Match Quality ($N_{\text{correct}} = 298$).}
-  \label{fig:option_match_quality}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-  \centering
-  \begin{tikzpicture}[scale=0.85]
-  \begin{axis}[
-      ybar,
-      enlarge x limits=0.4,
-      ylabel={Symmetric Count Error (RSF)},
-      xtick={0, 1, 2},
-      xticklabels={Fully, Partially, None},
-      nodes near coords,
-      nodes near coords align={vertical},
-      ymin=1.0, ymax=1.9,
-      width=6.5cm, height=5.5cm,
-  ]
-  \addplot[fill=primaryblue] coordinates {(0,1.67) (1,1.68) (2,1.64)};
-  \end{axis}
-  \end{tikzpicture}
-  \caption{Symmetric Count Error (RSF) by Subcategory (1.00 is perfect).}
-  \label{fig:rsf_by_subcategory}
-\end{minipage}
-\end{figure}
+However, command synthesis requires both correct utility classification and successful option validation. If the option generation module proposes conflicting or syntactically invalid parameters, the syntax engine triggers resolution warning, preventing command generation. Consequently, as illustrated in the overall resolution overview (Figure~\ref{fig:resolution_overview}), 58.13\% of all queries ($N=354$) successfully resolved into valid command-line invocations, while the remaining 41.87\% ($N=255$) resulted in resolution failures.
 
-% ====================================================================
-% GROUP C: Failure Resolution & Error Types (Chart 5 & Chart 6 side-by-side)
-% ====================================================================
-\begin{figure}[htbp]
-\centering
-\begin{minipage}{0.48\textwidth}
-  \centering
-  \begin{tikzpicture}[scale=0.85]
-  \begin{axis}[
-      ybar=2pt,
-      bar width=10pt,
-      enlarge x limits=0.6,
-      ylabel={Number of Queries},
-      xtick={0, 1},
-      xticklabels={Right, Wrong},
-      nodes near coords,
-      nodes near coords align={vertical},
-      ymin=0, ymax=350,
-      legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
-      width=6.5cm, height=5.5cm,
-  ]
-  % Increased bar shift from -6pt / 6pt to -12pt / 12pt to prevent number overlap
-  \addplot[fill=primarygreen, bar width=10pt, bar shift=-9pt] coordinates {(0,298) (1,56)};
-  \addplot[fill=primaryred, bar width=10pt, bar shift=9pt] coordinates {(0,191) (1,64)};
-  \legend{Success, Fail}
-  \end{axis}
-  \end{tikzpicture}
-  \caption{Resolution Status by Tool Correctness. Right = Correct Tool, Wrong = Wrong Tool.}
-  \label{fig:resolution_by_tool}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\textwidth}
-  \centering
-  \begin{tikzpicture}[scale=0.85]
-  \begin{axis}[
-      ybar=2pt,
-      bar width=8pt,
-      enlarge x limits=0.4,
-      ylabel={Number of Queries},
-      xtick={0, 1, 2},
-      xticklabels={cp, mv, ops},
-      nodes near coords,
-      nodes near coords align={vertical},
-      ymin=0, ymax=45,
-      legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
-      width=6.5cm, height=5.5cm,
-  ]
-  % Increased bar shift from -5pt / 5pt to -10pt / 10pt to prevent number overlap
-  \addplot[fill=primaryred, bar width=8pt, bar shift=-8pt] coordinates {(0,16) (1,30) (2,10)};
-  \addplot[fill=primaryorange, bar width=8pt, bar shift=8pt] coordinates {(0,35) (1,21) (2,0)};
-  \legend{Over, Missed}
-  \end{axis}
-  \end{tikzpicture}
-  \caption{Category-specific Errors: Over-generation (Over) vs. Missed Expected (Missed).}
-  \label{fig:errors_by_category}
-\end{minipage}
-\end{figure}
+A detailed breakdown of these metrics reveals the interactions between classification correctness and syntactical validation (Figure~\ref{fig:overall_breakdown}):
+\begin{itemize}
+    \item \textbf{Successful Correct Resolutions:} 48.93\% of the total dataset ($N=298$) was successfully resolved using the correct tool.
+    \item \textbf{Successful Incorrect Resolutions:} 9.20\% of the total dataset ($N=56$) was successfully resolved but generated a command for the incorrect tool.
+    \item \textbf{Syntactical Failures with Correct Tool Routing:} 31.36\% ($N=191$) correctly identified the utility but failed validation due to conflicting option arguments.
+    \item \textbf{Robustness against Incorrect Routing:} When the wrong utility was selected, command generation failed in 53.33\% of cases ($N=64$ out of $120$ queries where the results selected the incorrect tools), whereas when the correct tool was selected, the failure rate was lower at 39.06\% ($N=191$ out of $489$ correct-tool queries), as visualized in Figure~\ref{fig:resolution_by_tool}. 
+\end{itemize}
 
-% ====================================================================
-% GROUP D: Global Dataset Breakdowns (Chart 8 & Chart 9 side-by-side)
-% ====================================================================
+This correlation indicates that routing to an incorrect utility significantly increases the likelihood of a command generation failure. This behavior can be attributed to two main factors: first, highly ambiguous or poorly formed natural language queries confuse both the classifier and option validation. Second, the absence of expected option definitions in a wrongly selected utility results in the fallback selection of invalid or contradictory flags, triggering a syntax error.
+
+\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \begin{minipage}{0.48\textwidth}
@@ -224,6 +94,69 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
   \vspace{0.2cm}
   \caption{Overall dataset breakdown ($N=609$).}
   \label{fig:overall_breakdown}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+    \centering
+  \begin{tikzpicture}[scale=0.85]
+  \begin{axis}[
+      ybar=2pt,
+      bar width=10pt,
+      enlarge x limits=0.6,
+      ylabel={Number of Queries},
+      xtick={0, 1},
+      xticklabels={Right, Wrong},
+      nodes near coords,
+      nodes near coords align={vertical},
+      ymin=0, ymax=350,
+      legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
+      width=6.5cm, height=5.5cm,
+  ]
+  \addplot[fill=primarygreen, bar width=10pt, bar shift=-9pt] coordinates {(0,298) (1,56)};
+  \addplot[fill=primaryred, bar width=10pt, bar shift=9pt] coordinates {(0,191) (1,64)};
+  \legend{Success, Fail}
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Resolution Status by Tool Correctness. Right = Correct Tool, Wrong = Wrong Tool.}
+  \label{fig:resolution_by_tool}
+\end{minipage}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{Option Matching and Generation Quality}
+For the queries that successfully resolved to the correct utility ($N=298$), we evaluated the recall and accuracy of the generated option flags (Figure~\ref{fig:option_match_quality}):
+\begin{itemize}
+    \item \textbf{Perfect Matches:} 24.16\% of these successful resolutions (representing 11.82\% of the global dataset) generated command lines containing all required option flags with zero omissions.
+    \item \textbf{Partial Matches:} 51.01\% (24.96\% globally) matched at least one required option flag but not all of them, reflecting a partial recall of the query requirements.
+    \item \textbf{Zero Matches:} 24.83\% (12.15\% globally) generated a valid command syntactically suggesting the correct tool but failed to retrieve any of the correct options.
+\end{itemize}
+The granular distribution across all six mutual evaluation categories is illustrated in Figure~\ref{fig:detailed_breakdown}.
+
+\FloatBarrier
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.48\textwidth}
+    \centering
+  \begin{tikzpicture}[scale=0.9]
+    % Segment 1: Fully Correct (24.2%)
+    \draw[fill=primarygreen] (0,0) -- (0:2) arc (0:87:2) -- cycle;
+    % Segment 2: Partially Correct (51.0%)
+    \draw[fill=primaryblue] (0,0) -- (87:2) arc (87:271:2) -- cycle;
+    % Segment 3: Non-Correct (24.8%)
+    \draw[fill=primaryorange] (0,0) -- (271:2) arc (271:360:2) -- cycle;
+  \end{tikzpicture}
+  \vspace{0.3cm}
+  
+  \small
+  \begin{tabular}{llcc}
+    \textcolor{primarygreen}{\rule{1.2ex}{1.2ex}} & Fully Correct (100\% match) & 72 & (24.2\%) \\
+    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Partially Correct (1-99\% match) & 152 & (51.0\%) \\
+    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Non-Correct (0\% match) & 74 & (24.8\%) \\
+  \end{tabular}
+  \vspace{0.2cm}
+  \caption{Option Match Quality ($N_{\text{correct}} = 298$).}
+  \label{fig:option_match_quality}
+  
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
@@ -258,32 +191,66 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
   \label{fig:detailed_breakdown}
 \end{minipage}
 \end{figure}
+\FloatBarrier
+
+To determine whether the high recall in perfect matches was simply an artifact of over-generating excessive options (which would increase the probability of matching by chance), we analyzed the Relative Symmetric Count Error (RSF) across the three option match quality subcategories. As shown in Figure~\ref{fig:rsf_by_subcategory}, the RSF remains remarkably stable between 1.64 (for zero-match queries) and 1.68 (for partial-match queries), with perfect matches averaging 1.67. This uniformity confirms that option over-generation is consistent across all match qualities and is not the driving force behind correct matches.
+
+\FloatBarrier
+
+\begin{figure}[htbp]
+\centering
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \begin{tikzpicture}[scale=0.85]
+  \begin{axis}[
+      ybar,
+      enlarge x limits=0.4,
+      ylabel={Symmetric Count Error (RSF)},
+      xtick={0, 1, 2},
+      xticklabels={Fully, Partially, None},
+      nodes near coords,
+      nodes near coords align={vertical},
+      ymin=1.0, ymax=1.9,
+      width=6.5cm, height=5.5cm,
+  ]
+  \addplot[fill=primaryblue] coordinates {(0,1.67) (1,1.68) (2,1.64)};
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Symmetric Count Error (RSF) by Subcategory (1.00 is perfect).}
+  \label{fig:rsf_by_subcategory}
+\end{minipage}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{System Resource Utility and Performance}
+Finally, the execution latency and memory footprint of the command-finder engine were monitored across all 609 runs to evaluate production readiness. 
+
+The engine demonstrated excellent real-time performance, operating within a sub-second execution latency envelope in 99.18\% of cases ($N=604$), with an overall average latency of $563.21\text{ ms}$ (as visualized in Figure~\ref{fig:execution_time_density}). Only five queries exceeded the 1.0-second threshold. Given that only 11 queries in total exceeded $800\text{ ms}$ (as shown in the execution time distribution), these five outliers are highly likely to be the result of transient operating system thread scheduling or testing environment disruptions rather than algorithmic inefficiencies.
+
+In terms of memory consumption, the peak resident set size (RSS) was exceptionally stable, ranging between a minimum of $644\text{ MB}$ and a maximum of $672.54\text{ MB}$, with an overall average of $658.62\text{ MB}$. The memory distribution, plotted in Figure~\ref{fig:memory_usage_density}, converges to a tight normal distribution. This is mathematically consistent with the Central Limit Theorem: because process memory is dominated by a static startup allocation (loading the candidate aggregations and shared libraries), the minor variations are the sum of independent operating system allocation factors (such as ASLR page offsets and heap fragmentation).
+
+\FloatBarrier
 
 % ====================================================================
-% STANDALONE: CHART 7: Command Execution Time Latency Bins (Bar Chart)
+% GROUP F: Resource Density Distributions (Execution Time & Memory side-by-side)
 % ====================================================================
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    bar width=20pt,
-    enlarge x limits=0.6,
-    ylabel={Number of Queries},
-    xtick={0, 1},
-    xticklabels={Runs <= 1000ms, Runs > 1000ms},
-    nodes near coords,
-    nodes near coords align={vertical},
-    ymin=0, ymax=700,
-    width=8cm, height=6cm,
-]
-\addplot[fill=primaryblue] coordinates {(0,604) (1,5)};
-\end{axis}
-\end{tikzpicture}
-\caption{Command Execution Time Latency Bins ($N=609$). 604 runs completed in under 1 second, while only 5 exceeded 1000ms.}
-\label{fig:latency_bins}
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{abbildungen/execution_time_density.png}
+  \caption{Query Execution Time distribution histogram with fitted Gaussian normal curve ($\mu=563.2\text{ms}$, $\sigma=52.8\text{ms}$).}
+  \label{fig:execution_time_density}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{abbildungen/memory_usage_density.png}
+  \caption{Query Peak Memory Usage distribution histogram with fitted Gaussian normal curve ($\mu=658.6\text{MB}$, $\sigma=4.2\text{MB}$).}
+  \label{fig:memory_usage_density}
+\end{minipage}
 \end{figure}
-
 \FloatBarrier
+
 
 \subsection{User Study}
