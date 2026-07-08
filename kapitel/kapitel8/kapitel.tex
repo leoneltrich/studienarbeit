@@ -41,7 +41,6 @@ SSD runs in ZFS pool in proxmox, For performance:
 zfs set sync=disabled rpool/data/vm-500-disk-1
 
 \FloatBarrier
-
 % ====================================================================
 % GROUP A: Tool Selection Accuracy (Chart 1 & Chart 4 side-by-side)
 % ====================================================================
@@ -121,16 +120,16 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
   \begin{tikzpicture}[scale=0.85]
   \begin{axis}[
       ybar,
-      enlargelimits=0.15,
+      enlarge x limits=0.4,
       ylabel={Symmetric Count Error (RSF)},
-      symbolic x coords={Fully, Partially, None},
-      xtick=data,
+      xtick={0, 1, 2},
+      xticklabels={Fully, Partially, None},
       nodes near coords,
       nodes near coords align={vertical},
-      ymin=1.0, ymax=2.0,
+      ymin=1.0, ymax=1.9,
       width=6.5cm, height=5.5cm,
   ]
-  \addplot[fill=primaryblue] coordinates {(Fully,1.67) (Partially,1.68) (None,1.64)};
+  \addplot[fill=primaryblue] coordinates {(0,1.67) (1,1.68) (2,1.64)};
   \end{axis}
   \end{tikzpicture}
   \caption{Symmetric Count Error (RSF) by Subcategory (1.00 is perfect).}
@@ -147,18 +146,21 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
   \centering
   \begin{tikzpicture}[scale=0.85]
   \begin{axis}[
-      ybar,
+      ybar=2pt,
       bar width=10pt,
+      enlarge x limits=0.6,
       ylabel={Number of Queries},
-      symbolic x coords={Right, Wrong},
-      xtick=data,
+      xtick={0, 1},
+      xticklabels={Right, Wrong},
       nodes near coords,
       nodes near coords align={vertical},
+      ymin=0, ymax=350,
       legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
       width=6.5cm, height=5.5cm,
   ]
-  \addplot[fill=primarygreen] coordinates {(Right,298) (Wrong,56)};
-  \addplot[fill=primaryred] coordinates {(Right,191) (Wrong,64)};
+  % Increased bar shift from -6pt / 6pt to -12pt / 12pt to prevent number overlap
+  \addplot[fill=primarygreen, bar width=10pt, bar shift=-9pt] coordinates {(0,298) (1,56)};
+  \addplot[fill=primaryred, bar width=10pt, bar shift=9pt] coordinates {(0,191) (1,64)};
   \legend{Success, Fail}
   \end{axis}
   \end{tikzpicture}
@@ -170,18 +172,21 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
   \centering
   \begin{tikzpicture}[scale=0.85]
   \begin{axis}[
-      ybar,
+      ybar=2pt,
       bar width=8pt,
+      enlarge x limits=0.4,
       ylabel={Number of Queries},
-      symbolic x coords={cp, mv, ops},
-      xtick=data,
+      xtick={0, 1, 2},
+      xticklabels={cp, mv, ops},
       nodes near coords,
       nodes near coords align={vertical},
+      ymin=0, ymax=45,
       legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
       width=6.5cm, height=5.5cm,
   ]
-  \addplot[fill=primaryred] coordinates {(cp,16) (mv,30) (ops,10)};
-  \addplot[fill=primaryorange] coordinates {(cp,35) (mv,21) (ops,0)};
+  % Increased bar shift from -5pt / 5pt to -10pt / 10pt to prevent number overlap
+  \addplot[fill=primaryred, bar width=8pt, bar shift=-8pt] coordinates {(0,16) (1,30) (2,10)};
+  \addplot[fill=primaryorange, bar width=8pt, bar shift=8pt] coordinates {(0,35) (1,21) (2,0)};
   \legend{Over, Missed}
   \end{axis}
   \end{tikzpicture}
@@ -263,15 +268,16 @@ zfs set sync=disabled rpool/data/vm-500-disk-1
 \begin{axis}[
     ybar,
     bar width=20pt,
+    enlarge x limits=0.6,
     ylabel={Number of Queries},
-    symbolic x coords={Runs <= 1000ms, Runs > 1000ms},
-    xtick=data,
+    xtick={0, 1},
+    xticklabels={Runs <= 1000ms, Runs > 1000ms},
     nodes near coords,
     nodes near coords align={vertical},
-    ymin=0, ymax=650,
+    ymin=0, ymax=700,
     width=8cm, height=6cm,
 ]
-\addplot[fill=primaryblue] coordinates {(Runs <= 1000ms,604) (Runs > 1000ms,5)};
+\addplot[fill=primaryblue] coordinates {(0,604) (1,5)};
 \end{axis}
 \end{tikzpicture}
 \caption{Command Execution Time Latency Bins ($N=609$). 604 runs completed in under 1 second, while only 5 exceeded 1000ms.}
