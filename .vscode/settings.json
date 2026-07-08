@@ -1,4 +1,29 @@
 {
+        // Set the primary language for checking
+    "ltex.language": "en-US",
+
+    // Define which files LTeX+ should check
+    "ltex.enabled": [
+        "latex",
+        "bibtex"
+    ],
+
+    // Tell LTeX+ to look at your bib file so it ignores valid citation keys
+    "ltex.additionalRules.languageModel": "", 
+    "ltex.dictionary": {
+        "en-US": [
+        "Ravensburg",
+        "Friedrichshafen",
+        "doubleSlash"
+        ]
+    },
+
+    // Ignore specific LaTeX commands and environments from spellchecking
+    "ltex.hiddenFalsePositives": {},
+
+    // Performance tweak: Check the document when you save, rather than on every keystroke
+    "ltex.diagnosticSeverity": "information",
+    "ltex.completionEnabled": true,
     "editor.wordWrap": "wordWrapColumn",
     "editor.wordWrapColumn": 90,
     "editor.rulers": [90],
