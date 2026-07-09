@@ -1,6 +1,36 @@
 \section{Literature Review}
 The following sections examine the most relevant natural-language-to-Bash systems. The reviewed work shows that command generation is possible, but also identifies limitations related to ambiguity, training data, correctness, extensibility, and resource usage. These limitations motivate the more restricted retrieval-based approach investigated in this thesis.
 
+\subsection{Source Selection}
+
+A publication was considered suitable when it addressed at least one central aspect of the
+project. This included translating natural-language descriptions into Bash commands, retrieving technical information using natural-language queries, representing command-line syntax, or evaluating the correctness of generated commands.
+
+Particular attention was given to the following publications:
+
+\begin{itemize}
+    \item \textit{NL2Bash: A Corpus and Semantic Parser for Natural Language Interface to the Linux Operating System} was selected because it defines one of the central datasets and baseline approaches for translating natural-language requests into Bash commands. It also discusses the difficulty of generating complete commands, including tools, options, and user-specific arguments \cite{lin2018nl2bash}.
+
+    \item \textit{NeurIPS 2020 NLC2CMD Competition: Translating Natural Language to Bash Commands} was included because it provides a shared benchmark for the task and compares different approaches under a common evaluation setup. It is also relevant because several later publications build on the same dataset and competition results \cite{agarwal2021nlc2cmd}. 
+    
+    \item \textit{NL2CMD: An Updated Workflow for Natural Language to Bash Commands Translation} was selected because it extends earlier work through a revised dataset-generation process, argument masking, and Transformer-based command translation. It is particularly relevant for understanding the limitations of training-data-based approaches and the handling of command arguments \cite{fu2023nl2cmd}. 
+    
+    \item \textit{Explainable Natural Language to Bash Translation Using Abstract Syntax Tree} was included because it combines natural-language command generation with structural command representations and information from manual pages. This makes it relevant to the use of command documentation and to the distinction between tools, options, and arguments \cite{bharadwaj2021explainable}. 
+    
+    \item \textit{LLM-Supported Natural Language to Bash Translation} was selected because it examines the use of large language models for command generation and discusses weaknesses in existing datasets and evaluation methods. It is also relevant to the comparison between unrestricted command generation and the more constrained retrieval approach used in this thesis \cite{westenfelder2025llm}. 
+    
+    \item \textit{BashExplainer: Retrieval-Augmented Bash Code Comment Generation Based on Fine-Tuned CodeBERT} was included as adjacent work because it combines semantic and lexical retrieval for Bash-related content. Although its task direction differs from this project, it demonstrates how retrieval methods can be applied to Bash commands and how different similarity measures can complement each other \cite{yu2022bashexplainer}.
+
+\end{itemize}
+
+The publications were not selected only because they used similar terminology. Their task,
+input and output, method, dataset, and relevance to the proposed system were considered.
+Sources concerned only with general-purpose code generation were excluded when they did not provide insight into command-line interaction or retrieval.
+
+The final set of publications contains both directly related and adjacent work. The
+natural-language-to-Bash papers provide the closest comparison with the proposed system.
+The retrieval-related papers provide additional context for the decision to identify tools and options from stored descriptions rather than generating unrestricted commands. Together, these sources form the basis of the literature review.
+
 \subsection{Natural-Language-to-Bash Translation}
 One of the earliest major datasets for this task was introduced by Lin et al.\ through NL2Bash \cite{lin2018nl2bash}. The objective of NL2Bash is to translate an English description of a task into a corresponding Bash command. The authors created a dataset of natural-language and command pairs and evaluated several neural translation models.
 The task is more difficult than ordinary text translation because Bash commands contain several different types of information. A command may include the utility name, multiple option flags, pipelines, filenames, paths, and other user-specific arguments. A model must therefore identify both the general operation and its exact command structure.
