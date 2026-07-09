@@ -3,6 +3,94 @@ This chapter describes the methodological approach used to design, implement, an
 
 \subsection{Literature Review}
 
+The literature review was conducted to identify existing approaches to natural-language
+interaction with command-line applications and to determine how the proposed system differs from previous work. The search focused primarily on natural-language-to-Bash translation, information retrieval, and the use of machine-learning methods for processing command-line input.
+
+\subsubsection{Source Discovery}
+
+Google Scholar was used as the primary search engine. Initial searches used broad terms such as "natural language processing" and more specific terms such as "NL2Bash". Broad queries were useful for identifying the general research areas connected to the project, but they also returned many results without a direct connection to command-line applications. More specific queries produced fewer but more relevant publications on the translation of natural-language requests into Bash commands.
+
+Several additional publications were identified through backward citation searching. When a paper was considered relevant, its references were reviewed for earlier datasets, approaches, and evaluation methods. This was particularly useful because several publications in the natural-language-to-Bash field build on the same datasets and shared research tasks. Forward citation searching was also used where appropriate to identify newer work that extended or evaluated an existing approach.
+
+Table~\ref{tab:literature-search-terms} documents the search terms that were retained during the review. The table may be extended if further search terms are identified from the research notes of both authors.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Search terms used during the literature review}
+    \label{tab:literature-search-terms}
+    \begin{tabular}{p{3.5cm} p{3cm} p{7.5cm}}
+        \hline
+        \textbf{Search term} &
+        \textbf{Search engine} &
+        \textbf{General results and use in the project} \\
+        \hline
+
+        Natural language processing &
+        Google Scholar &
+        Produced broad introductory work on natural-language processing and information
+        retrieval. The results were mainly used to establish the wider research context and
+        identify more specific terminology for later searches. \\
+
+        NL2Bash &
+        Google Scholar &
+        Produced publications and datasets concerned with translating natural-language
+        requests into Bash commands. These results formed the main body of the related-work
+        analysis. \\
+
+        \textit{[Insert additional search term]} &
+        \textit{[Insert search engine]} &
+        \textit{[Insert summary of results and use]} \\
+
+        \textit{[Insert additional search term]} &
+        \textit{[Insert search engine]} &
+        \textit{[Insert summary of results and use]} \\
+
+        \textit{[Insert additional search term]} &
+        \textit{[Insert search engine]} &
+        \textit{[Insert summary of results and use]} \\
+
+        \hline
+    \end{tabular}
+\end{table}
+
+AI-assisted search tools were used as a supplementary method. Perplexity and Gemini were
+provided with a detailed description of the project, including its focus on local execution, natural-language command retrieval, and support for unfamiliar or proprietary command-line tools. The systems were then asked to identify publications with a close connection to these requirements.
+
+This conversational search process was useful for refining broad search questions and finding papers whose titles did not contain the original search terms. The tools were also asked to explain why a proposed publication was relevant and to identify passages supporting their assessment. However, AI-generated summaries and quotations were not accepted as evidence without verification. Each proposed source was opened and checked manually. Claims, quotations, publication details, and the relationship to the project were verified against the original publication before the source was used.
+
+The AI tools were therefore treated as discovery aids rather than academic sources. Their
+suggestions supported the search process, while the final assessment and interpretation of each publication remained a manual task.
+
+\subsubsection{Source Selection}
+
+A publication was considered suitable when it addressed at least one central aspect of the
+project. This included translating natural-language descriptions into Bash commands, retrieving technical information using natural-language queries, representing command-line syntax, or evaluating the correctness of generated commands.
+
+Particular attention was given to the following publications:
+
+\begin{itemize}
+    \item \textit{NL2Bash: A Corpus and Semantic Parser for Natural Language Interface to the Linux Operating System} was selected because it defines one of the central datasets and baseline approaches for translating natural-language requests into Bash commands. It also discusses the difficulty of generating complete commands, including tools, options, and user-specific arguments \cite{lin2018nl2bash}.
+
+    \item \textit{NeurIPS 2020 NLC2CMD Competition: Translating Natural Language to Bash Commands} was included because it provides a shared benchmark for the task and compares different approaches under a common evaluation setup. It is also relevant because several later publications build on the same dataset and competition results \cite{agarwal2021nlc2cmd}. 
+    
+    \item \textit{NL2CMD: An Updated Workflow for Natural Language to Bash Commands Translation} was selected because it extends earlier work through a revised dataset-generation process, argument masking, and Transformer-based command translation. It is particularly relevant for understanding the limitations of training-data-based approaches and the handling of command arguments \cite{fu2023nl2cmd}. 
+    
+    \item \textit{Explainable Natural Language to Bash Translation Using Abstract Syntax Tree} was included because it combines natural-language command generation with structural command representations and information from manual pages. This makes it relevant to the use of command documentation and to the distinction between tools, options, and arguments \cite{bharadwaj2021explainable}. 
+    
+    \item \textit{LLM-Supported Natural Language to Bash Translation} was selected because it examines the use of large language models for command generation and discusses weaknesses in existing datasets and evaluation methods. It is also relevant to the comparison between unrestricted command generation and the more constrained retrieval approach used in this thesis \cite{westenfelder2025llm}. 
+    
+    \item \textit{BashExplainer: Retrieval-Augmented Bash Code Comment Generation Based on Fine-Tuned CodeBERT} was included as adjacent work because it combines semantic and lexical retrieval for Bash-related content. Although its task direction differs from this project, it demonstrates how retrieval methods can be applied to Bash commands and how different similarity measures can complement each other \cite{yu2022bashexplainer}.
+
+\end{itemize}
+
+The publications were not selected only because they used similar terminology. Their task,
+input and output, method, dataset, and relevance to the proposed system were considered.
+Sources concerned only with general-purpose code generation were excluded when they did not provide insight into command-line interaction or retrieval.
+
+The final set of publications contains both directly related and adjacent work. The
+natural-language-to-Bash papers provide the closest comparison with the proposed system.
+The retrieval-related papers provide additional context for the decision to identify tools and options from stored descriptions rather than generating unrestricted commands. Together, these sources form the basis of the literature review.
+
 \subsection{System Design}
 The system design process began by defining functional and non-functional requirements for the application, in addition to the relevant environmental constraints. These requirements and constraints provided the foundation for the subsequent architecture selection and modeling phases.
 
