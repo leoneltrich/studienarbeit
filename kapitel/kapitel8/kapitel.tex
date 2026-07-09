@@ -193,7 +193,7 @@ The granular distribution across all six mutual evaluation categories is illustr
 \end{figure}
 \FloatBarrier
 
-To determine whether the high recall in perfect matches was simply an artifact of over-generating excessive options (which would increase the probability of matching by chance), we analyzed the Relative Symmetric Count Error (RSF) across the three option match quality subcategories. As shown in Figure~\ref{fig:rsf_by_subcategory}, the RSF remains remarkably stable between 1.64 (for zero-match queries) and 1.68 (for partial-match queries), with perfect matches averaging 1.67. This uniformity confirms that option over-generation is consistent across all match qualities and is not the driving force behind correct matches.
+To determine whether the high recall in perfect matches was simply an artifact of over-generating excessive options (which would increase the probability of matching by chance), we analyzed the \ac{RSCE} across the three option match quality subcategories. As shown in Figure~\ref{fig:rsf_by_subcategory}, the \ac{RSCE} remains remarkably stable between 1.64 (for zero-match queries) and 1.68 (for partial-match queries), with perfect matches averaging 1.67. This uniformity confirms that option over-generation is consistent across all match qualities and is not the driving force behind correct matches.
 
 \FloatBarrier
 
@@ -205,7 +205,7 @@ To determine whether the high recall in perfect matches was simply an artifact o
   \begin{axis}[
       ybar,
       enlarge x limits=0.4,
-      ylabel={Symmetric Count Error (RSF)},
+      ylabel={Relative Symmetric Count Error (RSCE)},
       xtick={0, 1, 2},
       xticklabels={Fully, Partially, None},
       nodes near coords,
@@ -216,7 +216,7 @@ To determine whether the high recall in perfect matches was simply an artifact o
   \addplot[fill=primaryblue] coordinates {(0,1.67) (1,1.68) (2,1.64)};
   \end{axis}
   \end{tikzpicture}
-  \caption{Symmetric Count Error (RSF) by Subcategory (1.00 is perfect).}
+  \caption{\ac{RSCE} by Subcategory (1.00 is perfect).}
   \label{fig:rsf_by_subcategory}
 \end{minipage}
 \end{figure}

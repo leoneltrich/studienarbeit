@@ -125,19 +125,19 @@ The second task focused on option retrieval and split into multiple steps. First
         \text{F}_1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
     \end{equation}
     
-    \item \ac{RSF}: A metric that measures how much the total number of predicted options deviates from the expected number, focusing purely on volume rather than whether the specific choices are correct.
+    \item \ac{RSCE}: A metric that measures how much the total number of predicted options deviates from the expected number, focusing purely on volume rather than whether the specific choices are correct.
     \begin{equation}
-        \text{RSF} = \begin{cases}
+        \text{RSCE} = \begin{cases}
            1.0 & \text{if } |P| = 0 \text{ and } |E| = 0 \\
            \max\left(\frac{|P|}{|E|}, \frac{|E|}{|P|}\right) & \text{if } |P| > 0 \text{ and } |E| > 0 \\
            \big||E| - |P|\big| + 1.0 & \text{otherwise}
         \end{cases}
     \end{equation}
     
-    \item Recall/\ac{RSF}: The ratio of Recall to the \ac{RSF} ($\frac{\text{Recall}}{\text{RSF}}$), used to evaluate a model's efficiency by penalizing accurate recall that relies on massive over-prediction.
+    \item Recall/\ac{RSCE}: The ratio of Recall to the \ac{RSCE} ($\frac{\text{Recall}}{\text{RSCE}}$), used to evaluate a model's efficiency by penalizing accurate recall that relies on massive over-prediction.
 \end{enumerate}
 
-In addition to the baseline, several variations of the retrieval setup were evaluated in an exhaustive grid search, in which every possible combination of the selected variations was tested. For each model, the best-performing configuration (measured by the Recall/\ac{RSF}) across all tested combinations was retained, and the resulting best scores were used to construct a final comparison table. This table formed the basis for selecting the model that performed best on the available data.
+In addition to the baseline, several variations of the retrieval setup were evaluated in an exhaustive grid search, in which every possible combination of the selected variations was tested. For each model, the best-performing configuration (measured by the Recall/\ac{RSCE}) across all tested combinations was retained, and the resulting best scores were used to construct a final comparison table. This table formed the basis for selecting the model that performed best on the available data.
 
 The following three variations were tested individually and in all possible combinations:
 
@@ -149,7 +149,7 @@ The following three variations were tested individually and in all possible comb
 
 Because the project targets an efficient retrieval system, additional efficiency-related metrics were collected alongside the retrieval quality metrics. These included peak memory consumption during embedding, model load time, and average throughput in tokens per second. To ensure accurate and isolated measurements, each benchmark run was executed in a fresh subprocess, preventing interference from previous model evaluations. Peak memory usage was obtained directly from \texttt{/proc/self/status} via the \texttt{VmHWM} field, which reports the process high-water mark~\cite{linux_proc_status}**source**. Model load time was measured with a timer started immediately before model loading and stopped directly after context initialization, thereby excluding unrelated benchmark setup overhead. Throughput was calculated by dividing the total number of processed tokens by the cumulative time spent exclusively in the decoding stage, while excluding tokenization and all post-processing steps.
 
-The final model selection was performed using a weighted decision matrix incorporating memory consumption, token processing speed, initial load time, \ac{RSF}, \ac{RSF}/Recall, precision, recall, and F1-score. Each model was ranked for every criterion, with higher ranks assigned to better-performing models. The resulting ranks were multiplied by predefined weights reflecting the relative importance of each criterion, and the weighted values were summed to produce a final score for each model. The model achieving the highest overall score was then chosen as the final retrieval model.
+The final model selection was performed using a weighted decision matrix incorporating memory consumption, token processing speed, initial load time, \ac{RSCE}, \ac{RSCE}/Recall, precision, recall, and F1-score. Each model was ranked for every criterion, with higher ranks assigned to better-performing models. The resulting ranks were multiplied by predefined weights reflecting the relative importance of each criterion, and the weighted values were summed to produce a final score for each model. The model achieving the highest overall score was then chosen as the final retrieval model.
 
 \subsection{Benchmarking}
 After the system design and implementation methodology had been established, the next methodological step was to define how the system would be evaluated technically. This section is divided into statistical benchmarking, which focuses on dataset generation and utilization, and performance benchmarking, which outlines the benchmarking environment used.
@@ -212,16 +212,65 @@ To prevent participants from manipulating the system, escaping the sandbox, or i
 After completing the tasks, participants answered a total of twelve questions. The first nine questions were multiple-choice questions, while the remaining three required free-text responses.
 
 \subsection{System Evaluation}
+\label{sec:technical_benchmarking_methodology}
 
-To evaluate the final system from a technical point of view, an automated benchmark gathering data was run based on the test set created in section \ref{sec:statistical_benchmarking}. The creation of the system was based entirely on the validation set, was done to avoid fitting the system to the final test data. This allows to realistically evaluate it on previously unseen data. The benchmark was run with a total of three tool catalogs stored in the system's database and on the system described in section~\ref{sec:performance_bench}. See appendix **
+To evaluate the synthesized command generation system from a technical and performance standpoint, an automated benchmarking suite was developed and executed. The benchmark was run against the independent test set ($N=609$ queries) established in Section~\ref{sec:statistical_benchmarking}. Crucially, the entire design, training, and iterative refinement of the system's retrieval and option-validation components were conducted strictly using the validation set, thereby preventing data leakage and ensuring that performance metrics reflect generalization to previously unseen queries.
 
+The benchmark evaluates the system against a SQLite database (\texttt{local\_assistant.db}) containing three tool catalogs: \texttt{mv}, \texttt{cp}, and \texttt{ops-sync}. All tests were conducted on the reference hardware environment described in Section~\ref{sec:performance_bench}.
 
+\subsubsection{Execution Isolation and Resource Tracking}
+To guarantee the precision and reproducibility of physical performance metrics, each test query was executed within an isolated, fresh Python subprocess invoking the compiled release binary of the developed system. This subprocess-level isolation prevents accumulative memory leaks, compiler/interpreter state pollution, or thread-scheduling bias between consecutive query runs. 
 
-- Speed of the test drive, the entire test system (proxmox, ssd, zfs, ...)
-- how is the start up time measured
+For each execution, two key physical resources were monitored:
+\begin{description}
+    \item[Execution Latency (ms):] Measured by recording the high-resolution system clock using Python's \texttt{time.perf\_counter()} immediately before spawning and immediately after the termination of the command-generation process.
+    \item[Peak Memory Consumption (MB):] Measured by querying the child process resource usage via the POSIX system API \texttt{getrusage(RUSAGE\_CHILDREN)}. The peak resident set size (\texttt{ru\_maxrss}), representing the high-water mark of physical memory allocated during the execution, was recorded and converted to megabytes (MB) by dividing the raw value by $1024.0$ (for Linux systems returning RSS in kilobytes).
+\end{description}
 
-- Test catalog generation
-- Test Set generation
-- Sentence collection tool
+\subsubsection{Output Parsing and Classification Pipeline}
+The standard output (stdout) and standard error (stderr) of the binary were intercepted. Since the command-finder employs ANSI terminal escape sequences to color-code its outputs, a preprocessing stage stripped all escape codes. The response was then categorized according to the following state machine logic:
+\begin{enumerate}
+    \item \textbf{System/Execution Error:} Classified if the process exited with a non-zero status code, if execution timed out (limit set to 15 seconds), or if text was emitted to stderr.
+    \item \textbf{Unclear Query Response:} Classified if the stripped stdout exactly matched the string \texttt{"Query unclear"}.
+    \item \textbf{Disambiguation Warning:} Classified if the stripped stdout contained the prompt \texttt{"The query could not be resolved"}. This occurs when the option validation finite state machine (FSM) detects conflicting or syntactically invalid parameters, causing the engine to refuse command generation. In these cases, the candidate tool name was extracted from the warning text to evaluate routing accuracy.
+    \item \textbf{Successful Command Generation:} Classified if the process exited with code 0 and outputted a green-highlighted command string. The first token of the outputted command string was parsed as the \textit{predicted tool}, and all subsequent tokens were parsed to extract option flags.
+\end{enumerate}
+
+\subsubsection{Option Flag Extraction and Matching}
+To evaluate option correctness, the predicted options in a generated command were normalized and parsed using the following tokenization rules:
+\begin{itemize}
+    \item Long flags with arguments structured with an equals sign (e.g., \texttt{-{}-backup=numbered}) were split, extracting only the option identifier (e.g., \texttt{-{}-backup}).
+    \item Short flags grouped together were not produced by the tool; however, custom tool flag syntax (such as \texttt{-m:secure}) was standardized to its base form (e.g., \texttt{-m}).
+    \item All extracted options and expected options from the ground truth were converted to lowercase and trimmed of whitespace.
+\end{itemize}
+
+\subsubsection{Metric Definitions}
+Let $E_i$ be the set of expected option flags for query $i$ and $P_i$ be the set of predicted option flags.
+\begin{description}
+    \item[Tool Selection Accuracy (\%):] The percentage of total queries where the system correctly routed the query to the expected utility (either resulting in a successful command or a disambiguation warning for that tool).
+    \item[Option Recall Score ($S_i$):] For queries where the correct utility was successfully generated, the recall of expected options is defined as:
+    \begin{equation}
+        S_i = \begin{cases}
+            100\% & \text{if } |E_i| = 0 \\
+            \frac{|E_i \cap P_i|}{|E_i|} \times 100\% & \text{if } |E_i| > 0
+        \end{cases}
+    \end{equation}
+    Using $S_i$, successful runs are categorized into:
+    \begin{itemize}
+        \item \textbf{Full Option Match:} $S_i = 100\%$.
+        \item \textbf{Partial Option Match:} $0\% < S_i < 100\%$.
+        \item \textbf{No Option Match:} $S_i = 0\%$ (with $|E_i| > 0$).
+    \end{itemize}
+    
+    \item[Relative Symmetric Count Error ($F_i$):] To penalize the over-generation of redundant options, the symmetric error ratio (the \texttt{FLAGS/DEST} metric) is calculated as:
+    \begin{equation}
+        F_i = \begin{cases}
+            1.0 & \text{if } |E_i| = 0 \land |P_i| = 0 \\
+            \max\left(\frac{|P_i|}{|E_i|}, \frac{|E_i|}{|P_i|}\right) & \text{if } |E_i| > 0 \land |P_i| > 0 \\
+            ||E_i| - |P_i|| + 1.0 & \text{otherwise}
+        \end{cases}
+    \end{equation}
+    An $F_i$ score of $1.00$ represents a perfect match in option cardinality, whereas scores $>1.00$ indicate flag count discrepancies.
+\end{description}
 
 
