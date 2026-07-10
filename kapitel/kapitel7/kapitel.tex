@@ -3,9 +3,49 @@
 
 The implementation of the tool was based on the system design and technology decisions of cahpter~\ref{sec:design_and_decision}. We utilized the tool Antigravity CLI in combination with various Gemini \acp{LLM} to accelerate development. For this we first created a project scaffold, with placholder functionality. This allowed us to ensure the architecture outlined in the respective chapters was properly implemented. We then utilized Antigravity CLI to implement the actual functionality of the tool step by step. By keeping tight boundries on what should be created and manually verifying the correctness of generated code, we managed to build a functional tool, fulfilling a subset of the requirements specified. In subsection \ref{sec:implementation_limitation} we outline the requirements ommitted at this stage and the reasons behind it.
 
-\subsection{Extended Finite State Machine (EFSM)}
 
-\subsection{Otsu Cutoff Optimizations}
+\subsection{Score Aggregation}\label{sec:score_aggregation_impl}
+
+\subsection{Hyperparameter Optimization for Otsu-based Candidate Cutoff}
+\label{sec:otsu_optimization}
+
+To select the best matching candidate group, candidate options are pruned using an Otsu-based cutoff filter. As detailed in Section~\ref{sec:score_aggregation_impl}, similarity scores from the keyword and embedding matching engines are normalized via min-max scaling and combined using a weighted sum, to which the cutoff filter is applied directly. 
+
+The filter is parameterized by the relative floor $\alpha \in [0, 1]$ (which zeroes out candidates scoring below $\alpha \cdot S_{\text{max}}$) and the Otsu multiplier $m \ge 1.0$ (which scales the computed Otsu drop threshold $\theta = m \cdot \theta_{\text{Otsu}}$ to determine where the score ``cliff'' occurs).
+
+A grid search was conducted over $\alpha \in [0.5, 1.5]$ (step 0.1) and $m \in [1.0, 3.0]$ (step 0.5) across $N=610$ queries. Performance was measured using Precision, Recall, $F_1$-Score, and \ac{RSCE} (defined in Section~\ref{sec:model_selection_meth}) alongside the Recall/\ac{RSCE} ratio. Table~\ref{tab:otsu_grid_search} summarizes the top configurations.
+
+\begin{table}[htbp]
+\centering
+\caption{Otsu cutoff grid search top configurations.}
+\label{tab:otsu_grid_search}
+\begin{tabular}{ccccccc}
+\toprule
+$\alpha$ & $m$ & Avg. Precision & Avg. Recall & Avg. $F_1$-Score & Avg. RSCE & Avg. Recall/RSCE \\
+\midrule
+\multicolumn{7}{l}{\textbf{Recall-Optimized}} \\
+0.50 & 3.00 & 0.3114 & 0.4833 & 0.3378 & 2.2590 & 0.2572 \\
+0.50 & 2.50 & 0.3121 & 0.4787 & 0.3375 & 2.2301 & 0.2580 \\
+0.50 & 2.00 & 0.3156 & 0.4691 & 0.3383 & 2.1481 & 0.2610 \\
+\midrule
+\multicolumn{7}{l}{\textbf{RSCE-Optimized}} \\
+0.90 & 3.00 & 0.3657 & 0.3077 & 0.3143 & 1.6322 & 0.2267 \\
+0.90 & 2.00 & 0.3649 & 0.3068 & 0.3135 & 1.6347 & 0.2259 \\
+0.90 & 1.00 & 0.3655 & 0.3077 & 0.3141 & 1.6363 & 0.2265 \\
+\midrule
+\multicolumn{7}{l}{\textbf{Recall/RSCE-Optimized}} \\
+0.60 & 2.00 & 0.3394 & 0.3954 & 0.3381 & 1.7470 & 0.2708 \\
+0.60 & 1.50 & 0.3391 & 0.3945 & 0.3376 & 1.7454 & 0.2705 \\
+0.60 & 3.00 & 0.3378 & 0.3967 & 0.3374 & 1.7598 & 0.2697 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We selected the configuration $\alpha = 0.50, m = 3.00$ (Recall-optimized). Optimizing for RSCE ($\alpha = 0.90$) or Recall/RSCE ($\alpha = 0.60$) severely degrades option recall (dropping from $0.4833$ to $0.3077$ and $0.3954$, respectively), which is unacceptable for identifying critical options. The higher count error associated with the selected configuration (\ac{RSCE} = 2.2590) is partially mitigated downstream by the Syntactical Validator (Section~\ref{sec:impl_validator}), which filters out invalid, conflicting, or non-applicable option combinations.
+
+
+
+\subsection{Extended Finite State Machine (EFSM)}\label{sec:impl_validator}
 
 \subsection{Compilation}
 

@@ -53,7 +53,7 @@ To determine which architectural pattern best fit the requirements, different pa
 
 Finally, the internal and external interfaces of the system were defined, and the technologies most suitable for implementing the system were selected. The technology selection was based on qualitative and quantitative criteria. This concluded the groundwork for the system implementation.
 
-\subsection{Model Selection}
+\subsection{Model Selection}\label{sec:model_selection_meth}
 
 The selection of the retrieval model began with the definition of an initial candidate set. This set was derived from the ranked list of models with fewer than one billion parameters on the MTEB English v2 leaderboard~\cite{mteb_leaderboard} **source for MTEB benchmark**. As this benchmark provides a focused overview of models that perform strongly across a range of English-language embedding tasks, it served as an appropriate basis for the initial selection process. The initial candidate set was then refined to account for task suitability and architectural diversity, as described in Chapter~\ref{sec:comp_emb_models}. The aim of this step was to obtain a reduced set of at least three suitable candidate models for the subsequent evaluation stage. In addition, multiple quantized variants of the selected models were tested whenever they satisfied the available memory constraints, in order to account for potential performance differences between quantization levels of the same base model.
 
