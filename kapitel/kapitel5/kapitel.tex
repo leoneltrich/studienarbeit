@@ -29,9 +29,9 @@ Before defining the functional behaviors and quality attributes of the system, i
         \toprule
         \textbf{ID} & \textbf{Constraint} & \textbf{Description} \\
         \midrule
-        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM running a Linux based operating system, configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8GB of 2133MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
+        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM running a Linux-based operating system, configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8 GB of 2133 MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
         ENV-2 & Offline Isolation & The system must function completely offline. It must not initiate any outbound network requests under any circumstances. \\
-        ENV-3 & Zero Third-Party Daemon & The system must be entirely self-contained. While the system's own architecture may utilize background processes, it must not require the installation or execution of third-party standalone server software. \\
+        ENV-3 & Zero Third-Party Daemon & The system must be entirely self-contained. While the system's own architecture may use background processes, it must not require the installation or execution of third-party standalone server software. \\
         ENV-4 & Headless Execution & The target environment is strictly headless. The system must not rely on or require graphical windowing systems or desktop environments for any user interaction or background execution. \\
         \bottomrule
     \end{tabularx}
@@ -95,13 +95,13 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
     \endlastfoot
 
     % --- DATA ROWS ---
-    NFR-1 & Query Latency & The system must return a completed command recommendation in under 1000ms from the moment the query is submitted. \\
+    NFR-1 & Query Latency & The system must return a completed command recommendation in under 1000 ms from the moment the query is submitted. \\
     
-    NFR-2 & Cold Startup Latency & The application must initialize and be ready to process input in under $1000ms$. \\
+    NFR-2 & Cold Startup Latency & The application must initialize and be ready to process input in under $1000 ms$. \\
     
     NFR-3 & Memory Bounding & The peak RAM utilization of the system process must never exceed $1024 MB$ at any time during operation. \\
     
-    NFR-4 & Latency Scalability & The system must maintain its $< 1000ms$ query latency when the persistent state is scaled to hold definitions for up to ** Average number of CLI tools installed on a linux machine ** distinct tools. \\
+    NFR-4 & Latency Scalability & The system must maintain its $< 1000 ms$ query latency when the persistent state is scaled to hold definitions for up to ** Average number of CLI tools installed on a linux machine ** distinct tools. \\
     
     NFR-5 & Retrieval Quality & The system must achieve a minimum Macro-Averaged F1-Score of **[Target]** and a Jaccard Similarity of **[Target]** against the established evaluation dataset. \\
     
@@ -130,13 +130,13 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 %\subsubsection{Architectural Pattern}
 %\label{sec:architecture_philosophy}
 
-%The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), 
+%The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000 ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), 
 
 %**while ensuring that the core algorithmic retrieval logic remains strictly decoupled from volatile \ac{I/O} operations and storage mechanisms (NFR-6). ** Umschreiben, ggf. Requirement dass storage backend austauschbar sein muss
 
 %To satisfy these constraints, a traditional Layered (N-Tier) Architecture was discarded. While a layered approach neatly categorizes concerns into presentation, business, and data tiers, it introduces a transitive top-down dependency structure**SOURCE**. In such a model, the core algorithmic logic is inherently coupled to the specific implementation of the underlying data access layer. 
 
-%If the local storage mechanism were to be replaced, the business logic would require modification, directly violating the modularity constraint (NFR-6). ** UMSCHREIBEN, NFR-6 bezieht sich auf die retrieval modells (Embedding \& Bm25), ggf. NFR-6 umschreiben dass das auch darin konkret reflectiert ist! Ich möchte den Keyword matching und das embedding modell austauschen können. Ich möchte auch das storage backend tasuchen können, also ggf. 2 Requirements draus machen.
+%If the local storage mechanism were to be replaced, the business logic would require modification, directly violating the modularity constraint (NFR-6). ** UMSCHREIBEN, NFR-6 bezieht sich auf die retrieval modells (Embedding \& Bm25), ggf. NFR-6 umschreiben dass das auch darin konkret reflektiert ist! Ich möchte den Keyword matching und das embedding modell austauschen können. Ich möchte auch das storage backend tauschen können, also ggf. 2 Requirements draus machen.
 
 %To decouple the algorithmic core from the storage layer, the system relies on the Dependency Inversion Principle. While modern dependency-inverting paradigms such as Clean Architecture \cite{martin2012clean}**SOURCES** and Onion Architecture \cite{palermo2008onion}**SOURCES** offer robust domain isolation, they prescribe concentric internal layers that mandate extensive \ac{DTO} mapping and rigid interface boundaries. For a localized \ac{CLI} operating under strict computational and latency budgets (NFR-1, NFR-3), this enterprise-level boilerplate introduces unjustifiable computational overhead and complexity. ** Ergänzen dass die komplexität der anwendung (für die instandhaltung/erweiterung) dadurch inhärent steigt
 
@@ -146,17 +146,17 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 %    \item \textbf{The Core (Inside):} This encapsulates the mathematical retrieval models, vector search logic, and domain entities (e.g., Commands, Flags, and Catalogs). The Core possesses zero knowledge of the external world. It dictates its storage and interaction needs purely through abstract interfaces (Ports).
 %    \item \textbf{The Infrastructure (Outside):} This encompasses all external I/O mechanisms, including the user-facing CLI terminal (Driving Adapter) and the local persistent state database (Driven Adapter). 
 %\end{itemize} 
-%** Das passt so nicht ganz, Das modell und der keyword matching algorithmus müsse nauch austasuchbar sein! Daher müssen diese auch als "plugins" definiert werden.
+%** Das passt so nicht ganz, Das modell und der keyword matching algorithmus müsse auch austauschbar sein! Daher müssen diese auch als "plugins" definiert werden.
 
 %By implementing data-access and presentation interfaces at the edge of the Core domain,
-%** Include the Embedding Modell and the Keyword matching algorithm here!**
+%** Include the Embedding Model and the Keyword matching algorithm here!**
 %the external mechanisms are forced to depend on the Core rather than the inverse. This guarantees that the core natural language processing and hybrid retrieval engine can be compiled, tested, and executed entirely independent of the chosen database technology or host operating system terminal, successfully fulfilling all architectural constraints.
 %** Rewrite this entire paragraph!**
 
 \subsection{Architectural Pattern}
 \label{sec:architecture_philosophy}
 
-The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), while ensuring that the core domain logic remains strictly decoupled from volatile \ac{I/O} operations, allowing both the persistent storage backend (NFR-6) and the specific search and matching algorithms (NFR-7) to be seamlessly replaced.
+The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000 ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), while ensuring that the core domain logic remains strictly decoupled from volatile \ac{I/O} operations, allowing both the persistent storage backend (NFR-6) and the specific search and matching algorithms (NFR-7) to be seamlessly replaced.
 
 To satisfy these constraints, a traditional Layered (N-Tier) Architecture was discarded. While a layered approach neatly categorizes concerns into different tiers (e.g. presentation, business and data), it introduces a transitive top-down dependency structure \cite{richards2020fundamentals}. As Richards and Ford assert, layers in this architecture remain isolated only if the contracts between them remain unchanged. However, in a standard layered model, the data access layer and external libraries define these contracts. Consequently, the core business logic is transitively coupled to the paradigms of the infrastructure. If the local storage technology or the specific text-matching algorithms were fundamentally replaced, the cascading changes to the underlying contracts would inevitably force direct modifications within the business logic. This top-down coupling directly violates the system's modularity constraints (NFR-6, NFR-7).
 
@@ -189,14 +189,14 @@ To formalize the operational boundaries of the software and verify the isolation
 
 The system interacts with two primary driving actors that initiate operations:
 \begin{itemize}
-    \item \textbf{The End-User:} Interacts with the system by submitting natural language queries and configuration parameters (FR-1, FR-9). In turn the End-User receives the command best fitting their query and disambiguation prompts (FR-7, FR-9).
-    \item \textbf{The Catalog-Maintainer:} Represents either a human developer or an application developed by them. This actor interfaces with the system via an authenticated programmatic boundary to ingest new or updated, structured tool catalogs, receiving synchronous validation receipts upon success or failure (FR-3). The Catalog-Maintainer also has the ability to delete their catalogs usign the authenticated interface.
+    \item \textbf{The End-User:} Interacts with the system by submitting natural language queries and configuration parameters (FR-1, FR-9). In turn, the End-User receives the command best fitting their query and disambiguation prompts (FR-7, FR-9).
+    \item \textbf{The Catalog-Maintainer:} Represents either a human developer or an application developed by them. This actor interfaces with the system via an authenticated programmatic boundary to ingest new or updated, structured tool catalogs, receiving synchronous validation receipts upon success or failure (FR-3). The Catalog-Maintainer also has the ability to delete their catalogs using the authenticated interface.
 \end{itemize}
 \FloatBarrier
 
 Furthermore, the system relies on a single driven external system: the \textbf{Host \ac{OS}}. The application initiates outward requests to the host operating system to read and write its persistent state. While the system manages application-level authentication, it defers to the underlying \ac{OS} file permission mechanisms to enforce \ac{OS}-level access control for all persisted data (NFR-11). 
 
-Most critically, the Context Model serves as visual and structural proof of the system's privacy and offline execution limitations (ENV-2). It also demonstrates that the zero third-party daemon reliance (ENV-3) is considered. The defined perimeter strictly excludes any outbound network or third party daemon dependencies. By restricting the attack surface and data flow strictly to the local host operating system and authorized standard inputs, the architecture guarantees that all user queries and proprietary tool descriptions remain entirely localized.
+Most critically, the Context Model serves as visual and structural proof of the system's privacy and offline execution limitations (ENV-2). It also demonstrates that the zero third-party daemon reliance (ENV-3) is considered. The defined perimeter strictly excludes any outbound network or third-party daemon dependencies. By restricting the attack surface and data flow strictly to the local host operating system and authorized standard inputs, the architecture guarantees that all user queries and proprietary tool descriptions remain entirely localized.
 
 \subsubsection{System Context Model (Level 2)}
 \label{sec:container_architecture}
@@ -221,7 +221,7 @@ As illustrated in Figure~\ref{fig:arch_level_2}, the system boundary encapsulate
 
 The inclusion of the system boundary (represented by the dashed perimeter) explicitly clarifies how external actors interface with the internal components. Both the \textbf{End-User} and the \textbf{Catalog-Maintainer} bypass the generic system perimeter to interact exclusively and directly with the \ac{CLI} Executable, submitting queries and ingestion payloads, respectively.
 
-Crucially, the diagram illustrates the specific dependency mechanics of an embedded data persistence architecture. Because the persistence mechanism must be daemonless, it operates as an embedded library, hence the data persistence initiates no outward  connections. The \ac{CLI} Executable maintains a strict, unidirectional dependency on the persistent storage, reading and writing state as needed. Consequently, it is the \ac{CLI} Executable--not the persistent storage itself--that initiates all direct interactions with the \textbf{Linux Host \ac{OS}} to delegate access control and execute the underlying file \ac{I/O} system calls.
+Crucially, the diagram illustrates the specific dependency mechanics of an embedded data persistence architecture. Because the persistence mechanism must be daemonless, it operates as an embedded library, hence the data persistence initiates no outward connections. The \ac{CLI} Executable maintains a strict, unidirectional dependency on the persistent storage, reading and writing state as needed. Consequently, it is the \ac{CLI} Executable--not the persistent storage itself--that initiates all direct interactions with the \textbf{Linux Host \ac{OS}} to delegate access control and execute the underlying file \ac{I/O} system calls.
 
 \subsubsection{System Context Model (Level 3)}
 \label{sec:component_architecture}
@@ -251,14 +251,14 @@ Crucially, these adapters do not invoke the application core directly; rather, t
 The architectural center consists entirely of computational logic and the definition of the boundary interfaces. It contains no references to external frameworks or database libraries **Fix this sentence! incorrect!**.
 \begin{itemize}
     \item \textbf{The Inbound Dependency Inversion:} The \textbf{Query Orchestrator} and the \textbf{Catalog Lifecycle Manager} serve as the primary use-case interactors. **They physically \textit{implement} the inbound ports.** CHECK IF THIS CORRECT! ** Consequently, their compile-time dependency arrows point inward toward the port interfaces, proving that the core dictates the execution contracts to the driving adapters.
-    \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8).The Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
+    \item \textbf{Domain Mathematics \& Rules:} The \textbf{Similarity \& Rank Aggregator} executes the mathematics required for the unified ranking (NFR-8). The Query Orchestrator fetches definitions via the storage port and passes them in-memory to the \textbf{Syntactical Validator}. This allows the validator to evaluate command validity (FR-6) as a pure function without requiring its own \ac{I/O} capabilities.
 \end{itemize}
 \FloatBarrier
 
 \paragraph{3. The Driven Adapters (Outbound Infrastructure)}
 When the core requires external data or heavy computational execution, it calls its internally defined outbound interfaces (\texttt{StoragePort} and \texttt{MatchingStrategyPort}). The driven adapters exist outside the core to physically fulfill these requests.
 \begin{itemize}
-    \item The \textbf{Persistence Adapter} implements the \textit{StoragePort} interface, translating domain entities into the strucutres required by the underlying storage mechanism and executing the underlying host \ac{OS} file operations (NFR-6, NFR-11).
+    \item The \textbf{Persistence Adapter} implements the \textit{StoragePort} interface, translating domain entities into the structures required by the underlying storage mechanism and executing the underlying host \ac{OS} file operations (NFR-6, NFR-11).
     \item The \textbf{Matching Strategy Adapters [1..*]} fulfill the matching interface. By utilizing the extension \texttt{1..n}, the diagram shows that the core is entirely agnostic to the number or type of search algorithms employed (NFR-7). 
 \end{itemize}
 \FloatBarrier
@@ -284,12 +284,12 @@ This daemonless approach guarantees that \ac{RAM} limits (NFR-3) are only consum
 \subsubsection{Primary Query Resolution Flow}
 \label{sec:primary_query_flow}
 
-The primary functional purpose of the system is to translate natural language into executable terminal commands (FR-1). Figure~\ref{fig:bpmn_high_level} illustrates the High-Level Systems Overview of this interaction.
+The primary functional purpose of the system is to translate natural language into executable terminal commands (FR-1). Figure~\ref{fig:bpmn_high_level} illustrates the high-level system overview of this interaction.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-1-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_high_level}
 \end{figure}
 \FloatBarrier
@@ -301,12 +301,12 @@ As described before, the process in Figure~\ref{fig:bpmn_high_level} has been si
 
 \paragraph{Tool and Option Determination}
 
-The system utilizes the pluggable matching adapters (defined in section~\ref{sec:component_architecture}) to match the tokenized data against the data persisted in the data store. If the highest resulting score remains below the minimum confidence threshold, the process immediately aborts evaluation and returns a \enquote{Tool Undetermined} state.
+The system utilizes the pluggable matching adapters (defined in Section~\ref{sec:component_architecture}) to match the tokenized data against the data persisted in the data store. If the highest resulting score remains below the minimum confidence threshold, the process immediately aborts evaluation and returns a \enquote{Tool Undetermined} state.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-2-Sub-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_2_sub_high_level}
 \end{figure}
 \FloatBarrier
@@ -318,7 +318,7 @@ To prevent the hallucination of low-quality results, the system applies a strict
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-3-Sub-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_3_sub_high_level}
 \end{figure}
 \FloatBarrier
@@ -330,13 +330,13 @@ The candidate tool and options are validated against the catalog schema (FR-6) t
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-4-Sub-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_4_sub_high_level}
 \end{figure}
 \FloatBarrier
 
 \paragraph{The Interactive Disambiguation Loop}
-If the Tool and Option Determination subprocess fails to achieve the required confidence threshold, or if the Command Verification subprocess encounters a validation error, an interactive disambiguation loop (FR-7) is triggered. The system issues a clarification request to the End-User, and awaits a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to minimize latency on subsequent iterations.
+If the Tool and Option Determination subprocess fails to achieve the required confidence threshold, or if the Command Verification subprocess encounters a validation error, an interactive disambiguation loop (FR-7) is triggered. The system issues a clarification request to the End-User, and waits for a rewritten query. Crucially, this loop routes back to the tokenization phase, explicitly bypassing the engine initialization phase to minimize latency on subsequent iterations.
 ** FIX ALL CAPTIONS FOR FIGURES! **
 
 
@@ -346,12 +346,12 @@ If the Tool and Option Determination subprocess fails to achieve the required co
 Beyond query resolution, the system must securely handle state mutations initiated by both users and external maintainer applications.
 
 \paragraph{Catalog Lifecycle Management}
-External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the Catalog Management flow (Figure~\ref{fig:bpmn_5_high_level}), the system first intercepts the request to authenticate and authorize the action. Once authorized, an exclusive gateway routes the payload to either the ingestion, update or deletion logic. If a catalog is being created or updated, the system preprocesses the ingested catalog data before persisting them to the data store, to ensure they fit the format required by the application. Regardless of the action, the system guarantees a success or failure receipt before the process terminates, ensuring maintainers can rely on a status message.
+External maintainers inject new tool definitions (FR-3, FR-4). As modeled in the Catalog Management flow (Figure~\ref{fig:bpmn_5_high_level}), the system first intercepts the request to authenticate and authorize the action. Once authorized, an exclusive gateway routes the payload to either the ingestion, update or deletion logic. If a catalog is being created or updated, the system preprocesses the ingested catalog data before persisting it to the data store, to ensure it fits the format required by the application. Regardless of the action, the system guarantees a success or failure receipt before the process terminates, ensuring maintainers can rely on a status message.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-5-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_5_high_level}
 \end{figure}
 \FloatBarrier
@@ -362,7 +362,7 @@ For local system adjustments (FR-9), the system provides a linear execution path
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{abbildungen/BPMN-6-High-Level.jpg} 
-    \caption{BPMN High-Level Systems Overview for Query Resolution}
+    \caption{BPMN high-level system overview for Query Resolution}
     \label{fig:bpmn_6_high_level}
 \end{figure}
 \FloatBarrier
@@ -371,7 +371,7 @@ For local system adjustments (FR-9), the system provides a linear execution path
 \subsection{Interface Specifications (Schnittstellen)}
 \label{sec:interfaces}
 
-To finalize the systems design, it is necessary to define the data contracts that bridge the system's boundaries. This section is explicitly divided into two categories: Internal Interfaces and External Interfaces. This allows us to distinguish between programmatic domain contracts (inside the Hexagon) and the interaction pathways used by actors (outside the hexagon).
+To finalize the systems design, it is necessary to define the data contracts that bridge the system's boundaries. This section is explicitly divided into two categories: Internal Interfaces and External Interfaces. This distinguishes programmatic domain contracts (inside the Hexagon) from the interaction pathways used by actors (outside the Hexagon).
 
 \subsubsection{Internal Interfaces (Hexagonal Ports)}
 \label{sec:internal_interfaces}
@@ -425,7 +425,7 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
         \hline
         \texttt{description} & \texttt{String} & Yes & High-level description of the tool's purpose. \\
         \hline
-        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user friendly description of the tools purpose. \\
+        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user-friendly description of the tool's purpose. \\
         \hline
         \texttt{keywords} & \texttt{String} & Yes & Keywords for the tool. \\
         \hline
@@ -433,11 +433,11 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
         \hline
         \texttt{options} & \texttt{List<Option>} & Yes & A collection of the command line options belonging to this tool. \\
         \hline
-        \texttt{options[].optionName} & \texttt{String} & Yes & the string of the flag (e.g. -f). \\
+        \texttt{options[].optionName} & \texttt{String} & Yes & The flag string (e.g. -f). \\
         \hline
         \texttt{options[].description} & \texttt{String} & Yes & The description of what the option achieves. \\
         \hline
-        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user friendly description of the options purpose. \\
+        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user-friendly description of the option's purpose. \\
         \hline
         \texttt{options[].keywords} & \texttt{String} & Yes & Keywords for the option. \\
         \hline
@@ -456,11 +456,11 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
         \hline
         \rowcolor{gray!10}
         \textbf{Property Key} & \textbf{Data Type} & \textbf{Required} & \textbf{Description \& Domain Rule} \\
-        \texttt{optionName} & \texttt{String} & Yes & the string of the flag (e.g. -f). \\
+        \texttt{optionName} & \texttt{String} & Yes & The flag string (e.g. -f). \\
         \hline
         \texttt{description} & \texttt{String} & Yes & The description of what the option achieves. \\
         \hline
-        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user friendly description of the options purpose. \\
+        \texttt{userFriendlyDescription} & \texttt{String} & Yes & A user-friendly description of the option's purpose. \\
         \hline
         \texttt{keywords} & \texttt{String} & Yes & Keywords for the option. \\
         \hline
@@ -468,18 +468,16 @@ The \textbf{CLI Execution Boundary} (Table~\ref{tab:cli_execution_boundary}) map
 \end{table}
 \FloatBarrier
 
-Finally, the \textbf{Maintainer Data Contract} (table~\ref{tab:maintainer_data_contract}) defines the exact structural schema for the tool catalogs to be ingested into the system, with table~\ref{tab:option_object} defining the option object. ** ACTUALLY DO THIS! ** The Rule object will be defined in chapter~\ref{sec:fsm_tech}. Attributes such as \texttt{description} and \texttt{keywords} have been deliberately included to provide a broad semantic baseline. This ensures that any pluggable matching engine -- whether relying on simple keyword matching or advanced neural text embeddings -- has sufficient contextual data available to accurately calculate candidate similarities.
+Finally, the \textbf{Maintainer Data Contract} (Table~\ref{tab:maintainer_data_contract}) defines the exact structural schema for the tool catalogs to be ingested into the system, with Table~\ref{tab:option_object} defining the option object. The Rule object will be defined in Chapter~\ref{sec:fsm_tech}. Attributes such as \texttt{description} and \texttt{keywords} have been deliberately included to provide a broad semantic baseline. This ensures that any pluggable matching engine -- whether relying on simple keyword matching or advanced neural text embeddings -- has sufficient contextual data available to accurately calculate candidate similarities.
 
 \subsection{Technology Decisions}
 
-After having established the architectural design of the system the following chapter will discuss teh technology decisions we have considered for this project. As it is the core of the system we will start by evaluating and picking a suitable programming language for the project. We will then compare different ways of implementing the persistence layer of our tool before finally discussing what matching engines the system shall utilize to determine the correct commands.
+After establishing the architectural design of the system this section discusses the technology decisions considered for this project. Because the programming language forms the basis of the system, the section begins by evaluating and picking a suitable programming language for the project. It then compares different ways of implementing the persistence layer of the tool before discussing which matching engines the system should utilize to determine the correct commands.
 
 \subsubsection{Matching Engines}\label{sec:engines}
 **Revise this section and also find sources where necessary!**
 
 **Revise numbers in table and add sources and update texts to include the information of the table**
-
-** Add a text talking aboutthe table and maybe add the something to methodology! **
 
 \FloatBarrier
 \begin{table}[htbp]
@@ -511,33 +509,31 @@ Semantic Accuracy & 0.30 & 4 & 2 & 5 & 1 \\
 \end{table}
 \FloatBarrier
 
-In our literature review we identified two approaches that might be used as matching engines. The first of them were \acp{LLM}. 
+The literature review identified two approaches that might be used as matching engines. The first of them was the use of \acp{LLM}. 
 
-\paragraph{\acp{LLM}} process natural language and Tools like ChatGPT or Gemini are known to be able to generate shell commands from this input. Due to our tool following a local first approach we would however, not be able to utilize any cloud hosted \acp{LLM} in this project. We would therefore be limited to open weight models that are able to run on local hardware. Unfortunately even small one billion parameter models take up a significant amount of memory. Even if quantized down to 8-bit a model would use up about 1000MB of memory, for it's weights alone (1 Parameter = 8 bit = 1 byte), making it scratch the memory limitation of NFR-3 and also leading to an increased startup and processing time (NFR-1, NFR-2)**sources and rewrite sentence, toot long**. Only a 4-bit quantized version could fit comfortably into the constraints of NFR-3. Such a model, would however suffer from significant performance penalties **source**. Furthermore, the models knowledge would be confined to the data it was trained on. To effectively provide it with novel data a \ac{RAG}-Architecture would have to be implemented. This would allow to retrieve data about new tools and augment the natural language prompt with it **source for RAG**. However, that approach would require an additional pipeline, which itself may cause significant computational overhead, making it not feasible. 
+\paragraph{\acp{LLM}} process natural language and tools like ChatGPT or Gemini are known to be able to generate shell commands from this input. Because the tool follows a local-first approach the project would, however, not be able to utilize any cloud-hosted \acp{LLM} in this project. The project would therefore be limited to open-weight models that are able to run on local hardware. Unfortunately even small one-billion-parameter models take up a significant amount of memory. Even if quantized down to 8-bit a model would use up about 1000MB of memory, for its weights alone (1 Parameter = 8 bit = 1 byte), making it scratch the memory limitation of NFR-3 and also leading to an increased startup and processing time (NFR-1, NFR-2)**sources and rewrite sentence, toot long**. Only a 4-bit quantized version could fit comfortably into the constraints of NFR-3. Such a model, would however suffer from significant performance penalties **source**. Furthermore, the model's knowledge would be confined to the data it was trained on. To effectively provide it with novel data a \ac{RAG}-Architecture would have to be implemented. This would enable the system to retrieve data about new tools and augment the natural language prompt with it **source for RAG**. However, that approach would require an additional pipeline, which itself may cause significant computational overhead, making it not feasible. 
 
-\paragraph{Specialized Neural Networks} were identified as the second approach. This has previously proven successful to a certain degree **source for NL2CLI competition**. The major constraint however, as with traditional \acp{LLM}, would be the limitation to the training data. Due to the network being significantly more primitive than a \ac{LLM} it would require less ressources to run but it would also only have a very limited attention span, making it not suitable for the \ac{RAG} approach **check if all this is true!!!**. Additionally significant ressources may be required to train such a network **source**. We therefore decided that it may be a good supplementary engine to be explored in future work, to improve the retrieval accuracy of publically known commands. In this study however we want to focus on identifying an approach that will also allow for commands that are not publically available to be retrieved. Hence this approach will not be explored any further in this work.
+\paragraph{Specialized Neural Networks} were identified as the second approach. This has previously proven successful to a certain degree **source for NL2CLI competition**. The major constraint however, as with a traditional \acp{LLM}, would be the limitation to the training data. Due to the network being significantly more primitive than a \ac{LLM} it would require less resources to run but it would also only have a very limited attention span, making it not suitable for the \ac{RAG} approach **check if all this is true!!!**. Additionally significant resources may be required to train such a network **source**. It was therefore decided that it may be a good supplementary engine to be explored in future work, to improve the retrieval accuracy of publicly known commands. In this study however this study focuses on identifying an approach that will also allow for commands that are not publicly available to be retrieved. Hence this approach will not be explored any further in this work.
 
-By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, we identified two other methods for retrieving commandline tools and their options **sources**. 
+By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, the study identified two other methods for retrieving command line tools and their options **sources**. 
 
-\paragraph{Embedding Models} being the first one of them. Instead of directly translating a user query into a full command and option response, this approach calculates a vector representation of the user query. If we now also have a vector representation of the tools and their options, we can use cosine similarity to identify the closest semantic match to the query. Since there exists a selection of embedding models using significantly fewer parameters than one billion, the memory and latency constraints are not that significant here. Additionally the corpus of commands and their options would be easily extensible by just calculating their vector representations and adding them. This would allow for new commands and options to be added at any time and therefore not just be limited to the training data. Due to those reasons we decided to include an embedding model as one of the matching engines. Chapter~\ref{sec:comp_emb_models} will identify and compare a selection of embedding models, to identify the best possible candidate for this system.
+\paragraph{Embedding Models} being the first one of them. Instead of directly translating a user query into a full command and option response, this approach calculates a vector representation of the user query. If vector representations are also available for a vector representation of the tools and their options, cosine similarity can be used to identify the closest semantic match to the query. Since a selection exists of embedding models using significantly fewer parameters than one billion, the memory and latency constraints are less restrictive here. Additionally the corpus of commands and their options would be easily extensible by just calculating their vector representations and adding them. This would allow for new commands and options to be added at any time and therefore not just be limited to the training data. For these reasons it was decided to include an embedding model as one of the matching engines. Chapter~\ref{sec:comp_emb_models} will identify and compare a selection of embedding models, to identify the best possible candidate for this system.
 
-\paragraph{Keyword Search} was identified as the second method. This approach would be highly efficient, using up only a fraction of the 1024MB memory budget **source**. It is also highly efficient once the data is loaded **source**, making it a suitable to supplement the retrieval results of the embedding models. It is also easily extensible, all that needs to be done is add a new catalog containing descriptions, keywords or both for the new tool and it's options. We therefore decided to use a simple keyword search as our secondary engine. As it is the defacto standard for such tasks, we decided to use the BM25 algorithm **sources**.
+\paragraph{Keyword Search} was identified as the second method. This approach would be highly efficient, using up only a fraction of the 1024 MB memory budget **source**. It is also highly efficient once the data is loaded **source**, making it suitable to supplement the retrieval results of the embedding models. It is also easily extensible, all that needs to be done is add a new catalog containing descriptions, keywords or both for the new tool and its options. A simple keyword search was therefore selected as the secondary engine. As it is the de facto standard for such tasks, it was decided to use the BM25 algorithm **sources**.
 
 \subsubsection{Programming Language}
 
-\paragraph{Python} frequently get's picked as the langauge for machine learning projects **source**. It is established as the defacto standard, uses simple syntax and has a variety of frameworks for such projects available **sources**. However those frameworks come with a big performance and memory footprint **source** and while a lot of the frameworks are actually written in C or C++ **source**, native Python is considered quite slow **sources**. This makes it not not suitable for our project due to the NFR-1 and NFR-3 constraints.
+\paragraph{Python} is frequently selected as the language for machine learning projects **source**. It is established as the de facto standard, uses simple syntax and has a variety of frameworks for such projects available **sources**. However those frameworks come with a big performance and memory footprint **source** and while a lot of the frameworks are actually written in C or C++ **source**, native Python is considered quite slow **sources**. This makes it not suitable for the project due to the NFR-1 and NFR-3 constraints.
 
-\paragraph{C++} is the language behind the llama-cpp library, which can be used to run  embedding models **source**. It is also considered to be a fast programming language **source** since unlike Python, it does not require an interpreter to run, which also leads to a lower memory footprint. This makes it a reasonable choice for our project. We however decided, that due to the lack of memory safety **source** and missing experience in the use of the langauge by the team, C++ is not the right fit for the project.
+\paragraph{C++} is the language behind the llama-cpp library, which can be used to run  embedding models **source**. It is also considered to be a fast programming language **source** since unlike Python, it does not require an interpreter to run, which also leads to a lower memory footprint. This makes it a reasonable choice for the project. However, it was decided that due to the lack of memory safety **source** and missing experience in the use of the language by the team, C++ is not the right fit for the project.
 
-\paragraph{Rust} is a compiled langauge that is considered memory safe **source**. It therefore combines the speed and memory efficiency of an interpreterless language like C++ with the feature of memory safety. Additionally the llama-cpp library is also available for Rust which allows to use it for running embedding models. All this in addition to the team being experienced in the use of the language makes Rust the best fit for the project. Hence Rust will be used as the programming language in the implementation phase.
+\paragraph{Rust} is a compiled language that is considered memory safe **source**. It therefore combines the speed and memory efficiency of an interpreterless language like C++ with the feature of memory safety. Additionally the llama-cpp library is also available for Rust which enables their use for running embedding models. All this in addition to the team being experienced in the use of the language makes Rust the best fit for the project. Hence Rust will be used as the programming language in the implementation phase.
 
 \subsubsection{Persistence Layer}
 
-The environmental cosntraint ENV-3 strictly requires the application to not use any third party daemons. Due to this traditional \acp{DBMS} can not be used to persist the tool catalogs. This leaves us with two options:
+The environmental constraint ENV-3 strictly requires the application to not use any third-party daemons. Due to this, traditional \acp{DBMS} cannot be used to persist the tool catalogs. This leaves two available options:
 
-\paragraph{Structured files} would allow us to store any data directly into a file. No third party daemon would be required and by utilizing an established structured format like JSON or XML, no custom parser would have to be developed for accessing any of the data. However this approach has two significant drawbacks. The first one being, that despite parsers existing for such files, the data retrieval itself would be very slow compared to an indexed database **source**. This might be an issue especially in a big corpus of data. On the other hand the bigger of the drawbacks, is that strucutred files do not allow us to optimize the retrieval of vectors. This would lead to poor query performance and thereby endanger the 1000ms query latency limit specified by NFR-1.
+\paragraph{Structured files} would allow data to be stored directly in a file. No third-party daemon would be required and by utilizing an established structured format like JSON or XML, no custom parser would have to be developed for accessing any of the data. However this approach has two significant drawbacks. The first one being, that despite parsers existing for such files, the data retrieval itself would be very slow compared to an indexed database **source**. This might be an issue especially in a big corpus of data. On the other hand the bigger of the drawbacks, is that structured files do not support optimized vector retrieval. This would lead to poor query performance and thereby endanger the 1000 ms query latency limit specified by NFR-1.
 
-\paragraph{SQLite} is a file based database system. Unlike traditional \ac{DBMS} it does not require a database server running in the background. The database engine is contained within the connection library itself **source**, hence it gets compiled directly into the application, circumventing the ENV-3 constraint of no third-party daemons because there is no daemon running. Despite this architectural choice, SQLite functions much like a traditional database. It allows for indexing **source** and guarantees ACID-Principles. While native SQLite does not support any optimizations for the retrieval of vectors, extensions can be added to achieve this **source**. The sqlite-vec library for example allows for a direct cosine distance check between stored vectors and a target vector **source**. We therefore decided that SQLite in combination with the sqlite-vec extension is the most suitable persistance layer for this project. 
+\paragraph{SQLite} is a file-based database system. Unlike traditional \ac{DBMS} it does not require a database server running in the background. The database engine is contained within the connection library itself **source**, hence it gets compiled directly into the application, circumventing the ENV-3 constraint of no third-party daemons because there is no daemon running. Despite this architectural choice, SQLite functions much like a traditional database. It allows for indexing **source** and guarantees ACID properties. While native SQLite does not support any optimizations for the retrieval of vectors, extensions can be added to achieve this **source**. The sqlite-vec library for example allows for a direct cosine distance check between stored vectors and a target vector **source**. It was therefore decided that SQLite in combination with the sqlite-vec extension is the most suitable persistence layer for this project.
 
-
-\subsubsection{Extended Finite State Machine (EFSM)}\label{sec:fsm_tech}
