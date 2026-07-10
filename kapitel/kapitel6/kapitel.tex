@@ -111,7 +111,7 @@ Following the initial selection of candidate architectures and the implementatio
 
 Task 1 evaluated the models on their ability to map user queries to the correct command-line tool. Using the validation set, each query was embedded and compared against the target catalog descriptions of the \texttt{mv} and \texttt{cp} tools. The results of this benchmark, measuring both retrieval accuracy and system execution metrics, are summarized in Table~\ref{tab:tool_retrieval_results}.
 
-\begin{table}[htbp]
+\begin{sidewaystable}[p]
 \centering
 \caption{Task 1: Tool Retrieval Benchmark Results}
 \label{tab:tool_retrieval_results}
@@ -131,7 +131,7 @@ embeddinggemma-300M-Q8\_0     & 316.2 &  919.4 & 402.16 & 78.69\% $\pm$ 1.66\% \
 embeddinggemma-300M-BF16      & 361.8 &  886.0 & 672.88 & 78.36\% $\pm$ 1.67\% \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{sidewaystable}
 
 The empirical data demonstrates that all evaluated candidates achieve strong baseline accuracy for tool classification, with scores ranging from 78.20\% to 84.26\%. The Q8-quantized variant of \texttt{Qwen3-Embedding-0.6B} achieved the highest raw accuracy of 84.26\% ($\pm$ 1.47\%), outperforming the Jina-v5 and Gemma model families. However, this accuracy advantage is accompanied by significant efficiency trade-offs: the Qwen models exhibit the largest memory footprints (750--781 MB) and low throughput (202--251 tokens per second). Conversely, Jina's nano models demonstrate exceptional throughput, with the Q4 variant reaching 1380.0 tokens per second while maintaining an accuracy of 80.49\%. 
 
@@ -139,28 +139,48 @@ Because tool retrieval represents a relatively simple classification task where 
 
 \subsubsection{Task 2: Option Retrieval Results}
 
-The second task evaluated the models on their ability to retrieve the correct set of command-line flags (options) for a given query. This task was split into two stages: a baseline evaluation utilizing the raw validation queries, and an optimized grid-search evaluation sweeping all combinations of query-tool prepending, flag title formatting, and catalog keyword augmentation. For both stages, options were partitioned using a dynamic Otsu cutoff (initialized with $Multiplier = 1.0$ and $Alpha = 0.0$). The metric results are compiled in Table~\ref{tab:option_retrieval_results}.
+The second task evaluated the models on their ability to retrieve the correct set of command-line flags (options) for a given query. This task was split into two stages: a baseline evaluation utilizing the raw validation queries, and an optimized grid-search evaluation sweeping all combinations of query-tool prepending, flag title formatting, and catalog keyword augmentation. For both stages, options were partitioned using a dynamic Otsu cutoff (initialized with $Multiplier = 1.0$ and $Alpha = 0.0$). The baseline metric results (without optimizations) are compiled in Table~\ref{tab:option_retrieval_baseline}, and the optimized results (the best configuration per model) are shown in Table~\ref{tab:option_retrieval_optimized}.
 
 \begin{table}[htbp]
 \centering
-\caption{Task 2: Option Retrieval Benchmark Results}
-\label{tab:option_retrieval_results}
-\begin{tabularx}{\textwidth}{X r r r r r r l}
+\caption{Task 2: Option Retrieval Baseline Results (No Optimizations)}
+\label{tab:option_retrieval_baseline}
+\begin{tabularx}{\textwidth}{X r r r r r}
 \toprule
-& \multicolumn{3}{c}{\textbf{Baseline Results}} & \multicolumn{4}{c}{\textbf{Optimized Results}} \\
-\cmidrule(lr){2-4} \cmidrule(lr){5-8}
-\textbf{Model Name} & \textbf{F1 (\%)} & \textbf{RSCE} & \textbf{Rec/RSCE} & \textbf{F1 (\%)} & \textbf{RSCE} & \textbf{Rec/RSCE} & \textbf{Best Config} \\
+\textbf{Model Name} & \textbf{Prec. (\%)} & \textbf{Rec. (\%)} & \textbf{F1 (\%)} & \textbf{RSCE} & \textbf{Rec/RSCE} \\
 \midrule
-v5-nano-Q4\_K\_M & 26.22\% & 3.40 & 12.79 & 32.51\% & 3.73 & 15.50 & RUN 8 \\
-v5-nano-Q8\_0    & 27.28\% & 3.22 & 14.06 & 32.61\% & 3.44 & 15.65 & RUN 6 \\
-v5-nano-F16      & 27.12\% & 3.26 & 14.11 & 32.09\% & 3.38 & 15.67 & RUN 6 \\
-v5-small-Q4      & 20.91\% & 3.62 & 10.70 & 27.63\% & 3.40 & 13.26 & RUN 5 \\
-v5-small-Q8      & 21.93\% & 3.69 & 11.24 & 27.51\% & 3.57 & 13.31 & RUN 5 \\
-Qwen3-Q4         & 26.16\% & 2.69 & 14.15 & 42.27\% & 2.66 & 18.74 & RUN 5 \\
-Qwen3-Q8         & 19.93\% & 4.36 & 10.72 & 40.78\% & 2.98 & 18.44 & RUN 5 \\
-Gemma-Q4         & 33.13\% & 2.35 & 16.17 & 42.85\% & 2.39 & 20.19 & RUN 6/8 \\
-Gemma-Q8         & 33.27\% & 2.12 & 16.92 & 43.47\% & 2.39 & 20.28 & RUN 6/8 \\
-Gemma-BF16       & 33.58\% & 2.26 & 16.74 & 44.61\% & 2.31 & 21.18 & RUN 6/8 \\
+v5-nano-retrieval-Q4\_K\_M    & 27.38\% & 43.47\% & 26.22\% & 3.40 & 12.79 \\
+v5-nano-retrieval-Q8\_0       & 28.38\% & 45.27\% & 27.28\% & 3.22 & 14.06 \\
+v5-nano-retrieval-F16         & 27.96\% & 46.01\% & 27.12\% & 3.26 & 14.11 \\
+v5-small-retrieval-Q4\_K\_M   & 20.52\% & 38.72\% & 20.91\% & 3.62 & 10.70 \\
+v5-small-retrieval-Q8\_0      & 20.98\% & 41.48\% & 21.93\% & 3.69 & 11.24 \\
+qwen3-embedding-0.6b-q4\_k\_m & 27.34\% & 38.06\% & 26.16\% & 2.69 & 14.15 \\
+Qwen3-Embedding-0.6B-Q8\_0    & 17.20\% & 46.72\% & 19.93\% & 4.36 & 10.72 \\
+embeddinggemma-300m-Q4\_0     & 37.32\% & 38.01\% & 33.13\% & 2.35 & 16.17 \\
+embeddinggemma-300M-Q8\_0     & 38.41\% & 35.87\% & 33.27\% & 2.12 & 16.92 \\
+embeddinggemma-300M-BF16      & 38.05\% & 37.84\% & 33.58\% & 2.26 & 16.74 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Task 2: Option Retrieval Optimized Results}
+\label{tab:option_retrieval_optimized}
+\begin{tabularx}{\textwidth}{X r r r r r}
+\toprule
+\textbf{Model Name} & \textbf{Prec. (\%)} & \textbf{Rec. (\%)} & \textbf{F1 (\%)} & \textbf{RSCE} & \textbf{Rec/RSCE} \\
+\midrule
+v5-nano-retrieval-Q4\_K\_M    & 31.70\% & 57.81\% & 32.51\% & 3.73 & 15.50 \\
+v5-nano-retrieval-Q8\_0       & 32.53\% & 53.85\% & 32.61\% & 3.44 & 15.65 \\
+v5-nano-retrieval-F16         & 31.79\% & 52.98\% & 32.09\% & 3.38 & 15.67 \\
+v5-small-retrieval-Q4\_K\_M   & 28.84\% & 45.08\% & 27.63\% & 3.40 & 13.26 \\
+v5-small-retrieval-Q8\_0      & 28.19\% & 47.51\% & 27.51\% & 3.57 & 13.31 \\
+qwen3-embedding-0.6b-q4\_k\_m & 49.04\% & 49.84\% & 42.27\% & 2.66 & 18.74 \\
+Qwen3-Embedding-0.6B-Q8\_0    & 44.37\% & 54.95\% & 40.78\% & 2.98 & 18.44 \\
+embeddinggemma-300m-Q4\_0     & 49.20\% & 48.25\% & 42.85\% & 2.39 & 20.19 \\
+embeddinggemma-300M-Q8\_0     & 50.42\% & 48.47\% & 43.47\% & 2.39 & 20.28 \\
+embeddinggemma-300M-BF16      & 51.77\% & 48.93\% & 44.61\% & 2.31 & 21.18 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -205,7 +225,7 @@ The final selection score for each model was computed as the weighted sum of its
 
 The criteria weights were defined as follows: Recall/RSCE ($w=3$) to prioritize retrieval balance; throughput ($w=2$), peak memory ($w=2$), and load time ($w=3$) to emphasize computational efficiency; and F1-score ($w=1$), precision ($w=1$), recall ($w=1$), and tool accuracy ($w=1$) as baseline quality indicators. The model load time was assigned a weight of 3 because in local systems executing short natural-language queries, startup latency is a dominant factor in end-to-end user experience. The normalized scores and final weighted sums are presented in Table~\ref{tab:decision_matrix}.
 
-\begin{table}[htbp]
+\begin{sidewaystable}[p]
 \centering
 \caption{Model Selection Decision Matrix (Min-Max Utility Scaling)}
 \label{tab:decision_matrix}
@@ -225,12 +245,11 @@ v5-small-Q8         & 0.06 &  0.00 &  9.86 & 0.27 &  0.00 &  0.00 & 1.91 & 1.07 
 v5-small-Q4         & 0.00 &  0.50 &  0.00 & 1.03 &  0.07 &  0.28 & 0.00 & 0.00 &   3.40 & 10 \\
 \bottomrule
 \end{tabularx}
-\end{table}
+\end{sidewaystable}
 
 The decision matrix identifies \texttt{embeddinggemma-300M-Q8\_0} as the optimal model configuration, achieving the highest final weighted score of 7.51 (Weighted Sum: 105.10). It is followed closely by the Q4-quantized variant of the same base model (score: 7.39). This result confirms that the Q8-quantized Gemma model successfully balances retrieval quality with runtime speed and low resource usage.
 
 To visually illustrate the trade-offs involved in this selection, Figure~\ref{fig:pareto_frontier} plots retrieval quality (Recall/RSCE) against peak memory consumption. The dashed red line represents the Pareto-optimal frontier, indicating configurations that cannot be improved in one metric without degrading the other.
-
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}
@@ -303,17 +322,16 @@ To visually illustrate the trade-offs involved in this selection, Figure~\ref{fi
 };
 \addlegendentry{Gemma-300M Variants}
 
-% Labels for key models
-\node[above, font=\scriptsize] at (axis cs:282.1, 15.50) {Jina Nano Q4};
-\node[above, font=\scriptsize] at (axis cs:302.9, 15.65) {Jina Nano Q8};
-\node[above, font=\scriptsize] at (axis cs:781.6, 18.44) {Qwen3 Q8};
-\node[above, font=\scriptsize] at (axis cs:402.1, 20.28) {Gemma Q8 (Winner)};
-\node[above, font=\scriptsize] at (axis cs:672.8, 21.18) {Gemma BF16};
+% Labels for key models (Adjusted to stay within plot bounds and clear the legend)
+\node[above, font=\scriptsize, yshift=4pt] at (axis cs:282.1, 15.50) {Jina Nano Q4};
+\node[right, font=\scriptsize, xshift=4pt, yshift=2pt] at (axis cs:302.9, 15.65) {Jina Nano Q8};
+\node[right, font=\scriptsize, xshift=4pt] at (axis cs:781.6, 18.44) {Qwen3 Q8};
+\node[above, font=\scriptsize, yshift=3pt] at (axis cs:402.1, 20.28) {Gemma Q8 (Winner)};
+\node[above, font=\scriptsize, yshift=3pt] at (axis cs:672.8, 21.18) {Gemma BF16};
 
 \end{axis}
 \end{tikzpicture}
 \caption{Retrieval quality (Recall/RSCE) plotted against peak memory consumption (VmHWM in MB). The Pareto frontier (dashed line) shows the optimal configurations, highlighting that the Q8-quantized Gemma-300M model represents the Pareto-optimal design point under strict memory and latency constraints.}
 \label{fig:pareto_frontier}
 \end{figure}
-
 The Pareto chart clearly shows that while the Jina-v5-nano models minimize memory consumption and Gemma-300M-BF16 maximizes retrieval quality, \texttt{embeddinggemma-300M-Q8\_0} occupies a critical elbow position. It offers near-peak retrieval quality at a resource cost comparable to the much smaller Jina models. Based on this quantitative analysis and trade-off visualization, \textbf{\texttt{embeddinggemma-300M-Q8\_0} is selected as the primary embedding engine} for the command retrieval system.
