@@ -6,6 +6,22 @@ The implementation of the tool was based on the system design and technology dec
 
 \subsection{Score Aggregation}\label{sec:score_aggregation_impl}
 
+\subsection{Multi-Engine Score Aggregation}
+\label{subsec:score_aggregation}
+
+To consolidate candidates retrieved by multiple matching engines, the system normalizes and aggregates raw scores using weighted summation. First, raw scores $S_e(c)$ for candidate $c$ from engine $e$ are normalized against the maximum score returned by that specific engine to bound them to $[0, 1]$:
+\[
+S'_{e}(c) = \begin{cases} 
+\frac{S_e(c)}{\max_{c'} S_e(c')} & \text{if } \max_{c'} S_e(c') > 0 \\ 
+0.0 & \text{otherwise} 
+\end{cases}
+\]
+Next, the final aggregated score $S_{\text{aggregated}}(c)$ is computed as the weighted sum:
+\[
+S_{\text{aggregated}}(c) = \sum_{e \in E} S'_{e}(c) \cdot w_e
+\]
+where $w_e \ge 0$ is the pre-configured weight of engine $e$. Candidates missing from an engine's results receive a score of $0.0$ for that engine. Finally, candidates are consolidated and sorted in descending order of their aggregated scores to produce the final ranked list.
+
 \subsection{Hyperparameter Optimization for Otsu-based Candidate Cutoff}
 \label{sec:otsu_optimization}
 
