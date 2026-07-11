@@ -2,21 +2,6 @@
 
 \subsection{Requirements}
 
-% Database:
-%- Tabelle für Tool beschreibungen
-%    - Tool name (ID)
-%    - Tool Beschreibung (TEXT)
-%    - Tool Beschreibung Vector (BLOB)
-%- Tabelle für tool option Beschreibungen
-%    - option (ID)
-%    - Tool Name (ID)
-%    - Tool Option beschreibung (TEXT)
-%    - Tool Option Beschreibung Vector (BLOB)
-
-%Pipeline Design \& Systemablaufdiagramm
-
-%2 systeme, eine lightweight api die das modell lädt und embeddings macht falls app registriert wird und das cli system
-
 Before defining the functional behaviors and quality attributes of the system, it is necessary to establish the immutable physical and operational boundaries within which the software must execute. These environmental constraints dictate the hardware baseline for all subsequent performance evaluations and formally enforce the strict offline, zero-dependency philosophy of the proposed architecture. The fundamental constraints governing the local execution environment are detailed in Table \ref{tab:env_constraints}.
 
 \FloatBarrier
@@ -101,7 +86,7 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
     
     NFR-3 & Memory Bounding & The peak RAM utilization of the system process must never exceed $1024 MB$ at any time during operation. \\
     
-    NFR-4 & Latency Scalability & The system must maintain its $< 1000 ms$ query latency when the persistent state is scaled to hold definitions for up to ** Average number of CLI tools installed on a linux machine ** distinct tools. \\
+    NFR-4 & Latency Scalability & The system must maintain its $< 1000 ms$ query latency when the persistent state is scaled to hold definitions for up to ** Average number of CLI tools installed on a Linux machine ** distinct tools. \\
     
     NFR-5 & Retrieval Quality & The system must achieve a minimum Macro-Averaged F1-Score of **[Target]** and a Jaccard Similarity of **[Target]** against the established evaluation dataset. \\
     
@@ -126,32 +111,6 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 \end{xltabular}
 
 \FloatBarrier
-
-%\subsubsection{Architectural Pattern}
-%\label{sec:architecture_philosophy}
-
-%The design of the system is fundamentally driven by the non-functional requirements governing latency, memory footprint, and modularity. Specifically, the system must process natural language queries in under 1000 ms (NFR-1, NFR-4) within a 1024 MB memory limit (NFR-3), 
-
-%**while ensuring that the core algorithmic retrieval logic remains strictly decoupled from volatile \ac{I/O} operations and storage mechanisms (NFR-6). ** Umschreiben, ggf. Requirement dass storage backend austauschbar sein muss
-
-%To satisfy these constraints, a traditional Layered (N-Tier) Architecture was discarded. While a layered approach neatly categorizes concerns into presentation, business, and data tiers, it introduces a transitive top-down dependency structure**SOURCE**. In such a model, the core algorithmic logic is inherently coupled to the specific implementation of the underlying data access layer. 
-
-%If the local storage mechanism were to be replaced, the business logic would require modification, directly violating the modularity constraint (NFR-6). ** UMSCHREIBEN, NFR-6 bezieht sich auf die retrieval modells (Embedding \& Bm25), ggf. NFR-6 umschreiben dass das auch darin konkret reflektiert ist! Ich möchte den Keyword matching und das embedding modell austauschen können. Ich möchte auch das storage backend tauschen können, also ggf. 2 Requirements draus machen.
-
-%To decouple the algorithmic core from the storage layer, the system relies on the Dependency Inversion Principle. While modern dependency-inverting paradigms such as Clean Architecture \cite{martin2012clean}**SOURCES** and Onion Architecture \cite{palermo2008onion}**SOURCES** offer robust domain isolation, they prescribe concentric internal layers that mandate extensive \ac{DTO} mapping and rigid interface boundaries. For a localized \ac{CLI} operating under strict computational and latency budgets (NFR-1, NFR-3), this enterprise-level boilerplate introduces unjustifiable computational overhead and complexity. ** Ergänzen dass die komplexität der anwendung (für die instandhaltung/erweiterung) dadurch inhärent steigt
-
-%Therefore, this system adopts a \textbf{Hexagonal Architecture}, also known as the Ports and Adapters pattern \cite{cockburn2005hexagonal}**SOURCES**. This pattern provides the necessary macro-level boundary control without dictating internal bureaucratic layers. ** Allowing to focus on the actual implementation ** The architecture is divided into two strict conceptual zones:
-
-%\begin{itemize}
-%    \item \textbf{The Core (Inside):} This encapsulates the mathematical retrieval models, vector search logic, and domain entities (e.g., Commands, Flags, and Catalogs). The Core possesses zero knowledge of the external world. It dictates its storage and interaction needs purely through abstract interfaces (Ports).
-%    \item \textbf{The Infrastructure (Outside):} This encompasses all external I/O mechanisms, including the user-facing CLI terminal (Driving Adapter) and the local persistent state database (Driven Adapter). 
-%\end{itemize} 
-%** Das passt so nicht ganz, Das modell und der keyword matching algorithmus müsse auch austauschbar sein! Daher müssen diese auch als "plugins" definiert werden.
-
-%By implementing data-access and presentation interfaces at the edge of the Core domain,
-%** Include the Embedding Model and the Keyword matching algorithm here!**
-%the external mechanisms are forced to depend on the Core rather than the inverse. This guarantees that the core natural language processing and hybrid retrieval engine can be compiled, tested, and executed entirely independent of the chosen database technology or host operating system terminal, successfully fulfilling all architectural constraints.
-%** Rewrite this entire paragraph!**
 
 \subsection{Architectural Pattern}
 \label{sec:architecture_philosophy}
@@ -368,7 +327,7 @@ For local system adjustments (FR-9), the system provides a linear execution path
 \FloatBarrier
 
 
-\subsection{Interface Specifications (Schnittstellen)}
+\subsection{Interface Specifications}
 \label{sec:interfaces}
 
 To finalize the systems design, it is necessary to define the data contracts that bridge the system's boundaries. This section is explicitly divided into two categories: Internal Interfaces and External Interfaces. This distinguishes programmatic domain contracts (inside the Hexagon) from the interaction pathways used by actors (outside the Hexagon).
