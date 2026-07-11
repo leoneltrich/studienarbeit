@@ -3,11 +3,7 @@
 
 The implementation of the tool was based on the system design and technology decisions of cahpter~\ref{sec:design_and_decision}. We utilized the tool Antigravity CLI in combination with various Gemini \acp{LLM} to accelerate development. For this we first created a project scaffold, with placholder functionality. This allowed us to ensure the architecture outlined in the respective chapters was properly implemented. We then utilized Antigravity CLI to implement the actual functionality of the tool step by step. By keeping tight boundries on what should be created and manually verifying the correctness of generated code, we managed to build a functional tool, fulfilling a subset of the requirements specified. In subsection \ref{sec:implementation_limitation} we outline the requirements ommitted at this stage and the reasons behind it.
 
-
 \subsection{Score Aggregation}\label{sec:score_aggregation_impl}
-
-\subsection{Multi-Engine Score Aggregation}
-\label{subsec:score_aggregation}
 
 To consolidate candidates retrieved by multiple matching engines, the system normalizes and aggregates raw scores using weighted summation. First, raw scores $S_e(c)$ for candidate $c$ from engine $e$ are normalized against the maximum score returned by that specific engine to bound them to $[0, 1]$:
 \[
