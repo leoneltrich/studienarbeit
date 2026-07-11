@@ -95,8 +95,64 @@
     \end{itemize}
 \end{enumerate}
 
+\section{User Evaluation Tasks}
+
+\textbf{Task 1: Create duplicate}
+
+\textbf{Scenario}: In your current location there is a folder called data (/tmp/data). Your task is to create an exact copy of the folder and all its contents, in the misc directory (/tmp/misc). To use the tool: command-finder query "your query".
+
+\textbf{Verification Command}: verify.sh 1
+
+\textbf{Solution}: cp -r /tmp/data /tmp/misc NOTE: Other command options may have also been correct in this scenario.
+
+
+\textbf{Task 2: Backup}  
+
+\textbf{Scenario}: You have important data that you need to create a safety copy of, in a file called benchmark (/tmp/results/benchmark). However there is already some data in the backup directory and you want to make sure the copy in (/tmp/backup) is numbered! To use the tool: command-finder query "your query".  
+
+\textbf{Verification Command}: verify.sh 2  
+
+\textbf{Solution}: cp --backup numbered /tmp/results/benchmark /tmp/backup NOTE: Other command options may have also been correct in this scenario
+
+\textbf{Task 3: Move to misc directory}  
+
+\textbf{Scenario}: There is a file called numbers.txt in your current directory (/tmp/numbers.txt). Your job is to get this file into the misc directory (/tmp/misc/numbers.txt), updating any existing numbers.txt files in this directory. To use the tool: command-finder query "your query".  
+
+\textbf{Verification Command}: verify.sh 3  
+
+\textbf{Solution}: mv --update=all /tmp/numbers.txt /tmp/misc NOTE: Other command options may have also been correct in this scenario.
+
+
+\textbf{Task 4: Environment Initialization}  
+
+\textbf{Scenario}: Your goal is to prepare your current folder for a production environment. Use the correct tool to create a new, secure production setup file in this directory. Ensure the file is created with the correct secure and production settings! To use the tool: command-finder query "your query".  
+
+\textbf{Verification Command}: verify.sh 4  
+
+\textbf{Solution}: ops-sync --genesis -m:secure --env prod  
+
+
+\textbf{Task 5: Legacy Payload Injection}
+
+\textbf{Scenario}: There is an existing file in your directory named data.txt that needs to be modified. You need to use the tool to add a legacy version marker to the very end of this file. Make sure you also trigger the tool's header rotation feature during this process so the file updates correctly without any errors or lost data. To use the tool: command-finder query "your query".  
+
+\textbf{Verification Command}: verify.sh 5  
+
+\textbf{Solution}: ops-sync --append data.txt --stream legacy-v2 --force-rotate
+
+
+\textbf{Task 6: Data Sanitization}
+
+\textbf{Scenario}: You need to clean up sensitive data inside the existing data.txt file by removing any lines that contain the word "PASSWORD". Use the tool to perform this cleanup directly inside the file, and make sure to point the tool's required export pipeline flag to a new log file named clean.log so the system can record that the cleanup took place. To use the tool: command-finder query "your query".  
+
+\textbf{Verification Command}: verify.sh 6  
+
+\textbf{Solution}: ops-sync -s data.txt -x clean.log --scrub "PASSWORD" 
+
+
 \section{Interface specification}\label{app:interfaces}
 ** VERIFY ALL REQUIREMENT REFERNCES IN THIS CHAPTER!!! Maybe remove the architecture stuff under the tables!**
+
 
 \begin{table}[htbp]
     \centering
