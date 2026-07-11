@@ -1,7 +1,31 @@
 \section{Background}
 \label{sec:grundlagen}
 
+** Find sources and revise text**
+\subsection{Adaptive Candidate Cutoff via Otsu's Method}
+\label{subsec:otsu_cutoff}
+Originally designed for image processing, Otsu's method is used here to dynamically detect the "cliff"—the point where candidate relevance suddenly drops off. Instead of forcing a rigid top-$K$ cutoff, this approach lets the system look at the actual distribution of scores and draw a line that naturally separates strong matches from weak ones (noise).
+
+The input to the algorithm is the relative drop in score between consecutive candidates. For a candidate $c_j$ at rank $j$ with an aggregated score $S(c_j)$, the relative drop $\Delta_j$ to the next candidate $c_{j+1}$ is calculated as:
+$$\Delta_j = \frac{S(c_j) - S(c_{j+1})}{S(c_j)}$$
+
+Otsu's method splits this set of drops $\Delta$ into two groups: minor fluctuations and significant drops. It does this by testing different thresholds $t$ and picking the optimal threshold $t^*$ that maximizes the variance between the two groups ($\sigma_b^2(t)$):
+$$t^* = \operatorname*{argmax}_{t} \sigma^2_b(t)$$
+
+The between-class variance for any candidate threshold $t$ is calculated using:
+
+$$\sigma_b^2(t) = \omega_0(t) \omega_1(t) (\mu_0(t) - \mu_1(t))^2$$
+
+Where $\omega_0(t)$ and $\omega_1(t)$ are the proportions of drop values falling below and above the threshold $t$, and $\mu_0(t)$ and $\mu_1(t)$ are the average drop values of those two split groups.
+
+To fine-tune this cutoff behavior, two hyperparameters are introduced:
+\begin{itemize}
+    \item \textbf{Relative Floor ($\alpha$):} A baseline filter used to weed out low-confidence candidates right away. Any candidate whose score is less than a certain percentage of the top score ($S(c) < \alpha \cdot \max_{c'} S(c')$) is immediately discarded.
+    \item \textbf{Sensitivity Multiplier ($m$):} A scaling factor used to adjust the strictness of the calculated threshold. The final cutoff threshold $\theta$ is defined as:
+    $$\theta = m \cdot t^*$$
+\end{itemize}
+
+Using this final threshold $\theta$, the system checks the ranked candidates in order. The list is cut off at the very first index $j$ where the relative drop $\Delta_j$ is greater than $\theta$, keeping only the high-quality candidates that came before it.
+
+\subsection{Embedding models}
 Embedding models (cross encoder vs. bi-encoder)
-
-Otsu cutoff
-
