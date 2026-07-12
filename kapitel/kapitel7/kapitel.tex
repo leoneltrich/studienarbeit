@@ -77,19 +77,19 @@ The command can be split into a total of five sections:
 \begin{enumerate}
     \item \textbf{CFLAGS="-Du\_int8\_t=uint8\_t -Du\_int16\_t=uint16\_t -Du\_int64\_t=uint64\_t"} 
     
-    Because the used version of sqlite-vec (v0.1.9) utilizes legacy types (e.g. u\_int8\_t) **source** this part of the compilation command defines a preprocessor macro for the compiler to map those legacy types to C99 standard types (e.g. uint8\_t). This is required because otherwise the musl build fails.
+    Because the used version of sqlite-vec (v0.1.9) utilizes legacy types (e.g. u\_int8\_t) this part of the compilation command defines a preprocessor macro for the compiler to map those legacy types to C99 standard types (e.g. uint8\_t). This is required because otherwise the musl build fails.
     \item \textbf{RUSTFLAGS="-C target-feature=+avx,+avx2,+fma,+f16c,+bmi2"}
     
-    This part of the command enables hardware-level CPU instruction extensions on the target machine. The \textbf{avx} and \textbf{avx2} extensions allow the CPU to run \ac{SIMD} operations, processing up to 8 floating-point numbers in a single clock cycle instead of one by one **source**. On the other hand the \textbf{fma} allows the CPU to perform multiplication and addition (A x B + C) in a single CPU instruction. This is the fundamental math operation behind neural networks and matrix multiplications **source**, leading to a significant speed up of those operations. The \textbf{f16c} extension enables hardware acceleration for converting 16-bit floats to 32-bit floats, which may help to speed up decompression of machine learning models **source**. Finally, the \textbf{bmi2} extension accelerates low-level indexing and hashing operations **source**.
+    This part of the command enables hardware-level CPU instruction extensions on the target machine. The \textbf{avx} and \textbf{avx2} extensions allow the CPU to run \ac{SIMD} operations, processing up to 8 floating-point numbers in a single clock cycle instead of one by one~\cite{intel_sdm_2024}. On the other hand the \textbf{fma} allows the CPU to perform multiplication and addition (A x B + C) in a single CPU instruction. This is the fundamental math operation behind neural networks and matrix multiplications~\cite{intel_sdm_2024}, leading to a significant speed up of those operations. The \textbf{f16c} extension enables hardware acceleration for converting 16-bit floats to 32-bit floats, which may help to speed up decompression of machine learning models~\cite{intel_sdm_2024}. Finally, the \textbf{bmi2} extension accelerates low-level indexing and hashing operations~\cite{intel_sdm_2024}.
     \item \textbf{cargo zigbuild}
     
-    By using this part in our command we swap out cargos default linker and C compiler with Zig. This allows for the cross compilation of C and C++ code without requiring a complex setup of a compilation environment **source**. 
+    By using this part in our command we swap out cargos default linker and C compiler with Zig. This allows for the cross compilation of C and C++ code without requiring a complex setup of a compilation environment. 
     \item \textbf{--release}
     
     Using this flag in our compilation command, tells cargo to optimize code, strip debugging symbols and trun of runtime debugging assertions, leading to an optimized executable.
     \item \textbf{--target x86\_64-unknown-linux-musl}
     
-    This last part of the command, specifies the compilation target system. This specific variation will compile for an x86 64-bit system. By specifying Linux it is specified that the executable targets a Linux kernel based OS and using musl tells the compiler to use musl-libc instead of the standard glibc. Unlike the standard gnu target, the  musl  target configures the compiler to link the C standard library statically **source**, making our binary portable and not require any shared runtime dependencies (NFR-7).
+    This last part of the command, specifies the compilation target system. This specific variation will compile for an x86 64-bit system. By specifying Linux it is specified that the executable targets a Linux kernel based OS and using musl tells the compiler to use musl-libc instead of the standard glibc. Unlike the standard gnu target, the  musl  target configures the compiler to link the C standard library statically~\cite{rust_rfc_crt_static}, making our binary portable and not require any shared runtime dependencies (NFR-7).
 \end{enumerate}
 
 % - Rust
