@@ -443,7 +443,7 @@ By exploring the \ac{RAG} approach, to extend the functionality of \acp{LLM}, th
 
 \subsubsection{Programming Language}
 
-\paragraph{Python} is frequently selected as the language for machine learning projects **source**. It is established as the de facto standard, uses simple syntax and has a variety of frameworks for such projects available **sources**. However, those frameworks come with a big performance and memory footprint **source** and while a lot of the frameworks are actually written in C or C++ **source**, native Python is considered quite slow **sources**. This makes it not suitable for the project due to the NFR-1 and NFR-3 constraints.
+\paragraph{Python} is frequently selected as the language for machine learning projects~\cite{raschka2020machine}. It uses simple syntax and has a variety of frameworks for such projects available~\cite{raschka2020machine}. However, Python still comes with a big performance and memory footprint~\cite{berger2023triangulating} and while a lot of the frameworks are actually written in C or C++~\cite{raschka2020machine}, native Python is considered quite slow~\cite{berger2023triangulating}. This makes it not suitable for the project due to the NFR-1 and NFR-3 constraints.
 
 \paragraph{C++} is the language behind the llama-cpp library, which can be used to run  embedding models **source**. It is also considered to be a fast programming language **source** since unlike Python, it does not require an interpreter to run, which also leads to a lower memory footprint. This makes it a reasonable choice for the project. However, it was decided that due to the lack of memory safety **source** and missing experience in the use of the language by the team, C++ is not the right fit for the project.
 
