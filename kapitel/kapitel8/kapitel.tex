@@ -5,10 +5,10 @@
 ** Check that all numbers in all diagrams are correct **
 \FloatBarrier
 
-The experimental evaluation of the command generation engine across the benchmark dataset of $N=609$ natural language queries yielded insights into utility retrieval accuracy, option validation dynamics, and runtime performance characteristics.
+The experimental evaluation of the command generation engine across the benchmark dataset of $N=609$ natural-language queries yielded insights into utility retrieval accuracy, option validation dynamics, and runtime performance characteristics.
 
-\subsubsection{Utility Retrieval And Command Resolution Success}
-At the primary stage of command synthesis, the classification model demonstrated strong classification capabilities, correctly identifying the target command-line utility ( \texttt{cp}, \texttt{mv}, or \texttt{ops-sync}) in 80.30\% of the evaluated cases ($N=489$, as shown in Figure~\ref{fig:overall_tool_accuracy}). 
+\subsubsection{Utility Retrieval and Command Resolution Success}
+At the primary stage of command synthesis, the classification model demonstrated strong classification capabilities, correctly identifying the target command-line utility (\texttt{cp}, \texttt{mv}, or \texttt{ops-sync}) in 80.30\% of the evaluated cases ($N=489$, as shown in Figure~\ref{fig:overall_tool_accuracy}). 
 
 \FloatBarrier
 \begin{figure}[htbp]
@@ -55,17 +55,17 @@ At the primary stage of command synthesis, the classification model demonstrated
 \end{figure}
 \FloatBarrier
 
-However, command synthesis requires both correct utility classification and successful option validation. If the option generation module proposes conflicting or syntactically invalid parameters, the syntax engine triggers resolution warning, preventing command generation. Consequently, as illustrated in the overall resolution overview (Figure~\ref{fig:resolution_overview}), 58.13\% of all queries ($N=354$) successfully resolved into valid command-line invocations, while the remaining 41.87\% ($N=255$) resulted in resolution failures.
+However, command synthesis requires both correct utility classification and successful option validation. If the option generation module proposes conflicting or syntactically invalid parameters, the syntax engine triggers a resolution warning, preventing command generation. Consequently, as illustrated in the overall resolution overview (Figure~\ref{fig:resolution_overview}), 58.13\% of all queries ($N=354$) were successfully resolved into valid command-line invocations, while the remaining 41.87\% ($N=255$) resulted in resolution failures.
 
-A detailed breakdown of these metrics reveals the interactions between classification correctness and syntactical validation (Figure~\ref{fig:overall_breakdown}):
+A detailed breakdown of these metrics reveals the interaction between classification correctness and syntactical validation (Figure~\ref{fig:overall_breakdown}):
 \begin{itemize}
     \item \textbf{Successful Correct Resolutions:} 48.93\% of the total dataset ($N=298$) was successfully resolved using the correct tool.
     \item \textbf{Successful Incorrect Resolutions:} 9.20\% of the total dataset ($N=56$) was successfully resolved but generated a command for the incorrect tool.
     \item \textbf{Syntactical Failures with Correct Tool Routing:} 31.36\% ($N=191$) correctly identified the utility but failed validation due to conflicting option arguments.
-    \item \textbf{Robustness against Incorrect Routing:} When the wrong utility was selected, command generation failed in 53.33\% of cases ($N=64$ out of $120$ queries where the results selected the incorrect tools), whereas when the correct tool was selected, the failure rate was lower at 39.06\% ($N=191$ out of $489$ correct-tool queries), as visualized in Figure~\ref{fig:resolution_by_tool}. 
+    \item \textbf{Robustness against Incorrect Routing:} When the wrong utility was selected, command generation failed in 53.33\% of cases ($N=64$ out of $120$ queries for which the incorrect tool was selected), whereas, when the correct tool was selected, the failure rate was lower at 39.06\% ($N=191$ out of $489$ correct-tool queries), as visualized in Figure~\ref{fig:resolution_by_tool}. 
 \end{itemize}
 
-This correlation indicates that routing to an incorrect utility significantly increases the likelihood of a command generation failure. This behavior can be attributed to two main factors: first, highly ambiguous or poorly formed natural language queries confuse both the classifier and option validation. Second, the absence of expected option definitions in a wrongly selected utility results in the fallback selection of invalid or contradictory flags, triggering a syntax error.
+This correlation indicates that routing to an incorrect utility significantly increases the likelihood of command generation failure. This behavior can be attributed to two main factors. First, highly ambiguous or poorly formed natural-language queries confuse both the classifier and the option validation process. Second, the absence of expected option definitions in an incorrectly selected utility results in the fallback selection of invalid or contradictory flags, triggering a syntax error.
 
 \FloatBarrier
 \begin{figure}[htbp]
@@ -114,7 +114,7 @@ This correlation indicates that routing to an incorrect utility significantly in
   ]
   \addplot[fill=primarygreen, bar width=10pt, bar shift=-9pt] coordinates {(0,298) (1,56)};
   \addplot[fill=primaryred, bar width=10pt, bar shift=9pt] coordinates {(0,191) (1,64)};
-  \legend{Success, Fail}
+  \legend{Success, Failure}
   \end{axis}
   \end{tikzpicture}
   \caption{Resolution Status by Tool Correctness. Right = Correct Tool, Wrong = Wrong Tool.}
@@ -124,13 +124,13 @@ This correlation indicates that routing to an incorrect utility significantly in
 \FloatBarrier
 
 \subsubsection{Option Matching and Generation Quality}
-For the queries that successfully resolved to the correct utility ($N=298$), we evaluated the recall and accuracy of the generated option flags (Figure~\ref{fig:option_match_quality}):
+For the queries that were successfully resolved to the correct utility ($N=298$), the recall and accuracy of the generated option flags were evaluated (Figure~\ref{fig:option_match_quality}):
 \begin{itemize}
-    \item \textbf{Perfect Matches:} 24.16\% of these successful resolutions (representing 11.82\% of the global dataset) generated command lines containing all required option flags with zero omissions.
-    \item \textbf{Partial Matches:} 51.01\% (24.96\% globally) matched at least one required option flag but not all of them, reflecting a partial recall of the query requirements.
-    \item \textbf{Zero Matches:} 24.83\% (12.15\% globally) generated a valid command syntactically suggesting the correct tool but failed to retrieve any of the correct options.
+    \item \textbf{Perfect Matches:} 24.16\% of these successful resolutions (representing 11.82\% of the global dataset) generated command lines containing all required option flags with no omissions.
+    \item \textbf{Partial Matches:} 51.01\% (24.96\% globally) matched at least one required option flag, but not all of them, reflecting partial recall of the query requirements.
+    \item \textbf{Zero Matches:} 24.83\% (12.15\% globally) generated a syntactically valid command using the correct tool but failed to retrieve any of the correct options.
 \end{itemize}
-The granular distribution across all six mutual evaluation categories is illustrated in Figure~\ref{fig:detailed_breakdown}.
+The detailed distribution across all six evaluation categories is illustrated in Figure~\ref{fig:detailed_breakdown}.
 
 \FloatBarrier
 \begin{figure}[htbp]
@@ -150,8 +150,8 @@ The granular distribution across all six mutual evaluation categories is illustr
   \small
   \begin{tabular}{llcc}
     \textcolor{primarygreen}{\rule{1.2ex}{1.2ex}} & Fully Correct (100\% match) & 72 & (24.2\%) \\
-    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Partially Correct (1-99\% match) & 152 & (51.0\%) \\
-    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Non-Correct (0\% match) & 74 & (24.8\%) \\
+    \textcolor{primaryblue}{\rule{1.2ex}{1.2ex}} & Partially Correct (1--99\% match) & 152 & (51.0\%) \\
+    \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Incorrect (0\% match) & 74 & (24.8\%) \\
   \end{tabular}
   \vspace{0.2cm}
   \caption{Option Match Quality ($N_{\text{correct}} = 298$).}
@@ -180,20 +180,20 @@ The granular distribution across all six mutual evaluation categories is illustr
   \scriptsize
   \begin{tabular}{llcc}
     \textcolor{green!80!black}{\rule{1.2ex}{1.2ex}} & Fully Correct (100\% match) & 72 & (11.8\%) \\
-    \textcolor{green!60!black}{\rule{1.2ex}{1.2ex}} & Partially Correct (1-99\% match) & 152 & (25.0\%) \\
-    \textcolor{green!30!black}{\rule{1.2ex}{1.2ex}} & Non-Correct (0\% match) & 74 & (12.2\%) \\
+    \textcolor{green!60!black}{\rule{1.2ex}{1.2ex}} & Partially Correct (1--99\% match) & 152 & (25.0\%) \\
+    \textcolor{green!30!black}{\rule{1.2ex}{1.2ex}} & Incorrect (0\% match) & 74 & (12.2\%) \\
     \textcolor{blue!60!black}{\rule{1.2ex}{1.2ex}} & Succeeded \& Wrong Tool & 56 & (9.2\%) \\
     \textcolor{orange!70!black}{\rule{1.2ex}{1.2ex}} & Failed \& Correct Tool & 191 & (31.4\%) \\
     \textcolor{red!70!black}{\rule{1.2ex}{1.2ex}} & Failed \& Wrong Tool & 64 & (10.5\%) \\
   \end{tabular}
   \vspace{0.2cm}
-  \caption{Granular 6-category classification split ($N=609$).}
+  \caption{Granular six-category classification split ($N=609$).}
   \label{fig:detailed_breakdown}
 \end{minipage}
 \end{figure}
 \FloatBarrier
 
-To determine whether the high recall in perfect matches was simply an artifact of over-generating excessive options (which would increase the probability of matching by chance), we analyzed the \ac{RSCE} across the three option match quality subcategories. As shown in Figure~\ref{fig:rsf_by_subcategory}, the \ac{RSCE} remains remarkably stable between 1.64 (for zero-match queries) and 1.68 (for partial-match queries), with perfect matches averaging 1.67. This uniformity confirms that option over-generation is consistent across all match qualities and is not the driving force behind correct matches.
+To determine whether the high recall in perfect matches was simply an artifact of generating excessive options, which would increase the probability of matching by chance, the \ac{RSCE} across the three option-match-quality subcategories was analyzed. As shown in Figure~\ref{fig:rsf_by_subcategory}, the \ac{RSCE} remained stable, ranging from 1.64 for zero-match queries to 1.68 for partial-match queries, with perfect matches averaging 1.67. This consistency indicates that option over-generation occurred at a similar rate across all match-quality categories and was not the main cause of correct matches.
 
 \FloatBarrier
 
@@ -222,12 +222,12 @@ To determine whether the high recall in perfect matches was simply an artifact o
 \end{figure}
 \FloatBarrier
 
-\subsubsection{System Resource Utility and Performance}
-Finally, the execution latency and memory footprint of the command-finder engine were monitored across all 609 runs to evaluate production readiness. 
+\subsubsection{System Resource Usage and Performance}
+Finally, the execution latency and memory footprint of the command-finder engine were monitored across all 609 runs to evaluate its performance. 
 
-The engine demonstrated excellent real-time performance, operating within a sub-second execution latency envelope in 99.18\% of cases ($N=604$), with an overall average latency of $563.21\text{ ms}$ (as visualized in Figure~\ref{fig:execution_time_density}). Only five queries exceeded the 1.0-second threshold. Given that only 11 queries in total exceeded $800\text{ ms}$ (as shown in the execution time distribution), these five outliers are highly likely to be the result of transient operating system thread scheduling or testing environment disruptions rather than algorithmic inefficiencies.
+The engine demonstrated strong real-time performance, operating with sub-second execution latency in 99.18\% of cases ($N=604$), with an overall average latency of $563.21\text{ ms}$, as visualized in Figure~\ref{fig:execution_time_density}. Only five queries exceeded the 1.0-second threshold. Given that only 11 queries in total exceeded $800\text{ ms}$, as shown in the execution-time distribution, these five outliers were likely caused by transient operating-system thread scheduling or disruptions in the testing environment rather than algorithmic inefficiencies.
 
-In terms of memory consumption, the peak resident set size (RSS) was exceptionally stable, ranging between a minimum of $644\text{ MB}$ and a maximum of $672.54\text{ MB}$, with an overall average of $658.62\text{ MB}$. The memory distribution, plotted in Figure~\ref{fig:memory_usage_density}, converges to a tight normal distribution. This is mathematically consistent with the Central Limit Theorem: because process memory is dominated by a static startup allocation (loading the candidate aggregations and shared libraries), the minor variations are the sum of independent operating system allocation factors (such as ASLR page offsets and heap fragmentation).
+In terms of memory consumption, the peak resident set size (RSS) was stable, ranging from a minimum of $644\text{ MB}$ to a maximum of $672.54\text{ MB}$, with an overall average of $658.62\text{ MB}$. The memory distribution, plotted in Figure~\ref{fig:memory_usage_density}, follows a narrow normal distribution. Because process memory is dominated by a static startup allocation, including the loading of candidate aggregations and shared libraries, the minor variations may result from operating-system allocation factors such as ASLR page offsets and heap fragmentation.
 
 \FloatBarrier
 
@@ -239,14 +239,14 @@ In terms of memory consumption, the peak resident set size (RSS) was exceptional
 \begin{minipage}{0.48\textwidth}
   \centering
   \includegraphics[width=\textwidth]{abbildungen/execution_time_density.png}
-  \caption{Query Execution Time distribution histogram with fitted Gaussian normal curve ($\mu=563.2\text{ms}$, $\sigma=52.8\text{ms}$).}
+  \caption{Query execution-time distribution histogram with a fitted Gaussian normal curve ($\mu=563.2\text{ ms}$, $\sigma=52.8\text{ ms}$).}
   \label{fig:execution_time_density}
 \end{minipage}
 \hfill
 \begin{minipage}{0.48\textwidth}
   \centering
   \includegraphics[width=\textwidth]{abbildungen/memory_usage_density.png}
-  \caption{Query Peak Memory Usage distribution histogram with fitted Gaussian normal curve ($\mu=658.6\text{MB}$, $\sigma=4.2\text{MB}$).}
+  \caption{Query peak-memory-usage distribution histogram with a fitted Gaussian normal curve ($\mu=658.6\text{ MB}$, $\sigma=4.2\text{ MB}$).}
   \label{fig:memory_usage_density}
 \end{minipage}
 \end{figure}
