@@ -239,9 +239,7 @@ Description: [DESCRIPTION]
 \end{enumerate}
 
 
-\section{Interface specification}\label{app:interfaces}
-** VERIFY ALL REQUIREMENT REFERNCES IN THIS CHAPTER!!! Maybe remove the architecture stuff under the tables!**
-
+\section{Interface Specification}\label{app:interfaces}
 
 \begin{table}[htbp]
     \centering
@@ -258,10 +256,6 @@ Description: [DESCRIPTION]
         \texttt{update\-Configuration} & \texttt{config: EndUser\-Configuration} & \texttt{Boolean} & \texttt{Invalid\-Configuration\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
         \hline
         \texttt{read\-Configuration} & \texttt{None} & \texttt{EndUser\-Configuration} & \texttt{\texttt{Storage\-Connection\-Exception}} \\
-        \hline
-        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
-            \small \textbf{Architectural Purpose:} The primary entry point for translating a user's natural language request into an executable command. If similarity scores fall below the minimum threshold, or if the resulting command violates catalog exclusivity rules, it throws an exception to trigger the interactive clarification loop (FR-1, FR-6, FR-7).
-        } \\
         \hline
     \end{tabularx}
 \end{table}
@@ -283,10 +277,6 @@ Description: [DESCRIPTION]
         \texttt{updateCatalog} & \texttt{catalog: ToolCatalog}, \newline \texttt{authKey: String} & \texttt{Boolean} & \texttt{Authentication\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception}, \newline \texttt{Invalid\-Catalog\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
         \hline
         \texttt{deleteCatalog} & \texttt{toolName: String}, \newline \texttt{authKey: String} & \texttt{Boolean} & \texttt{Authentication\-Exception}, \newline \texttt{Catalog\-NotFound\-Exception}, \newline \texttt{Storage\-Connection\-Exception} \\
-        \hline
-        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
-            \small \textbf{Architectural Purpose:} Defines the administrative contract for managing the lifecycle of tool catalogs. The external CLI adapter handles JSON deserialization, while this port ensures that all catalog mutations are strictly authenticated and semantically valid before the core delegates them to the persistence layer (FR-3, FR-4, FR-5).
-        } \\
         \hline
     \end{tabularx}
 \end{table}
@@ -356,10 +346,6 @@ Description: [DESCRIPTION]
     \hline
     \texttt{save\-Configuration} & \texttt{config: EndUser\-Config} & \texttt{Boolean} & \texttt{Storage\-Connection\-Exception} \\
     \hline
-    
-    \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
-        \small \textbf{Architectural Purpose:} Defines the absolute contract for persisting and retrieving domain entities. Note that \texttt{fetchCatalog} inherently retrieves all associated \texttt{CommandDefinitions} and \texttt{ExclusivityRules} required by the Syntactical Validator. By strictly relying on this interface, the Application Core remains completely agnostic to the underlying database technology (e.g., SQLite).
-    } \\
 \hline
 \end{longtable}
 \FloatBarrier
@@ -389,10 +375,6 @@ Description: [DESCRIPTION]
         \texttt{toolWeight} & \texttt{None} & \texttt{Float} & \texttt{Initialization\-Exception} \\
         \hline
         \texttt{optionWeight} & \texttt{None} & \texttt{Float} & \texttt{Initialization\-Exception} \\
-        \hline
-        \multicolumn{4}{|p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{
-            \small \textbf{Architectural Purpose:} Defines the contract for evaluating query similarity against candidate commands. By exposing only this interface to the core, the system achieves true algorithmic decoupling (NFR-7). External adapters can implement this port using anything from simple lexical token-matching to advanced neural embeddings (NFR-8). Furthermore, the \texttt{preloadModels} method guarantees that heavy machine learning assets are loaded into RAM during the boot or JIT phase, thereby preserving sub-second query latency during actual execution (NFR-1, NFR-2). Additionally methods are provided to manage optimized catalog instances, which allows an engine to store the catalog in it's preprocessed engine specific form. This reduces computational overhead during execution, contributing to the sub-second query latency. The \texttt{toolWeight} and \texttt{optionWeight} methods allow to give more accurate engines a higher importance during the ranking of candidates.
-        } \\
         \hline
     \end{tabularx}
 \end{table}
