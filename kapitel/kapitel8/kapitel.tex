@@ -1,11 +1,9 @@
 \section{Results}
 
 \subsection{Technical Benchmarking}
-** Revise every instance of "RSF"**
-** Check that all numbers in all diagrams are correct **
 \FloatBarrier
 
-The experimental evaluation of the command generation engine across the benchmark dataset of $N=609$ natural-language queries yielded insights into utility retrieval accuracy, option validation dynamics, and runtime performance characteristics.
+The experimental evaluation of the command generation engine across the test dataset of $N=609$ natural-language queries yielded insights into utility retrieval accuracy, option validation dynamics, and runtime performance characteristics.
 
 \subsubsection{Utility Retrieval and Command Resolution Success}
 At the primary stage of command synthesis, the classification model demonstrated strong classification capabilities, correctly identifying the target command-line utility (\texttt{cp}, \texttt{mv}, or \texttt{ops-sync}) in 80.30\% of the evaluated cases ($N=489$, as shown in Figure~\ref{fig:overall_tool_accuracy}). 
@@ -117,7 +115,7 @@ This correlation indicates that routing to an incorrect utility significantly in
   \legend{Success, Failure}
   \end{axis}
   \end{tikzpicture}
-  \caption{Resolution Status by Tool Correctness. Right = Correct Tool, Wrong = Wrong Tool.}
+  \caption{Resolution Status by Tool Correctness. Right = Correct Tool, Wrong = Wrong Tool ($N=609$).}
   \label{fig:resolution_by_tool}
 \end{minipage}
 \end{figure}
@@ -154,7 +152,7 @@ The detailed distribution across all six evaluation categories is illustrated in
     \textcolor{primaryorange}{\rule{1.2ex}{1.2ex}} & Incorrect (0\% match) & 74 & (24.8\%) \\
   \end{tabular}
   \vspace{0.2cm}
-  \caption{Option Match Quality ($N_{\text{correct}} = 298$).}
+  \caption{Option Match Quality for queries where the correct tool was selected ($N_{\text{correct}} = 298$).}
   \label{fig:option_match_quality}
   
 \end{minipage}
@@ -187,7 +185,7 @@ The detailed distribution across all six evaluation categories is illustrated in
     \textcolor{red!70!black}{\rule{1.2ex}{1.2ex}} & Failed \& Wrong Tool & 64 & (10.5\%) \\
   \end{tabular}
   \vspace{0.2cm}
-  \caption{Granular six-category classification split ($N=609$).}
+  \caption{Granular six-category classification split across the entire benchmark ($N=609$).}
   \label{fig:detailed_breakdown}
 \end{minipage}
 \end{figure}
@@ -216,7 +214,7 @@ To determine whether the high recall in perfect matches was simply an artifact o
   \addplot[fill=primaryblue] coordinates {(0,1.67) (1,1.68) (2,1.64)};
   \end{axis}
   \end{tikzpicture}
-  \caption{\ac{RSCE} by Subcategory (1.00 is perfect).}
+  \caption{\ac{RSCE} by Subcategory of queries where the correct tool was selected ($N=298$, \ac{RSCE} of 1.00 is perfect).}
   \label{fig:rsf_by_subcategory}
 \end{minipage}
 \end{figure}

@@ -80,7 +80,7 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
     \endlastfoot
 
     % --- DATA ROWS ---
-    NFR-1 & Query Latency & The system must return a completed command recommendation in under 1000 ms from the moment the query is submitted. \\
+    NFR-1 & Query Latency & The system must return a completed command recommendation in under $1000 ms$ from the moment the query is submitted. \\
     
     NFR-2 & Cold Startup Latency & The application must initialize and be ready to process input in under $1000 ms$. \\
     
@@ -94,9 +94,9 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 
     NFR-7 & Linux Deployment & The system must be deployable as a self-contained artifact for Linux environments, requiring no pre-installed language runtimes or package managers on the host machine. \\
     
-    NFR-8 & \ac{IPC} Network Isolation & Any \ac{IPC} mechanisms utilized by the system must be strictly bound to local OS constructs, explicitly denying any non-local network access. \\
+    NFR-8 & \ac{IPC} Network Isolation & Any \ac{IPC} mechanisms utilized by the system must be strictly bound to local \ac{OS} constructs, explicitly denying any non-local network access. \\
     
-    NFR-9 & State Access Control & The system must utilize host OS access control mechanisms to ensure its persistent state data is logically isolated and protected from unauthorized modification by other non-privileged users. \\
+    NFR-9 & State Access Control & The system must utilize host \ac{OS} access control mechanisms to ensure its persistent state data is logically isolated and protected from unauthorized modification by other non-privileged users. \\
     
     NFR-10 & Concurrency Resilience & The system must safely process simultaneous execution requests from multiple terminal instances without causing deadlocks, process crashes, or state corruption. \\
     
