@@ -14,7 +14,7 @@ Before defining the functional behaviors and quality attributes of the system, i
         \toprule
         \textbf{ID} & \textbf{Constraint} & \textbf{Description} \\
         \midrule
-        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox VM running a Linux-based operating system, configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8 GB of 2133 MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
+        ENV-1 & Target Hardware & All performance metrics must be achieved on a baseline Proxmox \ac{VM} running a Linux-based operating system, configured with 4 vCPUs (AMD Ryzen 7 5700X architecture), 8 GB of 2133 MHz DDR4 RAM, and a Samsung SSD 970 Evo Plus NVMe drive. \\
         ENV-2 & Offline Isolation & The system must function completely offline. It must not initiate any outbound network requests under any circumstances. \\
         ENV-3 & Zero Third-Party Daemon & The system must be entirely self-contained. While the system's own architecture may use background processes, it must not require the installation or execution of third-party standalone server software. \\
         ENV-4 & Headless Execution & The target environment is strictly headless. The system must not rely on or require graphical windowing systems or desktop environments for any user interaction or background execution. \\
@@ -94,7 +94,7 @@ While Functional Requirements dictate what the system must do, the Non-Functiona
 
     NFR-7 & Linux Deployment & The system must be deployable as a self-contained artifact for Linux environments, requiring no pre-installed language runtimes or package managers on the host machine. \\
     
-    NFR-8 & IPC Network Isolation & Any \ac{IPC} mechanisms utilized by the system must be strictly bound to local OS constructs, explicitly denying any non-local network access. \\
+    NFR-8 & \ac{IPC} Network Isolation & Any \ac{IPC} mechanisms utilized by the system must be strictly bound to local OS constructs, explicitly denying any non-local network access. \\
     
     NFR-9 & State Access Control & The system must utilize host OS access control mechanisms to ensure its persistent state data is logically isolated and protected from unauthorized modification by other non-privileged users. \\
     

@@ -74,9 +74,7 @@ Since more than one option may be correct for a given query, standard accuracy i
 
 The overall \ac{RMQ} score ($S$) is defined as the average score across all queries in the validation set:
 
-\begin{equation}
-S = \frac{1}{|Q|} \sum_{q \in Q} \left( \sum_{i \in M_q} \frac{1}{N_q} \right)
-\end{equation}
+$$S = \frac{1}{|Q|} \sum_{q \in Q} \left( \sum_{i \in M_q} \frac{1}{N_q} \right)$$
 
 where:
 \begin{itemize}
@@ -218,15 +216,11 @@ The \texttt{embeddinggemma-300m} family offers an optimal compromise. The BF16 v
 
 To determine the optimal model configuration, a multi-criteria decision matrix was constructed using Min-Max utility scaling normalization. For each candidate configuration $i$ and metric $j$, a normalized utility score $u_{i,j} \in [0, 10]$ was calculated. Positive metrics (where higher values are better) were normalized according to:
 
-\begin{equation}
-u_{i,j} = 10 \times \frac{x_{i,j} - \min_k(x_{k,j})}{\max_k(x_{k,j}) - \min_k(x_{k,j})}
-\end{equation}
+$$u_{i,j} = 10 \times \frac{x_{i,j} - \min_k(x_{k,j})}{\max_k(x_{k,j}) - \min_k(x_{k,j})}$$
 
 For negative metrics (where lower values are better, such as peak memory and model load time), the utility score was defined as:
 
-\begin{equation}
-u_{i,j} = 10 \times \frac{\max_k(x_{k,j}) - x_{i,j}}{\max_k(x_{k,j}) - \min_k(x_{k,j})}
-\end{equation}
+$$u_{i,j} = 10 \times \frac{\max_k(x_{k,j}) - x_{i,j}}{\max_k(x_{k,j}) - \min_k(x_{k,j})}$$
 
 The criteria weights were defined as follows: Recall/RSCE ($w=3$) to prioritize retrieval balance; throughput ($w=2$), peak memory ($w=2$), and load time ($w=3$) to emphasize computational efficiency; and F1-score ($w=1$), precision ($w=1$), recall ($w=1$), and tool accuracy ($w=1$) as baseline quality indicators. The model load time was assigned a weight of 3 because in local systems executing short natural-language queries, startup latency is a dominant factor in end-to-end user experience. The normalized scores and final weighted sums are presented in Table~\ref{tab:decision_matrix}.
 
