@@ -1,4 +1,4 @@
-\section{Comparison Of Embedding Models}\label{sec:comp_emb_models}
+\section{Comparison of Embedding Models}\label{sec:comp_emb_models}
 
 For the project only embedding modells of the bi-encoder family were compared. Models of the cross-encoder family were not taken into account. The reason for this is the fundamentally different way the two work. While for a bi-encoder model the embeddings of a target description can be calculated and stored, providing a significant boost in retrieval, this is not possible for cross-encoder models. That is, due to the way data is processed using cross-encoder models. The calculated similarity score in this case, is based on the combined input of the target description and the user query~\cite{qin2026ricci}. This makes cross-encoders more accurate, but at the same time slower than bi-encoders~\cite{weaviate2023crossencoders}, leading to the decision to focus on a bi-encoder model as the embedding engine in this project.
 
@@ -40,14 +40,14 @@ Google's \texttt{embeddinggemma-300m} was selected because it adds a smaller, in
 
 Despite the stronger leaderboard performance of some Qwen-derived variants, \texttt{Qwen/Qwen3-Embedding-0.6B} was selected as the primary baseline because it provides the clearest and most interpretable reference point within that model family. Yuan is explicitly built on \texttt{Qwen3-Embedding-0.6B}, Jasper is a downstream derivative of the same line, and KaLM is built on a Qwen2 backbone, so using \texttt{Qwen/Qwen3-Embedding-0.6B} as the primary representative of that family helps avoid repeatedly sampling closely related variants with additional downstream modifications. This choice preserves analytical clarity by separating the base Qwen embedding architecture from later fine-tuning and architectural adaptations, allowing the comparison to focus more directly on differences between model families rather than refinements within a single lineage.
 
-\subsection{Model Specific Optimizations}\label{sec:model_spec_opt}
+\subsection{Model-Specific Optimizations}\label{sec:model_spec_opt}
 
 In order to optimize results for each of the models, different modifications have been applied to the user queries and descriptions ingested.
 
-\subsubsection{jina-v5-retrieval Models (small/nano)}
+\subsubsection{Jina-v5-retrieval Models (Small/Nano)}
 For the Jina-v5-retrieval models, the primary task-specific modification applied in this comparison was to prepend user queries with \textit{"Query: "} and tool and option descriptions with \textit{"Document: "}, following Jina's retrieval setup~\cite{akram2026jina}.
 
-\subsubsection{embeddinggemma-300m}
+\subsubsection{EmbeddingGemma-300M}
 For \texttt{embeddinggemma-300m}, a task type must be specified so that the model can optimize embeddings for the intended retrieval setting~\cite{vera2025embeddinggemma}. In this evaluation, the task type \textit{"search result"} was used and prepended to each query together with the prefix \textit{"query: "}, yielding the format \textit{"task: search result | query: <query>"}. For the embedding of tool and option descriptions, a title-text structure was used in the form \textit{"title: <title> | text: <description>"} ~\cite{vera2025embeddinggemma}. The title was defined as either the tool name or the combination of tool name and option, depending on the embedding target, and the text field contained the corresponding description.
 
 \subsubsection{Qwen3-Embedding-0.6B}
