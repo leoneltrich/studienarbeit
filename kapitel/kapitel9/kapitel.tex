@@ -2,22 +2,14 @@
 
 \subsection{Validity Concerns}
 
-in the evaluation there were only 3 tools so the likelyhood of the wrong one being retrieved was significantly lower than in a standard system.
+\subsubsection{Internal Validity}
 
-The effectiveness of the results depends heavily on the catalog being optimized
+Several factors within the experimental design may have influenced the internal validity of the evaluation. First, the evaluation environment featured a highly constrained search space consisting of only three candidate tools. This restriction artificially deflated the baseline probability of retrieving an incorrect asset compared to a standard, production-grade system where hundreds of tools might exist, thereby potentially overstating the system's baseline retrieval precision. Second, the observed effectiveness of the system relies heavily on a highly curated, optimized tool catalog. This introduces a pragmatic limitation regarding operational utility: the manual human labor required to construct and maintain such an optimized catalog may equal or exceed the effort needed to author traditional documentation, threatening the real-world scalability of the approach. Finally, a degree of algorithmic non-determinism was discovered during the testing phase. The use of unordered data structures (specifically, hash maps) led to a state where, when multiple tools yielded identical relevance scores, ties were broken based on arbitrary memory traversal patterns rather than semantic criteria. This introduced minor runtime variances independent of the underlying model's actual capability.
 
-if there is someone taking the time to write an optimized catalog they might as well just write docs for it
+\subsubsection{External Validity and Generalizability}
 
-Only bi encoder embedding models were used
-
-Qwen prompts, only 3 variations tried
-
-Benchmarks do not take into account that maybe a subset of other options could also be enough and hence despite the "correct" solution not being contained, the solution would still have worked.
-
-Different weights for the results of different engines not applied
-
-Non deterministic test results due to hash map
-
-small number of users for evaluation
+The generalizability of the empirical findings is bounded by the specific architectural and model configurations selected for this study. Structurally, the retrieval mechanism was restricted exclusively to bi-encoder embedding models. While bi-encoders offer distinct computational advantages for dense, real-time vector search, they inherently lack the granular, token-level interaction processing typical of cross-encoder architectures~\cite{qin2026ricci}. Consequently, these accuracy benchmarks cannot be unreservedly generalized to other retrieval paradigms. Furthermore, the prompt-engineering space explored for the Qwen model family during model selection was extremely narrow, spanning only across three prompt variations. Given the sensitivity and structural brittleness of \acp{LLM} to minor phrasing adjustments, the reported results may reflect a localized performance optimum rather than the broader capabilities of the model family.
 
 \subsection{Answers To The Research Questions}
+
+The evaluation methodology introduces constraints regarding how accurately the chosen metrics capture true operational success. The benchmark framework employs a strict, binary evaluation criterion that registers a failure whenever the designated "correct" tool is missed. This rigid definition fails to account for functional equivalence, where a subset or alternative combination of the remaining tools or their options might still successfully resolve the user's underlying intent. By classifying these viable alternative pathways as outright failures, the evaluation might underreport the practical utility of the system in real-world deployments. Additionally, the system's multi-engine aggregation framework applied uniform weight to all retrieval outputs. Because individual retrieval engines inherently possess varying degrees of reliability depending on the query domain, the absence of a calibrated score-fusion means the system's collaborative retrieval potential was under-optimized during the benchmarking process. Finally, the human-centric evaluation of the system is constrained by a small participant sample size, as only nine users took part in the user study. While this cohort provided valuable qualitative insights and initial usability feedback, the limited sample size lacks the statistical power required to generalize the findings across a broader, more diverse user base. Consequently, the user evaluation metrics should be interpreted as an exploratory proof-of-concept rather than a definitive indication of universal user acceptance or system performance across larger populations.
