@@ -1,10 +1,14 @@
 \section{Methodology}
 This chapter describes the methodological approach used to design, implement, and evaluate the proposed local-first command option retrieval system. The methodology consists of a literature review, a requirements-driven system design process, an implementation and model selection phase, technical benchmarking, and a user study. Together, these steps provide the basis for evaluating both the technical feasibility of the approach and its perceived usefulness in command-line workflows.
 
+The methodology is structured around the three research questions. Source discovery, system design, and model selection support the investigation of RQ1. Statistical benchmarking, performance benchmarking, and the final system evaluation address RQ2, while the pre-study evaluation and user evaluation provide the evidence required to answer RQ3.
+
 \subsection{Literature Review}
 
 The literature review was conducted to identify existing approaches to natural-language
 interaction with command-line applications and to determine how the proposed system differs from previous work. The search focused primarily on natural-language-to-Bash translation, information retrieval, and the use of machine-learning methods for processing command-line input.
+
+The literature review primarily supports RQ1 by identifying existing technical approaches, their limitations, and the research gap that motivates the design of a lightweight, local-first retrieval system.
 
 \subsubsection{Source Discovery}
 
@@ -46,12 +50,16 @@ This conversational search process was beneficial as LLMs were able to develop a
 The AI tools were therefore treated as discovery aids rather than academic sources. Their
 suggestions supported the search process, while the final assessment and interpretation of each publication remained a manual task.
 
+This source-discovery process contributes to RQ1 by establishing the available design alternatives and by providing an evidence-based foundation for the architectural and technological decisions made later in the project.
+
 \subsection{System Design}
 The system design process began by defining functional and non-functional requirements for the application, in addition to the relevant environmental constraints. These requirements and constraints provided the foundation for the subsequent architecture selection and modeling phases.
 
 To determine which architectural pattern best fit the requirements, different patterns were systematically analyzed based on qualitative criteria. After selecting the architectural pattern, the system was modeled using the C4 standard~\cite{brown2026c4}. This provided a high-level overview of the system, its components, and its boundaries. To provide a more detailed view of the system behavior, BPMN 2.0~\cite{omg_bpmn_2014} style diagrams were created to describe the execution flow of the system and its different functions.
 
 Finally, the internal and external interfaces of the system were defined, and the technologies most suitable for implementing the system were selected. The technology selection was based on qualitative and quantitative criteria. This completed the groundwork for the system implementation.
+
+This design process directly addresses RQ1 by translating the local-first, privacy, extensibility, and hardware constraints into a concrete architecture. The requirements-driven approach is appropriate because it allows each architectural and technological decision to be assessed against the conditions stated in the research question rather than being selected solely on implementation convenience.
 
 \subsection{Model Selection}\label{sec:model_selection_meth}
 
@@ -101,8 +109,12 @@ Because the project targets an efficient retrieval system, additional efficiency
 
 The final model selection was performed using a weighted decision matrix incorporating memory consumption, token processing speed, initial load time, \ac{RSCE}, \ac{RSCE}/Recall, precision, recall, and F1-score. Each model was ranked for every criterion, with higher ranks assigned to better-performing models. The resulting ranks were multiplied by predefined weights reflecting the relative importance of each criterion, and the weighted values were summed to produce a final score for each model. The model achieving the highest overall score was then chosen as the final retrieval model.
 
+Model selection contributes to RQ1 because the chosen embedding model forms a central part of the proposed implementation and must remain usable under the stated local-hardware constraints. Considering both retrieval quality and resource consumption prevents the selection of a model that performs well statistically but is unsuitable for the intended deployment environment.
+
 \subsection{Benchmarking}
 After the system design and implementation methodology had been established, the next methodological step was to define how the system would be evaluated technically. This section is divided into statistical benchmarking, which focuses on dataset generation and utilization, and performance benchmarking, which outlines the benchmarking environment used.
+
+Together, these benchmarking procedures support RQ2 by defining how matching accuracy, execution latency, and resource consumption are measured under controlled and reproducible conditions.
 
 \subsubsection{Statistical Benchmarking} \label{sec:statistical_benchmarking}
 To allow for a systematic evaluation of different parameter configurations, a dataset was created. The dataset was intended to provide a set of sample queries that a user might submit to the system in order to achieve a specific task. For this purpose, ten sample categories were first defined (Appendix~\ref{app:dataset_sample_cats}), five of which used the "mv" tool and five of which used the "cp" tool. Each category consisted of a destination command and a description of the function performed by that command. A destination command was defined as a full command, including the tool name, options, flags, and any arguments required to perform the action described.
@@ -119,6 +131,8 @@ $$e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}$$
 
 Here, $Z$ is the z-score for a 90\% confidence level, $N$ is the sample size, and $p$ represents the empirical success rate recorded during the benchmark.
 
+This procedure supports the matching-accuracy component of RQ2. Separating the validation and test sets is particularly important because it allows configurations to be optimized without using the queries on which the final performance claims are based.
+
 \subsubsection{Performance Benchmarking}\label{sec:performance_bench}
 Since the system follows a local-first approach, benchmarking must not be limited to the expected success rate alone. Resource usage and execution speed also need to be taken into account. Therefore, the execution environment was defined in the environmental constraint ENV-1 in table~\ref{tab:env_constraints}. The \ac{VM} described there had several standard performance-related configuration options enabled manually to utilize the provided hardware as effectively as possible. The measures taken were:
 
@@ -134,6 +148,8 @@ In addition to the technical benchmarking, a user study was conducted to evaluat
 
 The goal of this project was to contribute to improving users' workflows when using the terminal, regardless of whether they were novice, intermediate, or advanced CLI users. The user study therefore evaluated the perceived effectiveness of the tool and assessed whether it supported participants when working with the CLI.
 For the user study, participants with a wide spectrum of skill levels were selected. This was intended to reduce bias in the results. For example, more advanced users might have been able to solve tasks more easily due to their existing expertise, while less experienced users might have perceived the tool differently due to their limited CLI understanding. To support participant classification, a pre-study survey was created to divide participants into novice, intermediate, and expert categories.
+
+The user study addresses RQ3 by collecting feedback from users with different levels of CLI expertise. Combining practical interaction with questionnaire responses is appropriate because the research question concerns participants’ perceived usability, helpfulness, and workflow efficiency rather than technical performance alone.
 
 \subsubsection{Pre-study Evaluation}
 The pre-study evaluation consisted of 10 questions of varying difficulty, designed to assess participants' general knowledge of the CLI. The questions were compiled based on widely used operations, ranging from moving and locating files to understanding paths, managing permissions, and using commands Appendix~\ref{app:pre-evaluation_questions}. During the user study, the questions were shuffled randomly to improve the reliability of the survey and to reduce the likelihood of participants sharing answers.
@@ -163,6 +179,9 @@ After completing the tasks, participants answered a total of twelve questions. T
 The evaluation tasks as shown in Appendix~\ref{app:Evaluation_tasks} were carefully designed to be straightforward and not overly difficult, ensuring that participants of all expertise levels could focus on evaluating the retrieval tool rather than struggling with complex system administration concepts. The first three tasks utilized standard file operations, while the latter three introduced ops-sync, a self-made mock utility with ambiguous options. This custom tool was implemented specifically to mirror a realistic situation in a corporate environment where users frequently encounter proprietary, undocumented, or niche applications. By transitioning from familiar utilities to an entirely unknown tool, the evaluation effectively tested whether the local-first system could seamlessly bridge the knowledge gap for proprietary software.
 
 Following the practical evaluation, the questionnaire Appendix~\ref{app:User evaluation questionnaire} was intentionally kept concise to avoid being too long for the users, thereby preventing survey fatigue. The multiple-choice section was divided into two distinct focal areas: the first five questions measured standard usability metrics such as ease of use, user confidence, and frustration levels. Questions six through nine shifted to a scenario-based evaluation, asking participants to imagine working in a restricted, offline environment where cloud-based alternatives are unavailable. These questions aimed to quantify the perceived real-world usefulness of the tool and the users' behavioral intention to adopt it for their daily workflow. Finally, the three free-text questions provided qualitative insights, allowing users to articulate the most helpful aspects of the system, document any frustrations, and define specific situations where they would prefer this local tool over traditional manuals or asking a colleague.
+
+The user evaluation provides the main evidence for RQ3. The combination of familiar and unfamiliar tools allows the study to assess both general usability and the system’s perceived value when users cannot rely on prior knowledge, while the quantitative and qualitative questions capture complementary aspects of the participants’ experience.
+
 \subsection{System Evaluation}
 \label{sec:technical_benchmarking_methodology}
 
@@ -178,6 +197,8 @@ For each execution, two key physical resources were monitored:
     \item[Execution Latency (ms):] Measured by recording the system clock using Python's \texttt{time.perf\_counter()} immediately before spawning and immediately after the termination of the command-generation process.
     \item[Peak Memory Consumption (MB):] Measured by querying the child process resource usage via \texttt{getrusage(RUSAGE\_CHILDREN)}. The peak resident set size (\texttt{ru\_maxrss}), representing the high-water mark of physical memory allocated during the execution~\cite{linux_man_getrusage}, was recorded and converted to megabytes (MB) by dividing the raw value by $1024.0$ (for Linux systems returning a value in kilobytes~\cite{linux_man_getrusage}).
 \end{description}
+
+The final system evaluation directly addresses RQ2 by measuring the completed system rather than its individual components. Using the previously unseen test set and the fixed reference environment ensures that the reported matching and runtime results reflect the behavior of the finalized implementation under the intended deployment conditions.
 
 \subsubsection{Output Parsing and Classification Pipeline}
 The standard output of the binary was intercepted. The response was then categorized according to the following state machine logic:
