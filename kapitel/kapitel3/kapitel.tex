@@ -59,7 +59,7 @@ The selection of the retrieval model began with the definition of an initial can
 
 In a second step, the remaining candidate models were compared using two retrieval tasks based on the validation set described in Chapter~\ref{sec:statistical_benchmarking}.
 
-The first task focused on tool retrieval. For this purpose, an example catalog was created for the \texttt{mv} and \texttt{cp} tools (see Appendix~\ref{appendix:tool_catalog_examples}). Using these catalogs, each sample query from the validation set was embedded and compared against the corresponding tool descriptions. The dot product between query and tool embeddings was then used to determine which of the two candidate tools received the higher similarity score. Each model variant was assigned an accuracy score corresponding to the percentage of cases in which the correct tool was ranked above the incorrect one.
+The first task focused on tool retrieval. For this purpose, an example catalog was created for the \texttt{mv} and \texttt{cp} tools (see Appendix~\ref{app:tool_catalogs}). Using these catalogs, each sample query from the validation set was embedded and compared against the corresponding tool descriptions. The dot product between query and tool embeddings was then used to determine which of the two candidate tools received the higher similarity score. Each model variant was assigned an accuracy score corresponding to the percentage of cases in which the correct tool was ranked above the incorrect one.
 
 The second task focused on option retrieval and split into multiple steps. First, a baseline test was run utilizing an Otsu cutoff~\cite{otsu1979threshold} to select the subset of the most relevant options. This baseline was evaluated on the raw sample queries from the validation set. During this stage, the following metrics were collected:
 
@@ -125,7 +125,7 @@ e = Z \cdot \sqrt{\frac{p(1-p)}{N}} = 1.645 \cdot \sqrt{\frac{p(1-p)}{609}}
 Here, $Z$ is the z-score for a 90\% confidence level, $N$ is the sample size, and $p$ represents the empirical success rate recorded during the benchmark.
 
 \subsubsection{Performance Benchmarking}\label{sec:performance_bench}
-Since the system follows a local-first approach, benchmarking must not be limited to the expected success rate alone. Resource usage and execution speed also need to be taken into account. Therefore, the execution environment was defined in table~\ref{tab}. The VM described there had several standard performance-related configuration options enabled manually to utilize the provided hardware as effectively as possible. The measures taken were:
+Since the system follows a local-first approach, benchmarking must not be limited to the expected success rate alone. Resource usage and execution speed also need to be taken into account. Therefore, the execution environment was defined in the environmental constraint ENV-1 in table~\ref{tab:env_constraints}. The VM described there had several standard performance-related configuration options enabled manually to utilize the provided hardware as effectively as possible. The measures taken were:
 
 \begin{enumerate}
 	\item CPU set to host mode
