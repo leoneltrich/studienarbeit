@@ -254,3 +254,167 @@ In terms of memory consumption, the peak resident set size (RSS) was exceptional
 
 
 \subsection{User Study}
+
+\subsubsection{Participants and Completion}
+
+A total of 30 participants completed the CLI knowledge pre-evaluation. Of these, nine participants subsequently took part in the practical evaluation and completed all six tasks. The same nine participants also answered all nine closed questionnaire items. Eight participants additionally completed all three free-text questions, resulting in eight complete responses to the full twelve-item questionnaire.
+
+The practical evaluation sample was evenly distributed across the three predefined expertise levels. Based on the results of the pre-evaluation, three participants were classified as beginners, three as intermediate users, and three as advanced users. This balanced distribution enabled the evaluation to include perspectives from users with substantially different levels of prior CLI knowledge.
+
+\begin{table}[htbp]
+    \centering
+    \caption{CLI expertise levels of the practical evaluation participants}
+    \label{tab:user-study-expertise}
+    \begin{tabular}{lrr}
+        \hline
+        \textbf{Expertise level} & \textbf{Participants} & \textbf{Percentage} \\
+        \hline
+        Beginner     & 3 & 33.3\% \\
+        Intermediate & 3 & 33.3\% \\
+        Advanced     & 3 & 33.3\% \\
+        \hline
+        Total        & 9 & 100\% \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Task Interaction and Completion Times}
+
+All nine participants completed each of the six practical tasks, resulting in a total of 54 completed participant--task records. Table~\ref{tab:user-study-task-interaction} summarizes the recorded active completion times and the number of participants who viewed the provided solution after each task. 
+
+Due to the small sample size and the presence of several unusually short and long completion times, the median was selected as the primary measure of central tendency. The interquartile range (IQR) is reported to describe the spread of the middle 50\% of observations, while the full minimum--maximum range illustrates the overall variation between participants. The first task had the highest median completion time at 603 seconds. The median subsequently decreased to 358 seconds for Task~2 and 214 seconds for Task~3. This suggests that participants generally required less time after becoming familiar with the evaluation environment and interaction process. The three tasks involving the custom tool produced comparatively similar median completion times of 218, 247, and 253 seconds. 
+
+\begin{table}[htbp]
+  \centering
+  \caption{Task completion times and solution consultation}
+  \label{tab:user-study-task-interaction}
+  \begin{tabular}{clrrrr}
+      \hline
+      \textbf{Task} &
+      \textbf{Tool category} &
+      \textbf{Completed} &
+      \textbf{Median (s)} &
+      \textbf{IQR (s)} &
+      \textbf{Range (s)} \\
+      \hline
+      1 & Standard tool & 9 & 603 & 181--1085 & 110--1114 \\
+      2 & Standard tool & 9 & 358 & 89--452   & 13--1483 \\
+      3 & Standard tool & 9 & 214 & 70--490   & 2--692 \\
+      4 & Custom tool   & 9 & 218 & 185--516  & 2--629 \\
+      5 & Custom tool   & 9 & 247 & 144--309  & 0--497 \\
+      6 & Custom tool   & 9 & 253 & 199--436  & 0--752 \\
+      \hline
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Participants consulting the solution for each task}
+  \label{tab:user-study-solution-views}
+  \begin{tabular}{lrr}
+      \hline
+      \textbf{Task} &
+      \textbf{Participants viewing solution} &
+      \textbf{Share of participants} \\
+      \hline
+      Task 1 & 4 & 44.4\% \\
+      Task 2 & 1 & 11.1\% \\
+      Task 3 & 2 & 22.2\% \\
+      Task 4 & 2 & 22.2\% \\
+      Task 5 & 3 & 33.3\% \\
+      Task 6 & 2 & 22.2\% \\
+      \hline
+  \end{tabular}
+\end{table}
+
+Completion times nevertheless varied substantially between individual participants. Task~1 showed the widest interquartile range, from 181 to 1085 seconds, while the smallest interquartile range was observed for Task~5, from 144 to 309 seconds. The recorded times therefore indicate considerable differences in how participants approached the tasks. The provided solutions were viewed most frequently after Task~1, where four of the nine participants consulted the solution. For the remaining tasks, between one and three participants viewed the corresponding solution. A solution view does not necessarily indicate that a task was completed incorrectly, as participants could also use the solution to compare it with the command they had produced. 
+
+\begin{figure}[hbt!]
+  \centering
+  \includegraphics[width=1.0\textwidth]{abbildungen/task_completion_times_boxplot.png}
+  \caption{Task Completion Times Across the Practical Evaluation}
+  \label{fig:task-completion-times}
+\end{figure}
+
+Figure~\ref{fig:task-completion-times} shows the distribution of active completion times for all six practical tasks. The individual data points make the small sample size transparent, while the box plots illustrate the median, interquartile range, and variation between participants. The separation between Tasks~1--3 and Tasks~4--6 distinguishes the standard command-line utilities from the custom tool. This comparison is relevant because it indicates whether participants required more time when working with an unfamiliar, internally developed application and whether completion times changed as they became more familiar with the evaluation environment. The custom-tool tasks did not produce systematically longer completion times than the standard-command tasks, suggesting that unfamiliarity with the tool alone did not substantially increase task duration.
+
+\subsubsection{Expertise and Response Time}
+
+\begin{figure}[hbt!]
+  \centering
+  \includegraphics[width=1.0\textwidth]{abbildungen/expertise_per_level.png}
+  \caption{Per-task completion times by CLI expertise}
+  \label{fig:expertise_per_level}
+\end{figure}
+
+Figure~\ref{fig:expertise_per_level} compares the total active task time of participants across the three CLI expertise levels. Although beginners had the highest median completion time and intermediate participants the lowest, the values varied substantially within each group and did not form a consistent progression with increasing expertise. Given the small sample of three participants per group and the presence of unusually short and long recorded times, the plot should therefore be interpreted as showing exploratory tendencies rather than a reliable relationship between CLI expertise and task duration.
+
+\subsubsection{Questionnaire Results}
+
+\begin{figure}[hbt!]
+  \centering
+  \includegraphics[width=1.0\textwidth]{abbildungen/Usability_and_User_Experience.png}
+  \caption{Likert graph showing responses for usability and user experience}
+  \label{fig:usablity_and_user_experience}
+\end{figure}
+
+Figure~\ref{fig:usablity_and_user_experience} presents the responses to the five questions concerning usability and the experience of interacting with the tool. Seven of the nine participants somewhat agreed that the tool was easy to understand, while responses concerning confidence in the retrieved information were more varied. Most participants agreed that the tool reduced the effort required to understand command options and reported overall satisfaction with the experience. The negatively phrased frustration item received predominantly disagreeing responses, indicating that most participants did not feel frustrated while using the tool.
+
+\begin{figure}[hbt!]
+  \centering
+  \includegraphics[width=1.0\textwidth]{abbildungen/acceptance_workflow.png}
+  \caption{Likert graph showing responses for technology acceptance questions}
+  \label{fig:acceptance_workflow}
+\end{figure}
+
+Figure~\ref{fig:acceptance_workflow} summarizes the responses concerning acceptance of the tool and its perceived value in a restricted work environment. Seven of the nine participants agreed that the tool would be an effective alternative where cloud-based AI could not be used. Six participants expressed confidence in its usefulness for internal command-line tools, and the same number believed that it would speed up their workflow. Six participants also indicated that they would want the tool installed if their work regularly involved undocumented or proprietary command-line applications.
+
+Overall, the questionnaire results indicate a generally positive evaluation of the tool. Participants particularly valued the reduction in effort, expressed high overall satisfaction, and showed a positive intention to use the tool in environments involving restricted or proprietary command-line applications. However, confidence in the retrieved information was less consistent than the other usability measures, suggesting that perceived reliability and transparency remain important areas for improvement. The results therefore support the potential usefulness of the approach while also indicating that successful adoption would depend on users being able to understand and trust the retrieved recommendations.
+
+\subsubsection{Qualitative feedback}
+
+Overall, the qualitative feedback was cautiously positive. Participants generally appreciated the near-complete command output, the placeholder explanations, and the detection of conflicting options, as these features reduced the effort required to identify suitable command syntax. At the same time, the responses showed that trust in the tool depended strongly on retrieval reliability, clear documentation, and transparent handling of arguments. The overall consensus was therefore that the tool would be particularly useful for unfamiliar or poorly documented command-line applications, but should not be relied upon uncritically in safety-sensitive environments.
+
+\subsubsection{Qualitative Feedback}
+
+The free-text responses were grouped into recurring themes to summarize the participants' most frequently mentioned positive aspects, concerns, and preferred usage contexts. Table~\ref{tab:qualitative-feedback-themes} presents the main themes identified across the responses.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Themes identified in the qualitative user feedback}
+    \label{tab:qualitative-feedback-themes}
+    \begin{tabular}{p{3.5cm} p{9.5cm}}
+        \hline
+        \textbf{Theme} & \textbf{Summary of participant feedback} \\
+        \hline
+
+        Immediately usable output &
+        Participants valued receiving an almost complete command that could be adapted and executed with relatively little additional effort. \\
+
+        Placeholder guidance &
+        The descriptions explaining how placeholders should be replaced were repeatedly identified as helpful when constructing the final command. \\
+
+        Conflict detection &
+        Participants positively noted that the tool identified conflicting command options instead of returning an invalid command without explanation. \\
+
+        Input and argument handling &
+        Several responses suggested that filenames, paths, and other values mentioned in the natural-language request should be inserted into the generated command automatically. \\
+
+        Documentation and onboarding &
+        Some participants considered the tool itself insufficiently documented and found that its operation was not always immediately clear. \\
+
+        Retrieval reliability &
+        Concerns were raised about incorrect results, sensitivity to special characters, and the possibility that the tool might return only one solution despite other valid approaches being available. \\
+
+        Interface usability &
+        Difficulties with copying and pasting commands in the browser-based terminal were mentioned as a source of friction during the evaluation. \\
+
+        Safety and trust &
+        Participants expressed caution about using generated commands in critical environments, particularly where an incorrect command could cause damage or where the user did not fully understand its effects. \\
+
+        Appropriate usage context &
+        The tool was considered most useful when documentation was unavailable, incomplete, or difficult to search. Participants were less likely to use it when comprehensive documentation was already readily available. \\
+
+        \hline
+    \end{tabular}
+\end{table}
