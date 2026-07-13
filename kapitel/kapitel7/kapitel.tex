@@ -1,4 +1,4 @@
-\section{Implementation}
+\section{Implementation}\label{sec:implementation}
 
 The implementation of the tool was based on the system design and technology decisions of Chapter~\ref{sec:design_and_decision}. The tool Antigravity CLI was utilized in combination with various Gemini \acp{LLM} to accelerate development. For this, a project scaffold with placeholder functionality was first created. This ensured that the architecture outlined in the respective chapters was properly implemented. Antigravity CLI was then used to implement the actual functionality of the tool step by step. By keeping tight boundaries on what should be created and manually verifying the correctness of the generated code, it was possible to build a functional tool fulfilling a subset of the specified requirements. Subsection~\ref{sec:implementation_limitation} outlines the requirements omitted at this stage and the reasons for their omission. The following subsections outline a variety of subsystems and optimizations applied to the tool.
 
@@ -20,7 +20,34 @@ where $w_e \ge 0$ is the pre-configured weight of engine $e$. Candidates missing
 \subsection{Hyperparameter Optimization for Otsu-based Candidate Cutoff}
 \label{sec:otsu_optimization}
 
-To select the best-matching candidate group, candidate options are pruned using an Otsu-based cutoff filter. As detailed in Section~\ref{sec:score_aggregation_impl}, similarity scores from the keyword and embedding matching engines are normalized via min-max scaling and combined using a weighted sum, to which the cutoff filter is applied directly. 
+\subsubsection{Otsu's Method Background}
+\label{subsec:otsu_cutoff}
+To dynamically determine an optimal candidate truncation point without relying on a rigid, predefined top-$K$ threshold, this architecture implements an adaptive cutoff mechanism based on score drop variance. This approach models the candidate list as a one-dimensional distribution of relative score deltas, applying Otsu's global thresholding method~\cite{4310076} to isolate significant score drops from minor statistical fluctuations.
+
+Let $c_j$ represent a candidate at rank $j$ with an associated normalized aggregate score $S(c_j)$. The relative score degradation $\Delta_j$ between consecutive candidates $c_j$ and $c_{j+1}$ is formalized as:
+$$\Delta_j = \frac{S(c_j) - S(c_{j+1})}{S(c_j)}$$
+
+The sequence of relative drops $\Delta$ is subsequently partitioned into two distinct classes (minor variances and major drops) by maximizing the between-class variance $\sigma_b^2(t)$, as defined by Otsu~\cite{4310076}:
+$$t^* = \operatorname*{argmax}_{t} \sigma^2_b(t)$$
+
+For any candidate threshold $t$, the between-class variance is computed as:
+$$\sigma_b^2(t) = \omega_0(t) \omega_1(t) (\mu_0(t) - \mu_1(t))^2$$
+
+Where $\omega_0(t)$ and $\omega_1(t)$ are the proportions of drop values falling below and above the threshold $t$, and $\mu_0(t)$ and $\mu_1(t)$ are the average drop values of those two split groups.
+
+To adjust the sensitivity and stop the system from cutting off candidates too early, two system hyperparameters are introduced:
+\begin{itemize}
+    \item \textbf{Relative Floor ($\alpha$):} A strict baseline filter that removes low-confidence candidates prior to variance analysis. A candidate is immediately pruned if its score falls below a fixed percentage of the maximum retrieved score:
+    $$S(c) < \alpha \cdot \max_{c'} S(c')$$
+    \item \textbf{Sensitivity Multiplier ($m$):} A multiplier used to make the cutoff more or less strict. The final threshold $\theta$ is calculated as:
+    $$\theta = m \cdot t^*$$
+\end{itemize}
+
+Using this final threshold $\theta$, the system checks the ranked candidates in order. The list is cut off at the very first index $j$ where the relative drop $\Delta_j$ is greater than $\theta$, keeping only the high-quality candidates that came before it.
+
+\subsubsection{Otsu Optimization}
+
+To select the best-matching candidate group, candidate options are pruned using the Otsu-based cutoff filter described in the previous section. As detailed in Section~\ref{sec:score_aggregation_impl}, similarity scores from the keyword and embedding matching engines are normalized via min-max scaling and combined, to which the cutoff filter is applied directly. 
 
 The filter is parameterized by the relative floor $\alpha \in [0, 1]$ (which zeroes out candidates scoring below $\alpha \cdot S_{\text{max}}$) and the Otsu multiplier $m \ge 1.0$, which scales the computed Otsu drop threshold $\theta = m \cdot \theta_{\text{Otsu}}$ to determine where the score ``cliff'' occurs.
 
